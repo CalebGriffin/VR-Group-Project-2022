@@ -2,37 +2,49 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
+// This class is used to create the boats and store their data
 public class Boat
 {
+    // Used to store the boat's positions on the board and be accessible to other scripts
     private int[] positions;
+    public int[] Positions{ get { return positions; } }
 
     private string name;
+    public string Name{ get { return name; } }
 
+    // The different constructors for the boat class, used to create the boats in different ways (with fixed positions or random positions)
+    #region Constructors
     public Boat(int boatLength)
     {
-        positions = new int[boatLength];
+        this.positions = new int[boatLength];
     }
 
     public Boat(string name, int boatLength)
     {
-        positions = new int[boatLength];
+        this.positions = new int[boatLength];
         this.name = name;
     }
 
     public Boat(Board board, int boatLength)
     {
-        positions = new int[boatLength];
-        InitializePositions(board, boatLength);
+        this.positions = new int[boatLength];
+        this.positions = InitializePositions(board, boatLength);
     }
 
     public Boat(Board board, string name, int boatLength)
     {
-        positions = new int[boatLength];
+        this.positions = new int[boatLength];
         this.name = name;
-        InitializePositions(board, boatLength);
+        this.positions = InitializePositions(board, boatLength);
     }
 
-    private int[] InitializePositions (Board board, int boatLength)
+    public Boat(Board board, int boatLength, int[] positions)
+    {
+        this.positions = InitializeFixedPositions(board, boatLength, positions);
+    }
+    #endregion
+
+    private int[] InitializePositions(Board board, int boatLength)
     {
         int[,] matrix = board.Matrix;
         int[] boatPositions = new int[boatLength];
@@ -118,6 +130,16 @@ public class Boat
         board.currentBoatPositionsWithBorders.AddRange(boatPositions);
         GetPointsAround(board, boatPositions);
         return boatPositions;
+    }
+
+    private int[] InitializeFixedPositions(Board board, int boatLength, int[] positions)
+    {
+        int[,] matrix = board.Matrix;
+        this.positions = new int[boatLength];
+        board.currentBoatPositions.AddRange(positions);
+        board.currentBoatPositionsWithBorders.AddRange(positions);
+        GetPointsAround(board, positions);
+        return positions;
     }
 
     private void GetPointsAround(Board board, int[] points)
