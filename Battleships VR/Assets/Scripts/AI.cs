@@ -14,6 +14,7 @@ public class AI : MonoBehaviour
     private List<int> positionGuesses = new List<int>();
     
     // Start is called before the first frame update
+    [ContextMenu("Start")]
     void Start()
     {
         string positionGuessesString = "";
@@ -23,7 +24,11 @@ public class AI : MonoBehaviour
             positionGuessesString += i + ", ";
         }
         Debug.Log(positionGuessesString);
+
+        board.currentBoatPositions.Clear();
+        board.currentBoatPositionsWithBorders.Clear();
         
+        boats.Clear();
         boats.Add(new Boat(board, "Carrier", 5));
         boats.Add(new Boat(board, "Battleship", 4));
         boats.Add(new Boat(board, "Cruiser", 3));
@@ -37,6 +42,9 @@ public class AI : MonoBehaviour
             foreach (int position in boat.Positions)
             {
                 boatPositions += position + ", ";
+                int row = (position - 1) / board.Matrix.GetLength(0);
+                int col = (position - 1) % board.Matrix.GetLength(0);
+                GameObject.Instantiate(shipCube, new Vector3(row, 0, col), Quaternion.identity);
             }
             Debug.Log(boatPositions);
             boatPositions = "";
@@ -46,6 +54,12 @@ public class AI : MonoBehaviour
         foreach (int position in board.currentBoatPositionsWithBorders)
         {
             boatPositionsWithBorders += position + ", ";
+            if (!board.currentBoatPositions.Contains(position))
+            {
+                int row = (position - 1) / board.Matrix.GetLength(0);
+                int col = (position - 1) % board.Matrix.GetLength(0);
+                GameObject.Instantiate(borderCube, new Vector3(row, 0, col), Quaternion.identity);
+            }
         }
         Debug.Log(boatPositionsWithBorders);
     }
