@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 // This class is used to create the boats and store their data
 public class Boat
@@ -8,6 +9,10 @@ public class Boat
     // Used to store the boat's positions on the board and be accessible to other scripts
     private int[] positions;
     public int[] Positions{ get { return positions; } }
+
+    // Used to store the boat's remaining positions and be accessible to other scripts
+    private List<int> remainingPositions = new List<int>();
+    public List<int> RemainingPositions { get { return remainingPositions; } }
 
     private string name;
     public string Name{ get { return name; } }
@@ -29,6 +34,7 @@ public class Boat
     {
         this.positions = new int[boatLength];
         this.positions = InitializePositions(board, boatLength);
+        InitializeRemainingPositions(this.positions);
     }
 
     public Boat(Board board, string name, int boatLength)
@@ -36,11 +42,13 @@ public class Boat
         this.positions = new int[boatLength];
         this.name = name;
         this.positions = InitializePositions(board, boatLength);
+        InitializeRemainingPositions(this.positions);
     }
 
     public Boat(Board board, int boatLength, int[] positions)
     {
         this.positions = InitializeFixedPositions(board, boatLength, positions);
+        InitializeRemainingPositions(this.positions);
     }
     #endregion
 
@@ -142,6 +150,11 @@ public class Boat
         return positions;
     }
 
+    private void InitializeRemainingPositions(int[] positions)
+    {
+        this.remainingPositions.AddRange(positions);
+    }
+
     private void GetPointsAround(Board board, int[] points)
     {
         int[,] matrix = board.Matrix;
@@ -224,5 +237,133 @@ public class Boat
         {
             board.currentBoatPositionsWithBorders.Add(point);
         }
+    }
+
+    public bool HitCheck(int point)
+    {
+        if (this.remainingPositions.Contains(point))
+        {
+            Hit(point);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public void Hit(int point)
+    {
+        this.remainingPositions.Remove(point);
+    }
+
+    public bool SunkCheck()
+    {
+        if (this.remainingPositions.Count == 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public int[] Sunk(Board board)
+    {
+        int[,] matrix = board.Matrix;
+
+        int[] returnPositions = new int[(this.positions.Length * 2) + 6];
+
+        for (int i = 0; i < this.positions.Length; i++)
+        {
+            int row = (this.positions[i] - 1) / matrix.GetLength(0);
+            int col = (this.positions[i] - 1) % matrix.GetLength(0);
+
+            for (int j = 0; j < board.Directions.Length; j++)
+            {
+                switch (board.Directions[j])
+                {
+                    case "upLeft":
+                        if (row - 1 >= 0 && col - 1 >= 0)
+                        {
+                            if (!this.positions.Contains(matrix[row - 1, col - 1]) && !returnPositions.Contains(matrix[row - 1, col - 1]))
+                            {
+                                returnPositions[i] = matrix[row - 1, col - 1];
+                            }
+                        }
+                        break;
+                    case "up":
+                        if (row - 1 >= 0)
+                        {
+                            if (!this.positions.Contains(matrix[row - 1, col]) && !returnPositions.Contains(matrix[row - 1, col]))
+                            {
+                                returnPositions[i] = matrix[row - 1, col];
+                            }
+                        }
+                        break;
+                    case "upRight":
+                        if (row - 1 >= 0 && col + 1 < matrix.GetLength(0))
+                        {
+                            if (!this.positions.Contains(matrix[row - 1, col + 1]) && !returnPositions.Contains(matrix[row - 1, col + 1]))
+                            {
+                                returnPositions[i] = matrix[row - 1, col + 1];
+                            }
+                        }
+                        break;
+                    case "downLeft":
+                        if (row + 1 < matrix.GetLength(0) && col - 1 >= 0)
+                        {
+                            if (!this.positions.Contains(matrix[row + 1, col - 1]) && !returnPositions.Contains(matrix[row + 1, col - 1]))
+                            {
+                                returnPositions[i] = matrix[row + 1, col - 1];
+                            }
+                        }
+                        break;
+                    case "down":
+                        if (row + 1 < matrix.GetLength(0))
+                        {
+                            if (!this.positions.Contains(matrix[row + 1, col]) && !returnPositions.Contains(matrix[row + 1, col]))
+                            {
+                                returnPositions[i] = matrix[row + 1, col];
+                            }
+                        }
+                        break;
+                    case "downRight":
+                        if (row + 1 < matrix.GetLength(0) && col + 1 < matrix.GetLength(0))
+                        {
+                            if (!this.positions.Contains(matrix[row + 1, col + 1]) && !returnPositions.Contains(matrix[row + 1, col + 1]))
+                            {
+                                returnPositions[i] = matrix[row + 1, col + 1];
+                            }
+                        }
+                        break;
+                    case "left":
+                        if (col - 1 >= 0)
+                        {
+                            if (!this.positions.Contains(matrix[row, col - 1]) && !returnPositions.Contains(matrix[row, col - 1]))
+                            {
+                                returnPositions[i] = matrix[row, col - 1];
+                            }
+                        }
+                        break;
+                    case "right":
+                        if (col + 1 < matrix.GetLength(0))
+                        {
+                            if (!this.positions.Contains(matrix[row, col + 1]) && !returnPositions.Contains(matrix[row, col + 1]))
+                            {
+                                returnPositions[i] = matrix[row, col + 1];
+                            }
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+            
+
+        }
+
+        return returnPositions;
     }
 }
