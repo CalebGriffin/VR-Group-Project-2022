@@ -1,0 +1,35 @@
+Pseudocode for how I want the AI's shooting to work:
+
+variables:
+
+    - a list containing all of the possible squares
+    - a dictionary with the previous moves and whether they hit or sunk
+    - a list of positions in target mode called the target stack
+
+Make a Decision:
+
+    if the ai is in target mode and previous shot was a hit:
+        for each of the positions surrounding the previous position (N,E,S,W):
+            if the position is in the list of possible squares and isn't in the target stack:
+                add the position to the end of the target stack
+        call the Target method
+
+    else if the ai is in target mode and the previous shot was a miss:
+        call the Target method
+
+    else:
+        call the Hunt method
+
+Target:
+
+    if the target stack is not empty:
+        shoot at the first position in the target stack (remove it from the possible squares and the target stack)
+        if the shot was a hit and sunk:
+            for each position in the target stack:
+                remove the position from the possible squares
+            clear the target stack and set the ai to hunt mode
+
+Hunt:
+
+    choose a random element from the possible squares list and shoot at that position (remove it from the possible squares)
+    if the position was a hit, set the ai to target mode
