@@ -313,7 +313,7 @@ public class Boat
         int[,] matrix = board.Matrix;
 
         // Create an array to store the positions around the boat's positions with a max length of the maximum number of positions that can be around the boat
-        int[] returnPositions = new int[(this.positions.Length * 2) + 6];
+        List<int> returnPositions = new List<int>();
 
         // Repeat the process for each point in the boat's positions
         for (int i = 0; i < this.positions.Length; i++)
@@ -332,7 +332,7 @@ public class Boat
                         {
                             if (!this.positions.Contains(matrix[row - 1, col - 1]) && !returnPositions.Contains(matrix[row - 1, col - 1]))
                             {
-                                returnPositions[i] = matrix[row - 1, col - 1];
+                                returnPositions.Add(matrix[row - 1, col - 1]);
                             }
                         }
                         break;
@@ -341,7 +341,7 @@ public class Boat
                         {
                             if (!this.positions.Contains(matrix[row - 1, col]) && !returnPositions.Contains(matrix[row - 1, col]))
                             {
-                                returnPositions[i] = matrix[row - 1, col];
+                                returnPositions.Add(matrix[row - 1, col]);
                             }
                         }
                         break;
@@ -350,7 +350,7 @@ public class Boat
                         {
                             if (!this.positions.Contains(matrix[row - 1, col + 1]) && !returnPositions.Contains(matrix[row - 1, col + 1]))
                             {
-                                returnPositions[i] = matrix[row - 1, col + 1];
+                                returnPositions.Add(matrix[row - 1, col + 1]);
                             }
                         }
                         break;
@@ -359,7 +359,7 @@ public class Boat
                         {
                             if (!this.positions.Contains(matrix[row + 1, col - 1]) && !returnPositions.Contains(matrix[row + 1, col - 1]))
                             {
-                                returnPositions[i] = matrix[row + 1, col - 1];
+                                returnPositions.Add(matrix[row + 1, col - 1]);
                             }
                         }
                         break;
@@ -368,7 +368,7 @@ public class Boat
                         {
                             if (!this.positions.Contains(matrix[row + 1, col]) && !returnPositions.Contains(matrix[row + 1, col]))
                             {
-                                returnPositions[i] = matrix[row + 1, col];
+                                returnPositions.Add(matrix[row + 1, col]);
                             }
                         }
                         break;
@@ -377,7 +377,7 @@ public class Boat
                         {
                             if (!this.positions.Contains(matrix[row + 1, col + 1]) && !returnPositions.Contains(matrix[row + 1, col + 1]))
                             {
-                                returnPositions[i] = matrix[row + 1, col + 1];
+                                returnPositions.Add(matrix[row + 1, col + 1]);
                             }
                         }
                         break;
@@ -386,7 +386,7 @@ public class Boat
                         {
                             if (!this.positions.Contains(matrix[row, col - 1]) && !returnPositions.Contains(matrix[row, col - 1]))
                             {
-                                returnPositions[i] = matrix[row, col - 1];
+                                returnPositions.Add(matrix[row, col - 1]);
                             }
                         }
                         break;
@@ -395,7 +395,7 @@ public class Boat
                         {
                             if (!this.positions.Contains(matrix[row, col + 1]) && !returnPositions.Contains(matrix[row, col + 1]))
                             {
-                                returnPositions[i] = matrix[row, col + 1];
+                                returnPositions.Add(matrix[row, col + 1]);
                             }
                         }
                         break;
@@ -406,6 +406,6 @@ public class Boat
         }
 
         // Return the positions around the boat's positions
-        return returnPositions;
+        return returnPositions.ToArray();
     }
 }
