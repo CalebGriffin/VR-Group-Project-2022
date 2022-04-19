@@ -297,14 +297,7 @@ public class Boat
     // Returns a bool of whether the boat is sunk
     public bool SunkCheck()
     {
-        if (this.remainingPositions.Count == 0)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return this.remainingPositions.Count == 0;
     }
 
     // Returns all of the points around the boat's positions when it is sunk so that misses can be placed automatically in those positions
