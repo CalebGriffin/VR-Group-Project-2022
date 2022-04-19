@@ -4,29 +4,23 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class AI : MonoBehaviour
+public class AI2 : MonoBehaviour
 {
-    // TESTING // REMOVE
-    // Cube prefabs to display different objects on the board
     public GameObject shipCube;
     public GameObject borderCube;
     public GameObject hitCube;
     public GameObject missCube;
-    public AI2 otherAI; // Reference to the other AI script
 
-    // Creates a new instance of the Board class and stores its data
+    public AI AI;
+
     private Board board = new Board(10);
 
-    // A list to store all of the boats
     private List<Boat> boats = new List<Boat>();
 
-    // A list to store all of the guesses that have not been made yet
     private List<int> positionGuesses = new List<int>();
 
-    // A list to store all of the previous guesses and whether they were hits or misses and whether they sunk a boat
     private List<Tuple<int, bool, bool>> previousGuesses = new List<Tuple<int, bool, bool>>();
 
-    // A list of positions that is used in target mode to pick points around the currently targeted boat
     private List<int> targetStack = new List<int>();
 
     private bool targetMode = false;
@@ -59,7 +53,7 @@ public class AI : MonoBehaviour
                 boatPositions += position + ", ";
                 int row = (position - 1) / board.Matrix.GetLength(0);
                 int col = (position - 1) % board.Matrix.GetLength(0);
-                GameObject.Instantiate(shipCube, new Vector3(row, 0, col), Quaternion.identity);
+                GameObject.Instantiate(shipCube, new Vector3(row, 0, col + 11), Quaternion.identity);
             }
             Debug.Log(boatPositions);
             boatPositions = "";
@@ -121,7 +115,7 @@ public class AI : MonoBehaviour
                 // Enable the object on that position with the 'hit' object
                 int row = (position - 1) / board.Matrix.GetLength(0);
                 int col = (position - 1) % board.Matrix.GetLength(0);
-                GameObject.Instantiate(hitCube, new Vector3(row, 1, col), Quaternion.identity);
+                GameObject.Instantiate(hitCube, new Vector3(row, 1, col + 11), Quaternion.identity);
                 Debug.Log("Hit!");
                 if (boat.SunkCheck())
                 {
@@ -136,7 +130,7 @@ public class AI : MonoBehaviour
                             // Enable the object on that position with the 'miss' object
                             row = (positionAround - 1) / board.Matrix.GetLength(0);
                             col = (positionAround - 1) % board.Matrix.GetLength(0);
-                            GameObject.Instantiate(missCube, new Vector3(row, 1, col), Quaternion.identity);
+                            GameObject.Instantiate(missCube, new Vector3(row, 1, col + 11), Quaternion.identity);
                         }
                     }
                     WinCheck();
@@ -149,8 +143,8 @@ public class AI : MonoBehaviour
         {
             // Enable the object on that position with the 'miss' object
             int row = (position - 1) / board.Matrix.GetLength(0);
-            int col = (position- 1) % board.Matrix.GetLength(0);
-            GameObject.Instantiate(missCube, new Vector3(row, 1, col), Quaternion.identity);
+            int col = (position - 1) % board.Matrix.GetLength(0);
+            GameObject.Instantiate(missCube, new Vector3(row, 1, col + 11), Quaternion.identity);
             Debug.Log("Miss!");
         }
 
@@ -257,7 +251,7 @@ public class AI : MonoBehaviour
             {
                 positionGuesses.Remove(target);
             }
-            previousGuesses.Add(otherAI.ShotFired(target));
+            previousGuesses.Add(AI.ShotFired(target));
             if (previousGuesses.Last().Item2 && previousGuesses.Last().Item3)
             {
                 foreach (int i in targetStack)
@@ -282,7 +276,7 @@ public class AI : MonoBehaviour
             int position = positionGuesses[UnityEngine.Random.Range(0, positionGuesses.Count)];
             positionGuesses.Remove(position);
             // Call the ShotFired method with the hunt position on the Player script
-            previousGuesses.Add(otherAI.ShotFired(position));
+            previousGuesses.Add(AI.ShotFired(position));
             if (previousGuesses.Last().Item2)
             {
                 huntMode = false;
