@@ -13,11 +13,13 @@ public class AI2 : MonoBehaviour
 
     public AI AI;
 
+    public TestRunner testRunner;
+
     private Board board = new Board(10);
 
     private List<Boat> boats = new List<Boat>();
 
-    private List<int> positionGuesses = new List<int>();
+    public List<int> positionGuesses = new List<int>();
 
     private List<Tuple<int, bool, bool>> previousGuesses = new List<Tuple<int, bool, bool>>();
 
@@ -30,7 +32,9 @@ public class AI2 : MonoBehaviour
     [ContextMenu("Start")]
     void Start()
     {
-        foreach(int i in board.Matrix)
+        CreateBoats();
+
+        foreach (int i in board.Matrix)
         {
             positionGuesses.Add(i);
         }
@@ -125,7 +129,7 @@ public class AI2 : MonoBehaviour
 
                     foreach (int positionAround in positionsAround)
                     {
-                        if (positionAround != 0)
+                        if (positionAround != 0 && AI.positionGuesses.Contains(positionAround))
                         {
                             // Enable the object on that position with the 'miss' object
                             row = (positionAround - 1) / board.Matrix.GetLength(0);
@@ -133,6 +137,9 @@ public class AI2 : MonoBehaviour
                             GameObject.Instantiate(missCube, new Vector3(row, 1, col + 11), Quaternion.identity);
                         }
                     }
+
+                    AI.RemoveSunkPoints(positionsAround);
+
                     WinCheck();
                 }
                 break;
@@ -149,6 +156,17 @@ public class AI2 : MonoBehaviour
         }
 
         return Tuple.Create(position, hit, sunk);
+    }
+
+    public void RemoveSunkPoints(int[] pointsAround)
+    {
+        foreach (int i in pointsAround)
+        {
+            if (positionGuesses.Contains(i))
+            {
+                positionGuesses.Remove(i);
+            }   
+        }
     }
 
     private void WinCheck()
@@ -168,6 +186,7 @@ public class AI2 : MonoBehaviour
         {
             // Call a GameOver method to end the game because the player has won
             Debug.Log("You win!");
+            testRunner.Button();
         }
     }
 
