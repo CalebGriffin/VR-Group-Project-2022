@@ -15,7 +15,7 @@ public class AI : MonoBehaviour
     public GameObject hitCube;
     public GameObject missCube;
     public AI2 otherAI; // Reference to the other AI script
-    public TestRunner testRunner;
+    public TestRunner testRunner; // Calls the Decision method on each of the AI scripts to run the simulation
 
     // Creates a new instance of the Board class and stores its data
     private Board board = new Board(10);
@@ -27,7 +27,8 @@ public class AI : MonoBehaviour
     public List<int> positionGuesses = new List<int>();
 
     // A list to store all of the previous guesses and whether they were hits or misses and whether they sunk a boat
-    private List<Tuple<int, bool, bool>> previousGuesses = new List<Tuple<int, bool, bool>>();
+    // Uses ValueTuples to store the data which allow each entry to have a name and a value
+    private List<(int Position, bool Hit, bool Sunk)> previousGuesses = new List<(int, bool, bool)>();
 
     // A list of positions that is used in target mode to pick points around the currently targeted boat
     private List<int> targetStack = new List<int>();
@@ -126,7 +127,7 @@ public class AI : MonoBehaviour
 
     // This method will be called by the Player when they choose a position on the board to shoot
     // Returns a Tuple containing the position that was shot and whether it was a hit or a miss
-    public Tuple<int, bool, bool> ShotFired(int position)
+    public (int, bool, bool) ShotFired(int position)
     {
         // These are the return values
         bool hit = false;
@@ -189,8 +190,8 @@ public class AI : MonoBehaviour
             Debug.Log("Miss!");
         }
 
-        // Return the Tuple with the hit and sunk booleans
-        return Tuple.Create(position, hit, sunk);
+        // Return the ValueTuple with the hit and sunk booleans
+        return ValueTuple.Create(position, hit, sunk);
     }
 
     // This method will be called by the player to remove the points around a sunk boat from the position guesses list
@@ -236,6 +237,7 @@ public class AI : MonoBehaviour
         int row = (position - 1) / board.Matrix.GetLength(0);
         int col = (position - 1) % board.Matrix.GetLength(0);
 
+        // The positions are added to the target stack in the reverse order that they are checked
         foreach (string direction in new string[] { "North", "East", "South", "West" })
         {
             switch (direction)
@@ -278,10 +280,10 @@ public class AI : MonoBehaviour
         if (targetMode)
         {
             // If the AI is in target mode and the previous shot was a hit then get all the positions around that point and add them to the target stack
-            if (previousGuesses.Last().Item2)
+            if (previousGuesses.Last().Hit)
             {
                 // Get the positions around the previous guess
-                int[] cardinalPositionsAround = GetCardinalPositionsAround(previousGuesses.Last().Item1);
+                int[] cardinalPositionsAround = GetCardinalPositionsAround(previousGuesses.Last().Position);
                 // For each of the positions around the previous guess, if they haven't already been guessed and they are not already in the target stack then add them to the target stack at the front
                 foreach (int cardinalPosition in cardinalPositionsAround)
                 {
@@ -294,7 +296,7 @@ public class AI : MonoBehaviour
                 Target();
             }
             // If the AI is in target mode and the previous shot was a miss then call the Target method without updating the target stack
-            else if (!previousGuesses.Last().Item2)
+            else if (!previousGuesses.Last().Hit)
             {
                 Target();
             }
@@ -323,7 +325,7 @@ public class AI : MonoBehaviour
             previousGuesses.Add(otherAI.ShotFired(target));
 
             // If the shot was a hit and sunk then clear the target stack and remove the elements from the position guesses list and set the target mode to false
-            if (previousGuesses.Last().Item2 && previousGuesses.Last().Item3)
+            if (previousGuesses.Last().Hit && previousGuesses.Last().Sunk)
             {
                 foreach (int i in targetStack)
                 {
@@ -352,7 +354,7 @@ public class AI : MonoBehaviour
             previousGuesses.Add(otherAI.ShotFired(position));
 
             // If the shot was a hit, then set the target mode to true
-            if (previousGuesses.Last().Item2)
+            if (previousGuesses.Last().Hit)
             {
                 targetMode = true;
             }

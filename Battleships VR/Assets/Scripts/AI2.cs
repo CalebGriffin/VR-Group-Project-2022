@@ -21,7 +21,7 @@ public class AI2 : MonoBehaviour
 
     public List<int> positionGuesses = new List<int>();
 
-    private List<Tuple<int, bool, bool>> previousGuesses = new List<Tuple<int, bool, bool>>();
+    private List<(int Position, bool Hit, bool Sunk)> previousGuesses = new List<(int, bool, bool)>();
 
     private List<int> targetStack = new List<int>();
 
@@ -105,7 +105,7 @@ public class AI2 : MonoBehaviour
     }
     #endregion
 
-    public Tuple<int, bool, bool> ShotFired(int position)
+    public (int, bool, bool) ShotFired(int position)
     {
         bool hit = false;
         bool sunk = false;
@@ -155,7 +155,7 @@ public class AI2 : MonoBehaviour
             Debug.Log("Miss!");
         }
 
-        return Tuple.Create(position, hit, sunk);
+        return ValueTuple.Create(position, hit, sunk);
     }
 
     public void RemoveSunkPoints(int[] pointsAround)
