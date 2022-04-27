@@ -18,6 +18,10 @@ public class Boat
     private string name;
     public string Name{ get { return name; } }
 
+    // The direction of the boat
+    private string direction;
+    public string Direction{ get { return direction; } }
+
     // The different constructors for the boat class, used to create the boats in different ways (with fixed positions or random positions)
     #region Constructors
     public Boat(int boatLength)
