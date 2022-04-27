@@ -1,0 +1,17 @@
+Pseudocode for how I want the Player input to work:
+
+variables:
+
+When a model boat enters the trigger area above the mini board:
+    get the length of the model boat
+    set the upper and lower bounds of the grid locking area based on the length of the boat and its rotation
+
+When a model boat leaves the trigger area above the mini board:
+    reset the upper and lower bounds of the grid locking area
+    set the lock to point of the model boat back to the original position
+
+While the model boat is within the trigger area above the mini board:
+    if the boat hasn't been placed:
+        take the position of the model boat and round it to the nearest position on the grid
+        if the position doesn't already contain a boat or another object:
+            update the position of the temporary boat on the grid at that position
