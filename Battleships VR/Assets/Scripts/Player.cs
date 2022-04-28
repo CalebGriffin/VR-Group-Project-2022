@@ -19,6 +19,25 @@ public class Player : MonoBehaviour
         
     }
 
+    public void AddShip(ModelBoat boat)
+    {
+        boats.Add(new Boat(this.board, boat.Name, boat.Length, boat.positions));
+    }
+
+    public void RemoveShip(ModelBoat boat)
+    {
+        boats.Remove(boats.Find(x => x.Name == boat.Name));
+        foreach(int position in boat.positions)
+        {
+            board.currentBoatPositions.Remove(position);
+            board.currentBoatPositionsWithBorders.Remove(position);
+        }
+        foreach(int position in boat.positionsAround)
+        {
+            board.currentBoatPositionsWithBorders.Remove(position);
+        }
+    }
+
     public (int, bool, bool) ShotFired(int position)
     {
         // Theses are the return values

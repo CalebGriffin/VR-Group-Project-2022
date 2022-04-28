@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Valve.VR;
+using Valve.VR.InteractionSystem.Sample;
 
 public class ModelBoat : MonoBehaviour
 {
@@ -13,7 +15,15 @@ public class ModelBoat : MonoBehaviour
     [SerializeField] private bool placed;
     public bool Placed { get { return placed; } set { placed = value; } }
 
+    [SerializeField] private string boatName;
+    public string Name { get { return boatName; } }
+
+    [SerializeField] public int[] positions;
     [SerializeField] public int[] positionsAround;
+
+    [SerializeField] public Player player;
+
+    [SerializeField] private Transform originalPosition;
 
     // Start is called before the first frame update
     void Start()
@@ -25,6 +35,16 @@ public class ModelBoat : MonoBehaviour
     void Update()
     {
         
+    }
+    
+    public void SetLockPoint(Transform previewBoatPosition)
+    {
+        this.GetComponent<LockToPoint>().snapTo = previewBoatPosition;
+    }
+
+    public void ResetLockPoint()
+    {
+        this.GetComponent<LockToPoint>().snapTo = originalPosition;
     }
 
     public void SetDirection(string direction)
@@ -57,11 +77,18 @@ public class ModelBoat : MonoBehaviour
         }
     }
 
+    public void OnPickUp()
+    {
+        placed = false;
+
+        player.RemoveShip(this);
+    }
+
     public void OnLetGo()
     {
         placed = true;
 
         // Call a method on the player to create a boat with the length and direction
-
+        player.AddShip(this);
     }
 }

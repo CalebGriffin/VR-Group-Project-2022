@@ -7,6 +7,8 @@ public class BoardInput : MonoBehaviour
     private int lowerX, lowerZ, upperX, upperZ;
 
     public Player player;
+
+    public PreviewBoat previewBoat;
     
     // Start is called before the first frame update
     void Start()
@@ -30,11 +32,23 @@ public class BoardInput : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "ModelBoat")
-        {
-            int boatLength = other.gameObject.GetComponent<ModelBoat>().Length;
+        Debug.Log("Collision with " + other.gameObject.name);
 
-            string direction = other.gameObject.GetComponent<ModelBoat>().Direction;
+        GameObject modelBoat;
+        if (other.gameObject.transform.parent != null)
+        {
+            modelBoat = other.gameObject.transform.parent.gameObject;
+        }
+        else
+        {
+            modelBoat = other.gameObject;
+        }
+
+        if (modelBoat.tag == "ModelBoat")
+        {
+            int boatLength = modelBoat.GetComponent<ModelBoat>().Length;
+
+            string direction = modelBoat.GetComponent<ModelBoat>().Direction;
 
             ResetBounds();
 
@@ -61,13 +75,30 @@ public class BoardInput : MonoBehaviour
 
     void OnTriggerStay(Collider other)
     {
-        if (other.gameObject.tag == "ModelBoat" && other.gameObject.GetComponent<ModelBoat>().Placed == false)
+        Debug.Log("OnTriggerStay with " + other.gameObject.name);
+
+        GameObject modelBoat;
+        if (other.gameObject.transform.parent != null)
         {
-            Vector3 previewPosition = FindRoundedPosition(other.transform.position, other.gameObject.GetComponent<ModelBoat>().Direction, other.gameObject.GetComponent<ModelBoat>().Length);
+            modelBoat = other.gameObject.transform.parent.gameObject;
+        }
+        else
+        {
+            modelBoat = other.gameObject;
+        }
+
+        if (modelBoat.tag == "ModelBoat" && modelBoat.GetComponent<ModelBoat>().Placed == false)
+        {
+            Vector3 previewPosition = FindRoundedPosition(this.gameObject.transform.InverseTransformPoint(modelBoat.transform.position), modelBoat.GetComponent<ModelBoat>().Direction, modelBoat.GetComponent<ModelBoat>().Length);
+            Debug.Log("Preview position: " + previewPosition);
             if (previewPosition.x >= lowerX && previewPosition.x <= upperX && previewPosition.z >= lowerZ && previewPosition.z <= upperZ && previewPosition != new Vector3(100, 100, 100))
             {
                 // Set the position of the preview boat to the preview position
+                previewBoat.Show();
+                previewBoat.ChangePosition(previewPosition, modelBoat.GetComponent<ModelBoat>().Direction, modelBoat.GetComponent<ModelBoat>().Name);
+
                 // Set the lock to point of the model boat to the position of the preview boat
+                modelBoat.GetComponent<ModelBoat>().SetLockPoint(previewBoat.transform);
             }
             
         }
@@ -75,12 +106,26 @@ public class BoardInput : MonoBehaviour
 
     void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.tag == "ModelBoat")
+        GameObject modelBoat;
+        if (other.gameObject.transform.parent != null)
+        {
+            modelBoat = other.gameObject.transform.parent.gameObject;
+        }
+        else
+        {
+            modelBoat = other.gameObject;
+        }
+
+        if (modelBoat.tag == "ModelBoat")
         {
             ResetBounds();
-            other.gameObject.GetComponent<ModelBoat>().Placed = false;
+            modelBoat.GetComponent<ModelBoat>().Placed = false;
+
             // Set the lock to point of the model boat to the original position
+            modelBoat.GetComponent<ModelBoat>().ResetLockPoint();
+
             // Hide the preview boat
+            previewBoat.Hide();
         }
     }
 
@@ -143,7 +188,7 @@ public class BoardInput : MonoBehaviour
 
         if (valid)
         {
-            return new Vector3(newX, 0, newZ);
+            return new Vector3(newX, 1, newZ);
         }
         else
         {
@@ -153,12 +198,12 @@ public class BoardInput : MonoBehaviour
 
     private int RoundFloat(float number)
     {
-        int diff = (int)number % player.Board.Matrix.GetLength(0);
+        int diff = (int)number % 1;
 
         number -= diff;
 
-        if (diff > player.Board.Matrix.GetLength(0) / 2)
-            number += player.Board.Matrix.GetLength(0);
+        if (diff > 1 / 2)
+            number += 1;
 
         return (int)number;
     }
