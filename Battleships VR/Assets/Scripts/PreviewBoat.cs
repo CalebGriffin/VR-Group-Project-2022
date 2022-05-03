@@ -23,10 +23,11 @@ public class PreviewBoat : MonoBehaviour
 
     public void Hide()
     {
-        Debug.Log("Hiding preview boat");
 
         foreach(Transform child in transform)
         {
+            Debug.Log("Hiding preview boat");
+            Debug.Assert(child.gameObject.name == null, child.gameObject.name);
             child.gameObject.SetActive(false);
         }
     }

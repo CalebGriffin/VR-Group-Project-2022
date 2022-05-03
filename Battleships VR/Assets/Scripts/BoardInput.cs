@@ -35,14 +35,15 @@ public class BoardInput : MonoBehaviour
         Debug.Log("Collision with " + other.gameObject.name);
 
         GameObject modelBoat;
-        if (other.gameObject.transform.parent != null)
-        {
-            modelBoat = other.gameObject.transform.parent.gameObject;
-        }
-        else
-        {
-            modelBoat = other.gameObject;
-        }
+        //if (other.gameObject.transform.parent != null)
+        //{
+            //modelBoat = other.gameObject.transform.parent.gameObject;
+        //}
+        //else
+        //{
+            //modelBoat = other.gameObject;
+        //}
+        modelBoat = other.gameObject;
 
         if (modelBoat.tag == "ModelBoat")
         {
@@ -78,14 +79,15 @@ public class BoardInput : MonoBehaviour
         Debug.Log("OnTriggerStay with " + other.gameObject.name);
 
         GameObject modelBoat;
-        if (other.gameObject.transform.parent != null)
-        {
-            modelBoat = other.gameObject.transform.parent.gameObject;
-        }
-        else
-        {
-            modelBoat = other.gameObject;
-        }
+        //if (other.gameObject.transform.parent != null)
+        //{
+            //modelBoat = other.gameObject.transform.parent.gameObject;
+        //}
+        //else
+        //{
+            //modelBoat = other.gameObject;
+        //}
+        modelBoat = other.gameObject;
 
         if (modelBoat.tag == "ModelBoat" && modelBoat.GetComponent<ModelBoat>().Placed == false)
         {
@@ -107,14 +109,17 @@ public class BoardInput : MonoBehaviour
     void OnTriggerExit(Collider other)
     {
         GameObject modelBoat;
-        if (other.gameObject.transform.parent != null)
-        {
-            modelBoat = other.gameObject.transform.parent.gameObject;
-        }
-        else
-        {
-            modelBoat = other.gameObject;
-        }
+        //if (other.gameObject.transform.parent != null)
+        //{
+            //modelBoat = other.gameObject.transform.parent.gameObject;
+        //}
+        //else
+        //{
+            //modelBoat = other.gameObject;
+        //}
+        modelBoat = other.gameObject;
+
+        Debug.Log(modelBoat.name);
 
         if (modelBoat.tag == "ModelBoat")
         {

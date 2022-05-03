@@ -86,6 +86,8 @@ public class ModelBoat : MonoBehaviour
 
     public void OnLetGo()
     {
+        Debug.Log("Let go");
+
         placed = true;
 
         // Call a method on the player to create a boat with the length and direction
