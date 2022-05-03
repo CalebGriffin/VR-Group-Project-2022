@@ -29,6 +29,24 @@ Target:
                 remove the position from the possible squares
             clear the target stack and set the ai to hunt mode
 
+Improved Target Mode:
+
+    if the target stack is not empty:
+        get the last two times that the ai hit from the previous guesses list
+        if the difference between them is 1:
+            for each of the items in the target stack:
+                if the direction is east or west:
+                    remove it from the target stack
+
+        if the difference between them is the length of the matrix:
+            for each of the items in the target stack:
+                if the direction is north or south:
+                    remove it from the target stack
+        
+        
+        
+
+
 Hunt:
 
     choose a random element from the possible squares list and shoot at that position (remove it from the possible squares)
