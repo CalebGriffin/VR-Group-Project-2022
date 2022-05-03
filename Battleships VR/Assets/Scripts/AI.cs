@@ -8,6 +8,13 @@ public class AI : MonoBehaviour
 {
     #region Variable Declarations
 
+    public enum Difficulty
+    {
+        Normal,
+        Hard
+    }
+    [SerializeField] private Difficulty aiDifficulty;
+
     // TESTING // REMOVE
     // Cube prefabs to display different objects on the board
     public GameObject shipCube;
@@ -31,7 +38,7 @@ public class AI : MonoBehaviour
     private List<(int Position, bool Hit, bool Sunk)> previousGuesses = new List<(int, bool, bool)>();
 
     // A list of positions that is used in target mode to pick points around the currently targeted boat
-    private List<int> targetStack = new List<int>();
+    private List<(int Position, string Direction)> targetStack = new List<(int Position, string Direction)>();
 
     // A boolean to determine whether the AI is in target mode or not
     private bool targetMode = false;
@@ -123,6 +130,28 @@ public class AI : MonoBehaviour
             Debug.Log(remainingPositions);
         }
     }
+
+    [ContextMenu(nameof(PrintPreviousGuesses))]
+    private void PrintPreviousGuesses()
+    {
+        string previousGuessesString = "";
+        foreach ((int Position, bool Hit, bool Sunk) previousGuess in previousGuesses)
+        {
+            previousGuessesString = previousGuess.Position + ", " + previousGuess.Hit + ", " + previousGuess.Sunk;
+            Debug.Log(previousGuessesString);
+        }
+    }
+
+    [ContextMenu(nameof(PrintTargetStack))]
+    private void PrintTargetStack()
+    {
+        string targetStackString = "";
+        foreach ((int Position, string Direction) target in targetStack)
+        {
+            targetStackString = target.Position + ", " + target.Direction;
+            Debug.Log(targetStackString);
+        }
+    }
     #endregion
 
     // This method will be called by the Player when they choose a position on the board to shoot
@@ -146,13 +175,13 @@ public class AI : MonoBehaviour
                 int row = (position - 1) / board.Matrix.GetLength(0);
                 int col = (position - 1) % board.Matrix.GetLength(0);
                 GameObject.Instantiate(hitCube, new Vector3(row, 1, col), Quaternion.identity);
-                Debug.Log("Hit!");
+                //Debug.Log("Hit!");
 
                 // Calls the method on the Boat class that returns a bool of whether the boat has any remaining positions left
                 if (boat.SunkCheck())
                 {
                     sunk = true;
-                    Debug.Log("Sunk!");
+                    //Debug.Log("Sunk!");
 
                     // Get all of the points around the boat and place miss objects around them because the boats can't be there
                     int[] positionsAround = boat.Sunk(this.board);
@@ -187,7 +216,7 @@ public class AI : MonoBehaviour
             int row = (position - 1) / board.Matrix.GetLength(0);
             int col = (position- 1) % board.Matrix.GetLength(0);
             GameObject.Instantiate(missCube, new Vector3(row, 1, col), Quaternion.identity);
-            Debug.Log("Miss!");
+            //Debug.Log("Miss!");
         }
 
         // Return the ValueTuple with the hit and sunk booleans
@@ -229,47 +258,183 @@ public class AI : MonoBehaviour
         }
     }
 
-    // This method takes in a position and returns a list of all the positions around it in the 4 cardinal directions
-    public int[] GetCardinalPositionsAround(int position)
+    public int[] GetLastTwoHits()
     {
-        int[] returnValues = new int[4];
+        var temp = new List<(int Position, bool Hit, bool Sunk)>(previousGuesses);
+
+        var lastPosition = temp.LastOrDefault(x => x.Hit == true);
+
+        temp.Remove(lastPosition);
+
+        var lastPosition2 = temp.LastOrDefault(x => x.Hit == true);
+
+        return new int[] { lastPosition.Position, lastPosition2.Position };
+    }
+
+    // This method takes in a position and returns a list of all the positions around it in the 4 cardinal directions
+    public List<(int, string)> GetCardinalPositionsAround(int position)
+    {
+        string[] directions = new string[4];
+
+        List<(int Position, string Direction)> returnValues = new List<(int, string)>();
 
         int row = (position - 1) / board.Matrix.GetLength(0);
         int col = (position - 1) % board.Matrix.GetLength(0);
 
+        // Get the last two positions in the previous guesses list where it was a hit
+        int[] LastTwoHits = GetLastTwoHits();
+        Debug.Log("LastTwoHits: " + LastTwoHits[0] + ", " + LastTwoHits[1]);
+
+        // Get the absolute value of the difference between the last two positions that were hit
+        int diff = Mathf.Abs(LastTwoHits[0] - LastTwoHits[1]);
+        Debug.Log("Diff: " + diff);
+
+        // If the difference is 1 then only check in left and right directions
+        if (diff == 1)
+        {
+            directions[0] = "East";
+            directions[1] = "West";
+        }
+        // If the difference is 10 then only check in up and down directions
+        else if (diff == board.Matrix.GetLength(0))
+        {
+            directions[0] = "North";
+            directions[1] = "South";
+        }
+        else if (diff < board.Matrix.GetLength(0))
+        {
+            bool sameBoat = true;
+            int smallerNumber = 0;
+            int largerNumber = 0;
+
+            if (LastTwoHits[0] < LastTwoHits[1])
+            {
+                smallerNumber = LastTwoHits[0];
+                largerNumber = LastTwoHits[1];
+            }
+            else
+            {
+                smallerNumber = LastTwoHits[1];
+                largerNumber = LastTwoHits[0];
+            }
+
+            for (int i = smallerNumber; i < largerNumber; i++)
+            {
+                if (!previousGuesses.Contains((i, true, false)))
+                {
+                    sameBoat = false;
+                    break;
+                }
+            }
+
+            if (sameBoat)
+            {
+                directions[0] = "East";
+                directions[1] = "West";
+            }
+            else
+            {
+                directions[0] = "North";
+                directions[1] = "South";
+                directions[2] = "East";
+                directions[3] = "West";
+            }
+        }
+        else if (diff % board.Matrix.GetLength(0) == 0)
+        {
+            bool sameBoat = true;
+            int smallerNumber = 0;
+            int largerNumber = 0;
+
+
+            if (LastTwoHits[0] < LastTwoHits[1])
+            {
+                smallerNumber = LastTwoHits[0];
+                largerNumber = LastTwoHits[1];
+            }
+            else
+            {
+                smallerNumber = LastTwoHits[1];
+                largerNumber = LastTwoHits[0];
+            }
+
+            for (int i = smallerNumber; i < largerNumber; i += board.Matrix.GetLength(0))
+            {
+                if (!previousGuesses.Contains((i, true, false)))
+                {
+                    sameBoat = false;
+                    break;
+                }
+            }
+
+            if (sameBoat)
+            {
+                directions[0] = "North";
+                directions[1] = "South";
+            }
+            else
+            {
+                directions[0] = "North";
+                directions[1] = "South";
+                directions[2] = "East";
+                directions[3] = "West";
+            }
+        }
+        // Else, check in all directions
+        else
+        {
+            directions[0] = "North";
+            directions[1] = "South";
+            directions[2] = "East";
+            directions[3] = "West";
+        }
+
         // The positions are added to the target stack in the reverse order that they are checked
-        foreach (string direction in new string[] { "North", "East", "South", "West" })
+        foreach (string direction in directions)
         {
             switch (direction)
             {
                 case "North":
                     if (row - 1 >= 0)
                     {
-                        returnValues[0] = board.Matrix[row - 1, col];
+                        returnValues.Add(ValueTuple.Create(board.Matrix[row - 1, col], direction));
                     }
                     break;
                 case "East":
                     if (col + 1 < board.Matrix.GetLength(0))
                     {
-                        returnValues[1] = board.Matrix[row, col + 1];
+                        returnValues.Add(ValueTuple.Create(board.Matrix[row, col + 1], direction));
                     }
                     break;
                 case "South":
                     if (row + 1 < board.Matrix.GetLength(0))
                     {
-                        returnValues[2] = board.Matrix[row + 1, col];
+                        returnValues.Add(ValueTuple.Create(board.Matrix[row + 1, col], direction));
                     }
                     break;
                 case "West":
                     if (col - 1 >= 0)
                     {
-                        returnValues[3] = board.Matrix[row, col - 1];
+                        returnValues.Add(ValueTuple.Create(board.Matrix[row, col - 1], direction));
                     }
                     break;
             }
         }
 
         return returnValues;
+    }
+
+    private bool TargetStackContains(int point)
+    {
+        foreach ((int Position, string Direction) in targetStack)
+        {
+            if (point == Position)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     // TESTING
@@ -283,11 +448,11 @@ public class AI : MonoBehaviour
             if (previousGuesses.Last().Hit)
             {
                 // Get the positions around the previous guess
-                int[] cardinalPositionsAround = GetCardinalPositionsAround(previousGuesses.Last().Position);
+                List<(int Position, string Direction)> cardinalPositionsAround = GetCardinalPositionsAround(previousGuesses.Last().Position);
                 // For each of the positions around the previous guess, if they haven't already been guessed and they are not already in the target stack then add them to the target stack at the front
-                foreach (int cardinalPosition in cardinalPositionsAround)
+                foreach ((int Position, string Direction) cardinalPosition in cardinalPositionsAround)
                 {
-                    if (positionGuesses.Contains(cardinalPosition) && !targetStack.Contains(cardinalPosition) && cardinalPosition != 0)
+                    if (positionGuesses.Contains(cardinalPosition.Position) && !TargetStackContains(cardinalPosition.Position) && cardinalPosition.Position != 0)
                     {
                         targetStack.Insert(0, cardinalPosition);
                     }
@@ -314,8 +479,41 @@ public class AI : MonoBehaviour
     {
         if (targetStack.Count > 0)
         {
+            // Get the last two positions in the previous guesses list where it was a hit
+            int[] LastTwoHits = GetLastTwoHits();
+            Debug.Log("LastTwoHits: " + LastTwoHits[0] + ", " + LastTwoHits[1]);
+
+            // Get the absolute value of the difference between the last two positions that were hit
+            int diff = Mathf.Abs(LastTwoHits[0] - LastTwoHits[1]);
+            Debug.Log("Diff: " + diff);
+
+            // If the difference is 1 then removes any positions in the target stack that are not in the same column as the last two positions that were hit
+            if (diff == 1)
+            {
+                // Loop through the target stack backwards, removing any elements where the Direction is "North" or "South"
+                for (int i = targetStack.Count - 1; i >= 0; i--)
+                {
+                    if (targetStack[i].Direction == "North" || targetStack[i].Direction == "South")
+                    {
+                        targetStack.RemoveAt(i);
+                    }
+                }
+            }
+            // If the difference is 10 then removes any positions in the target stack that are not in the same row as the last two positions that were hit
+            else if (diff == board.Matrix.GetLength(0))
+            {
+                // Loop through the target stack backwards, removing any elements where the Direction is "East" or "West"
+                for (int i = targetStack.Count - 1; i >= 0; i--)
+                {
+                    if (targetStack[i].Direction == "East" || targetStack[i].Direction == "West")
+                    {
+                        targetStack.RemoveAt(i);
+                    }
+                }
+            }
+
             // Get the first position in the target stack and fire at it by calling the ShotFired method on the player's script
-            int target = targetStack[0];
+            int target = targetStack[0].Position;
             targetStack.RemoveAt(0);
             if (positionGuesses.Contains(target))
             {
@@ -327,11 +525,11 @@ public class AI : MonoBehaviour
             // If the shot was a hit and sunk then clear the target stack and remove the elements from the position guesses list and set the target mode to false
             if (previousGuesses.Last().Hit && previousGuesses.Last().Sunk)
             {
-                foreach (int i in targetStack)
+                foreach ((int Position, string Direction) i in targetStack)
                 {
-                    if (positionGuesses.Contains(i))
+                    if (positionGuesses.Contains(i.Position))
                     {
-                        positionGuesses.Remove(i);
+                        positionGuesses.Remove(i.Position);
                     }
                 }
                 targetStack.Clear();

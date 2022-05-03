@@ -120,11 +120,11 @@ public class AI2 : MonoBehaviour
                 int row = (position - 1) / board.Matrix.GetLength(0);
                 int col = (position - 1) % board.Matrix.GetLength(0);
                 GameObject.Instantiate(hitCube, new Vector3(row, 1, col + 11), Quaternion.identity);
-                Debug.Log("Hit!");
+                //Debug.Log("Hit!");
                 if (boat.SunkCheck())
                 {
                     sunk = true;
-                    Debug.Log("Sunk!");
+                    //Debug.Log("Sunk!");
                     int[] positionsAround = boat.Sunk(this.board);
 
                     foreach (int positionAround in positionsAround)
@@ -152,7 +152,7 @@ public class AI2 : MonoBehaviour
             int row = (position - 1) / board.Matrix.GetLength(0);
             int col = (position - 1) % board.Matrix.GetLength(0);
             GameObject.Instantiate(missCube, new Vector3(row, 1, col + 11), Quaternion.identity);
-            Debug.Log("Miss!");
+            //Debug.Log("Miss!");
         }
 
         return ValueTuple.Create(position, hit, sunk);
