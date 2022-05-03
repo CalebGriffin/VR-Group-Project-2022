@@ -93,12 +93,10 @@ public class Boat
             {
                 possibleDirections.Add("left");
             }
-            
             if (col + boatLength <= matrix.GetLength(0))
             {
                 possibleDirections.Add("down");
             }
-
             if (col - boatLength >= 0)
             {
                 possibleDirections.Add("up");
