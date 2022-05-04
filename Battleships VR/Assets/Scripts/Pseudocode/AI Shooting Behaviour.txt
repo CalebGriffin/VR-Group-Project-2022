@@ -76,6 +76,7 @@ Hunt:
     for each of the boats in the player's boat list:
         call the Probability Density Function with the length of the boat and the string "Horizontal"
     call the method to print out the weights
+    order the positions in the list of unchecked positions by weight
 
     choose a random element from the possible squares list and shoot at that position (remove it from the possible squares)
     if the position was a hit, set the ai to target mode
