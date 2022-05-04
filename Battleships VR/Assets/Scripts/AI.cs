@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+// TESTING // REMOVE
+using TMPro;
 
 public class AI : MonoBehaviour
 {
@@ -26,12 +28,13 @@ public class AI : MonoBehaviour
 
     // Creates a new instance of the Board class and stores its data
     private Board board = new Board(10);
+    public Board Board { get { return board; } }
 
     // A list to store all of the boats
     private List<Boat> boats = new List<Boat>();
 
     // A list to store all of the guesses that have not been made yet
-    public List<int> positionGuesses = new List<int>();
+    public List<(int Position, int Weight)> uncheckedPositions = new List<(int Position, int Weight)>();
 
     // A list to store all of the previous guesses and whether they were hits or misses and whether they sunk a boat
     // Uses ValueTuples to store the data which allow each entry to have a name and a value
@@ -42,6 +45,9 @@ public class AI : MonoBehaviour
 
     // A boolean to determine whether the AI is in target mode or not
     private bool targetMode = false;
+
+    // TESTING // REMOVE
+    public GameObject textParent;
 
     #endregion
     
@@ -56,8 +62,9 @@ public class AI : MonoBehaviour
         // Initialize the position guesses list with the values from the board
         foreach (int i in board.Matrix)
         {
-            positionGuesses.Add(i);
+            uncheckedPositions.Add((i, 0));
         }
+        DisplayPositionWeights();
 
         // TESTING // REMOVE
         // Reset from the previous time the game was played
@@ -152,6 +159,33 @@ public class AI : MonoBehaviour
             Debug.Log(targetStackString);
         }
     }
+
+    [ContextMenu(nameof(PrintUncheckedPositions))]
+    private void PrintUncheckedPositions()
+    {
+        string uncheckedPositionsString = "";
+        foreach ((int Position, int Weight) uncheckedPosition in uncheckedPositions)
+        {
+            uncheckedPositionsString = uncheckedPosition.Position + ", " + uncheckedPosition.Weight;
+            Debug.Log(uncheckedPositionsString);
+        }
+    }
+
+    [ContextMenu(nameof(DisplayPositionWeights))]
+    private void DisplayPositionWeights()
+    {
+        foreach (int i in board.Matrix)
+        {
+            if (UncheckedPositionsContains(i))
+            {
+                textParent.transform.Find(i.ToString()).GetChild(0).GetComponent<TextMeshProUGUI>().text = uncheckedPositions.Find(x => x.Position == i).Weight.ToString();
+            }
+            else
+            {
+                textParent.transform.Find(i.ToString()).GetChild(0).GetComponent<TextMeshProUGUI>().text = "0";
+            }
+        }
+    }
     #endregion
 
     // This method will be called by the Player when they choose a position on the board to shoot
@@ -228,9 +262,9 @@ public class AI : MonoBehaviour
     {
         foreach (int i in pointsAround)
         {
-            if (positionGuesses.Contains(i))
+            if (uncheckedPositions.FirstOrDefault(x => x.Position == i).Position != 0)
             {
-                positionGuesses.Remove(i);
+                uncheckedPositions.Remove(uncheckedPositions.FirstOrDefault(x => x.Position == i));
             }   
         }
     }
@@ -254,7 +288,10 @@ public class AI : MonoBehaviour
             // Call a GameOver method to end the game because the player has won
             Debug.Log("You win!");
             // TESTING // REMOVE
-            testRunner.Button();
+            if (testRunner.playing)
+            {
+                testRunner.Button();
+            }
         }
     }
 
@@ -437,6 +474,20 @@ public class AI : MonoBehaviour
         return false;
     }
 
+    public bool UncheckedPositionsContains(int point)
+    {
+        return uncheckedPositions.Any(x => x.Position == point);
+        //foreach ((int Position, int Weight) item in uncheckedPositions)
+        //{
+            //if (point == item.Position)
+            //{
+                //return true;
+            //}
+        //}
+
+        //return false;
+    }
+
     // TESTING
     [ContextMenu(nameof(Decision))]
     // This method is the decision of the AI and will be called by the Player after they have played their turn
@@ -452,7 +503,7 @@ public class AI : MonoBehaviour
                 // For each of the positions around the previous guess, if they haven't already been guessed and they are not already in the target stack then add them to the target stack at the front
                 foreach ((int Position, string Direction) cardinalPosition in cardinalPositionsAround)
                 {
-                    if (positionGuesses.Contains(cardinalPosition.Position) && !TargetStackContains(cardinalPosition.Position) && cardinalPosition.Position != 0)
+                    if (UncheckedPositionsContains(cardinalPosition.Position) && !TargetStackContains(cardinalPosition.Position) && cardinalPosition.Position != 0)
                     {
                         targetStack.Insert(0, cardinalPosition);
                     }
@@ -515,9 +566,9 @@ public class AI : MonoBehaviour
             // Get the first position in the target stack and fire at it by calling the ShotFired method on the player's script
             int target = targetStack[0].Position;
             targetStack.RemoveAt(0);
-            if (positionGuesses.Contains(target))
+            if (UncheckedPositionsContains(target))
             {
-                positionGuesses.Remove(target);
+                uncheckedPositions.Remove(uncheckedPositions.FirstOrDefault(x => x.Position == target));
             }
             // TESTING // CHANGE
             previousGuesses.Add(otherAI.ShotFired(target));
@@ -527,9 +578,9 @@ public class AI : MonoBehaviour
             {
                 foreach ((int Position, string Direction) i in targetStack)
                 {
-                    if (positionGuesses.Contains(i.Position))
+                    if (UncheckedPositionsContains(i.Position))
                     {
-                        positionGuesses.Remove(i.Position);
+                        uncheckedPositions.Remove(uncheckedPositions.FirstOrDefault(x => x.Position == i.Position));
                     }
                 }
                 targetStack.Clear();
@@ -542,12 +593,38 @@ public class AI : MonoBehaviour
     // Choose a random position from the position guesses list and fire at it, if the shot is a hit then set the AI to target mode
     private void Hunt()
     {
-        // Make sure that the position guesses list isn't empty
-        if (positionGuesses.Count > 0)
+        ClearUncheckedPositionWeight();
+        foreach (Boat boat in otherAI.Boats)
         {
+            if (boat.RemainingPositions.Count > 0)
+            {
+                Debug.Log("Boat: " + boat.Name + " Length: " + boat.Positions.Length);
+                ProbabilityDensity(boat.Positions.Length, "Horizontal");
+            }
+        }
+        uncheckedPositions = uncheckedPositions.OrderByDescending(x => x.Weight).ToList();
+        DisplayPositionWeights();
+
+        // Make sure that the position guesses list isn't empty
+        if (uncheckedPositions.Count > 0)
+        {
+            int position = 0;
+            switch(aiDifficulty)
+            {
+                case Difficulty.Normal:
+                    position = uncheckedPositions[UnityEngine.Random.Range(0, uncheckedPositions.Count)].Position;
+                    break;
+                
+                case Difficulty.Hard:
+                    position = uncheckedPositions[0].Position;
+                    break;
+                
+                default:
+                    break;
+            }
+
             // Pick a random position, remove it from the positions guesses list and fire at it by calling the ShotFired method on the player's script
-            int position = positionGuesses[UnityEngine.Random.Range(0, positionGuesses.Count)];
-            positionGuesses.Remove(position);
+            uncheckedPositions.Remove(uncheckedPositions.FirstOrDefault(x => x.Position == position));
             // TESTING // CHANGE
             previousGuesses.Add(otherAI.ShotFired(position));
 
@@ -556,6 +633,91 @@ public class AI : MonoBehaviour
             {
                 targetMode = true;
             }
+        }
+    }
+
+    private void ClearUncheckedPositionWeight()
+    {
+        for (int i = 0; i < uncheckedPositions.Count; i++)
+        {
+            uncheckedPositions[i] = (uncheckedPositions[i].Position, 0);
+        }
+    }
+
+    private void ProbabilityDensity(int boatLength, string directionToCheck)
+    {
+        int incrementValue = 0;
+
+        switch (directionToCheck)
+        {
+            case "Horizontal":
+                incrementValue = 1;
+                break;
+            
+            case "Vertical":
+                incrementValue = board.Matrix.GetLength(0);
+                break;
+            
+            default:
+                break;
+        }
+
+        for (int i = 0; i < uncheckedPositions.Count; i++)
+        {
+            int[] boatPositionsToCheck = new int[boatLength];
+
+            int loopNumber = uncheckedPositions[i].Position;
+            for (int j = uncheckedPositions[i].Position; j < uncheckedPositions[i].Position + (boatLength * incrementValue); j += incrementValue)
+            {
+                boatPositionsToCheck[loopNumber - uncheckedPositions[i].Position] = j;
+                loopNumber++;
+            }
+            string boatPositionsToCheckString = "";
+            foreach (int j in boatPositionsToCheck)
+            {
+                boatPositionsToCheckString += j + ", ";
+            }
+
+            bool valid = true;
+            // A strange edge case where the boat isn't in a straight line
+            if (directionToCheck == "Horizontal")
+            {
+                int startRow = boatPositionsToCheck[0] / board.Matrix.GetLength(0);
+                int endRow = boatPositionsToCheck[boatLength - 1] / board.Matrix.GetLength(0);
+                if (startRow != endRow)
+                {
+                    valid = false;
+                }
+            }
+
+            if (valid)
+            {
+                foreach (int k in boatPositionsToCheck)
+                {
+                    if (!UncheckedPositionsContains(k))
+                    {
+                        valid = false;
+                        break;
+                    }
+                }
+            }
+
+            Debug.Log("BoatPositionsToCheck: " + boatPositionsToCheckString + " Valid: " + valid);
+
+            if (valid)
+            {
+                foreach (int l in boatPositionsToCheck)
+                {
+                    //uncheckedPositions[l] = (l, uncheckedPositions[l].Weight + 1);
+                    int index = uncheckedPositions.FindIndex(x => x.Position == l);
+                    uncheckedPositions[index] = (l, uncheckedPositions[index].Weight + 1);
+                }
+            }
+        }
+
+        if (directionToCheck == "Horizontal")
+        {
+            ProbabilityDensity(boatLength, "Vertical");
         }
     }
 }

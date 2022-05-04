@@ -18,6 +18,7 @@ public class AI2 : MonoBehaviour
     private Board board = new Board(10);
 
     private List<Boat> boats = new List<Boat>();
+    public List<Boat> Boats { get { return boats; } }
 
     public List<int> positionGuesses = new List<int>();
 
@@ -129,7 +130,7 @@ public class AI2 : MonoBehaviour
 
                     foreach (int positionAround in positionsAround)
                     {
-                        if (positionAround != 0 && AI.positionGuesses.Contains(positionAround))
+                        if (positionAround != 0 && AI.UncheckedPositionsContains(positionAround))
                         {
                             // Enable the object on that position with the 'miss' object
                             row = (positionAround - 1) / board.Matrix.GetLength(0);
@@ -186,7 +187,10 @@ public class AI2 : MonoBehaviour
         {
             // Call a GameOver method to end the game because the player has won
             Debug.Log("You win!");
-            testRunner.Button();
+            if (testRunner.playing)
+            {
+                testRunner.Button();
+            }
         }
     }
 
