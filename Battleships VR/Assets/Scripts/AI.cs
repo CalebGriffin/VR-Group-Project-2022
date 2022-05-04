@@ -174,15 +174,24 @@ public class AI : MonoBehaviour
     [ContextMenu(nameof(DisplayPositionWeights))]
     private void DisplayPositionWeights()
     {
+        int currentHighestWeight = uncheckedPositions.Max(x => x.Weight);
+
         foreach (int i in board.Matrix)
         {
             if (UncheckedPositionsContains(i))
             {
                 textParent.transform.Find(i.ToString()).GetChild(0).GetComponent<TextMeshProUGUI>().text = uncheckedPositions.Find(x => x.Position == i).Weight.ToString();
+                textParent.transform.Find(i.ToString()).GetChild(0).GetComponent<TextMeshProUGUI>().color = Color.black;
+
+                if (uncheckedPositions.Find(x => x.Position == i).Weight == currentHighestWeight && currentHighestWeight != 0)
+                {
+                    textParent.transform.Find(i.ToString()).GetChild(0).GetComponent<TextMeshProUGUI>().color = Color.green;
+                }
             }
             else
             {
                 textParent.transform.Find(i.ToString()).GetChild(0).GetComponent<TextMeshProUGUI>().text = "0";
+                textParent.transform.Find(i.ToString()).GetChild(0).GetComponent<TextMeshProUGUI>().color = Color.black;
             }
         }
     }
@@ -421,8 +430,8 @@ public class AI : MonoBehaviour
         else
         {
             directions[0] = "North";
-            directions[1] = "South";
-            directions[2] = "East";
+            directions[1] = "East";
+            directions[2] = "South";
             directions[3] = "West";
         }
 
@@ -461,31 +470,16 @@ public class AI : MonoBehaviour
         return returnValues;
     }
 
+    // Returns a bool of whether or not the position is in the target stack
     private bool TargetStackContains(int point)
     {
-        foreach ((int Position, string Direction) in targetStack)
-        {
-            if (point == Position)
-            {
-                return true;
-            }
-        }
-
-        return false;
+        return targetStack.Any(x => x.Position == point);
     }
 
+    // Returns a bool of whether or not the position is in the unchecked positions list
     public bool UncheckedPositionsContains(int point)
     {
         return uncheckedPositions.Any(x => x.Position == point);
-        //foreach ((int Position, int Weight) item in uncheckedPositions)
-        //{
-            //if (point == item.Position)
-            //{
-                //return true;
-            //}
-        //}
-
-        //return false;
     }
 
     // TESTING
@@ -493,6 +487,9 @@ public class AI : MonoBehaviour
     // This method is the decision of the AI and will be called by the Player after they have played their turn
     public void Decision()
     {
+        // TESTING // REMOVE
+        CalculateHeatMap();
+
         if (targetMode)
         {
             // If the AI is in target mode and the previous shot was a hit then get all the positions around that point and add them to the target stack
@@ -500,13 +497,26 @@ public class AI : MonoBehaviour
             {
                 // Get the positions around the previous guess
                 List<(int Position, string Direction)> cardinalPositionsAround = GetCardinalPositionsAround(previousGuesses.Last().Position);
-                // For each of the positions around the previous guess, if they haven't already been guessed and they are not already in the target stack then add them to the target stack at the front
+
+                // Validate all the returned positions to make sure that they haven't already been added to the target stack or have already been checked or are out of bounds
+                for (int i = cardinalPositionsAround.Count - 1; i > -1; i--)
+                {
+                    if (TargetStackContains(cardinalPositionsAround[i].Position) || !UncheckedPositionsContains(cardinalPositionsAround[i].Position) || cardinalPositionsAround[i].Position == 0)
+                    {
+                        cardinalPositionsAround.RemoveAt(i);
+                    }
+                }
+                string cardinalPositionsAroundString = "";
                 foreach ((int Position, string Direction) cardinalPosition in cardinalPositionsAround)
                 {
-                    if (UncheckedPositionsContains(cardinalPosition.Position) && !TargetStackContains(cardinalPosition.Position) && cardinalPosition.Position != 0)
-                    {
-                        targetStack.Insert(0, cardinalPosition);
-                    }
+                    cardinalPositionsAroundString += cardinalPosition.Position + ", ";
+                }
+                Debug.Log("Cardinal Positions Around: " + cardinalPositionsAroundString);
+
+                // For each of the positions around the previous guess, add them to the front of the target stack
+                foreach ((int Position, string Direction) cardinalPosition in cardinalPositionsAround)
+                {
+                    targetStack.Insert(0, cardinalPosition);
                 }
                 // Call the Target method
                 Target();
@@ -523,6 +533,8 @@ public class AI : MonoBehaviour
             Hunt();
         }
 
+        // TESTING // REMOVE
+        CalculateHeatMap();
     }
 
     // Choose the first position in the target stack and fire at it, if the shot is a hit and sunk then clear the target stack
@@ -593,18 +605,6 @@ public class AI : MonoBehaviour
     // Choose a random position from the position guesses list and fire at it, if the shot is a hit then set the AI to target mode
     private void Hunt()
     {
-        ClearUncheckedPositionWeight();
-        foreach (Boat boat in otherAI.Boats)
-        {
-            if (boat.RemainingPositions.Count > 0)
-            {
-                Debug.Log("Boat: " + boat.Name + " Length: " + boat.Positions.Length);
-                ProbabilityDensity(boat.Positions.Length, "Horizontal");
-            }
-        }
-        uncheckedPositions = uncheckedPositions.OrderByDescending(x => x.Weight).ToList();
-        DisplayPositionWeights();
-
         // Make sure that the position guesses list isn't empty
         if (uncheckedPositions.Count > 0)
         {
@@ -616,7 +616,9 @@ public class AI : MonoBehaviour
                     break;
                 
                 case Difficulty.Hard:
-                    position = uncheckedPositions[0].Position;
+                    int currentHighestWeight = uncheckedPositions[0].Weight;
+                    int lastElementWithHighestWeight = uncheckedPositions.FindIndex(x => x.Weight != currentHighestWeight) - 1;
+                    position = uncheckedPositions[UnityEngine.Random.Range(0, lastElementWithHighestWeight)].Position;
                     break;
                 
                 default:
@@ -634,6 +636,24 @@ public class AI : MonoBehaviour
                 targetMode = true;
             }
         }
+    }
+
+    private void CalculateHeatMap()
+    {
+        ClearUncheckedPositionWeight();
+
+        foreach (Boat boat in otherAI.Boats)
+        {
+            if (boat.RemainingPositions.Count > 0)
+            {
+                Debug.Log("Boat: " + boat.Name + " Length: " + boat.Positions.Length);
+                ProbabilityDensity(boat.Positions.Length, "Horizontal");
+            }
+        }
+
+        uncheckedPositions = uncheckedPositions.OrderByDescending(x => x.Weight).ToList();
+
+        DisplayPositionWeights();
     }
 
     private void ClearUncheckedPositionWeight()
@@ -682,8 +702,8 @@ public class AI : MonoBehaviour
             // A strange edge case where the boat isn't in a straight line
             if (directionToCheck == "Horizontal")
             {
-                int startRow = boatPositionsToCheck[0] / board.Matrix.GetLength(0);
-                int endRow = boatPositionsToCheck[boatLength - 1] / board.Matrix.GetLength(0);
+                int startRow = (boatPositionsToCheck[0] - 1)/ board.Matrix.GetLength(0);
+                int endRow = (boatPositionsToCheck[boatLength - 1] - 1) / board.Matrix.GetLength(0);
                 if (startRow != endRow)
                 {
                     valid = false;
