@@ -43,11 +43,39 @@ Improved Target Mode:
                 if the direction is north or south:
                     remove it from the target stack
         
-        
+Probability Density Function: (takes input of the length of the boat and a string of the direction to check)
+    if the string is "Horizontal":
+        the increment number "j" is 1
+    if the string is "Vertical":
+        the increment number "j" is the length of the matrix
+
+    for each of the elements in position guesses:
+        create temporary empty int array to store the boat positions to check
+        for int i = position; i < position + length of the boat; i += j:
+            add i to the temporary array
+        boolean valid is true
+        for each of the elements in the temporary array:
+            if the element is not in the list of possible squares:
+                valid is false
+                break out of the loop
+        if valid is true:
+            for each of the elements in the temporary array:
+                increment the weight for that element in the position guesses
+    
+    if the string is "Horizontal":
+        call Probability Density Function with the boat length and the string "Vertical"
+
+
+
         
 
 
 Hunt:
+
+    clear the weight of the unchecked positions
+    for each of the boats in the player's boat list:
+        call the Probability Density Function with the length of the boat and the string "Horizontal"
+    call the method to print out the weights
 
     choose a random element from the possible squares list and shoot at that position (remove it from the possible squares)
     if the position was a hit, set the ai to target mode
