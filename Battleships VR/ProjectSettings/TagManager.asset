@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - ModelBoat
+  - StuffToDestroy
   layers:
   - Default
   - TransparentFX

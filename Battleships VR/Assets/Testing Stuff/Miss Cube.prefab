@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 4908416342320030690}
   m_Layer: 0
   m_Name: Miss Cube
-  m_TagString: Untagged
+  m_TagString: StuffToDestroy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

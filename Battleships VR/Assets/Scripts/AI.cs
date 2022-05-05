@@ -32,6 +32,8 @@ public class AI : MonoBehaviour
 
     // A list to store all of the boats
     private List<Boat> boats = new List<Boat>();
+    // TESTING // REMOVE
+    public List<Boat> Boats { get { return boats; } }
 
     // A list to store all of the guesses that have not been made yet
     public List<(int Position, int Weight)> uncheckedPositions = new List<(int Position, int Weight)>();
@@ -46,6 +48,9 @@ public class AI : MonoBehaviour
     // A boolean to determine whether the AI is in target mode or not
     private bool targetMode = false;
 
+    // An integer to store how far below the optimal move the AI could potentially shoot at
+    private int deviation = 1;
+
     // TESTING // REMOVE
     public GameObject textParent;
 
@@ -54,17 +59,20 @@ public class AI : MonoBehaviour
     // ContextMenu allows this method to be run from within the Inspector
     [ContextMenu("Start")]
     // Start is called before the first frame update
-    void Start()
+    public void Start()
     {
         // TESTING // REMOVE
         CreateBoats();
+
+        // TESTING // REMOVE
+        uncheckedPositions.Clear();
 
         // Initialize the position guesses list with the values from the board
         foreach (int i in board.Matrix)
         {
             uncheckedPositions.Add((i, 0));
         }
-        DisplayPositionWeights();
+        //DisplayPositionWeights();
 
         // TESTING // REMOVE
         // Reset from the previous time the game was played
@@ -76,34 +84,34 @@ public class AI : MonoBehaviour
         
         // TESTING // REMOVE
         // Prints out the boats and their positions
-        string boatPositions = "";
-        foreach (Boat boat in boats)
-        {
-            Debug.Log(boat.Name + ":");
-            foreach (int position in boat.Positions)
-            {
-                boatPositions += position + ", ";
-                int row = (position - 1) / board.Matrix.GetLength(0);
-                int col = (position - 1) % board.Matrix.GetLength(0);
-                GameObject.Instantiate(shipCube, new Vector3(row, 0, col), Quaternion.identity);
-            }
-            Debug.Log(boatPositions);
-            boatPositions = "";
-        }
+        //string boatPositions = "";
+        //foreach (Boat boat in boats)
+        //{
+            //Debug.Log(boat.Name + ":");
+            //foreach (int position in boat.Positions)
+            //{
+                //boatPositions += position + ", ";
+                //int row = (position - 1) / board.Matrix.GetLength(0);
+                //int col = (position - 1) % board.Matrix.GetLength(0);
+                //GameObject.Instantiate(shipCube, new Vector3(row, 0, col), Quaternion.identity);
+            //}
+            //Debug.Log(boatPositions);
+            //boatPositions = "";
+        //}
 
         // TESTING // REMOVE
         // Prints out the borders
-        string boatPositionsWithBorders = "";
-        foreach (int position in board.currentBoatPositionsWithBorders)
-        {
-            boatPositionsWithBorders += position + ", ";
-            if (!board.currentBoatPositions.Contains(position))
-            {
-                int row = (position - 1) / board.Matrix.GetLength(0);
-                int col = (position - 1) % board.Matrix.GetLength(0);
+        //string boatPositionsWithBorders = "";
+        //foreach (int position in board.currentBoatPositionsWithBorders)
+        //{
+            //boatPositionsWithBorders += position + ", ";
+            //if (!board.currentBoatPositions.Contains(position))
+            //{
+                //int row = (position - 1) / board.Matrix.GetLength(0);
+                //int col = (position - 1) % board.Matrix.GetLength(0);
                 //GameObject.Instantiate(borderCube, new Vector3(row, 0, col), Quaternion.identity);
-            }
-        }
+            //}
+        //}
         //Debug.Log(boatPositionsWithBorders);
     }
 
@@ -217,7 +225,7 @@ public class AI : MonoBehaviour
                 // Enable the object on that position with the 'hit' object
                 int row = (position - 1) / board.Matrix.GetLength(0);
                 int col = (position - 1) % board.Matrix.GetLength(0);
-                GameObject.Instantiate(hitCube, new Vector3(row, 1, col), Quaternion.identity);
+                //GameObject.Instantiate(hitCube, new Vector3(row, 1, col), Quaternion.identity);
                 //Debug.Log("Hit!");
 
                 // Calls the method on the Boat class that returns a bool of whether the boat has any remaining positions left
@@ -236,7 +244,7 @@ public class AI : MonoBehaviour
                             // Enable the object on that position with the 'miss' object
                             row = (positionAround - 1) / board.Matrix.GetLength(0);
                             col = (positionAround - 1) % board.Matrix.GetLength(0);
-                            GameObject.Instantiate(missCube, new Vector3(row, 1, col), Quaternion.identity);
+                            //GameObject.Instantiate(missCube, new Vector3(row, 1, col), Quaternion.identity);
                         }
                     }
 
@@ -258,7 +266,7 @@ public class AI : MonoBehaviour
             // Enable the object on that position with the 'miss' object
             int row = (position - 1) / board.Matrix.GetLength(0);
             int col = (position- 1) % board.Matrix.GetLength(0);
-            GameObject.Instantiate(missCube, new Vector3(row, 1, col), Quaternion.identity);
+            //GameObject.Instantiate(missCube, new Vector3(row, 1, col), Quaternion.identity);
             //Debug.Log("Miss!");
         }
 
@@ -295,11 +303,10 @@ public class AI : MonoBehaviour
         if (win)
         {
             // Call a GameOver method to end the game because the player has won
-            Debug.Log("You win!");
             // TESTING // REMOVE
             if (testRunner.playing)
             {
-                testRunner.Button();
+                testRunner.Button("AI2");
             }
         }
     }
@@ -329,11 +336,11 @@ public class AI : MonoBehaviour
 
         // Get the last two positions in the previous guesses list where it was a hit
         int[] LastTwoHits = GetLastTwoHits();
-        Debug.Log("LastTwoHits: " + LastTwoHits[0] + ", " + LastTwoHits[1]);
+        //Debug.Log("LastTwoHits: " + LastTwoHits[0] + ", " + LastTwoHits[1]);
 
         // Get the absolute value of the difference between the last two positions that were hit
         int diff = Mathf.Abs(LastTwoHits[0] - LastTwoHits[1]);
-        Debug.Log("Diff: " + diff);
+        //Debug.Log("Diff: " + diff);
 
         // If the difference is 1 then only check in left and right directions
         if (diff == 1)
@@ -350,19 +357,8 @@ public class AI : MonoBehaviour
         else if (diff < board.Matrix.GetLength(0))
         {
             bool sameBoat = true;
-            int smallerNumber = 0;
-            int largerNumber = 0;
-
-            if (LastTwoHits[0] < LastTwoHits[1])
-            {
-                smallerNumber = LastTwoHits[0];
-                largerNumber = LastTwoHits[1];
-            }
-            else
-            {
-                smallerNumber = LastTwoHits[1];
-                largerNumber = LastTwoHits[0];
-            }
+            int smallerNumber = Mathf.Min(LastTwoHits[0], LastTwoHits[1]);
+            int largerNumber = Mathf.Max(LastTwoHits[0], LastTwoHits[1]);
 
             for (int i = smallerNumber; i < largerNumber; i++)
             {
@@ -381,28 +377,16 @@ public class AI : MonoBehaviour
             else
             {
                 directions[0] = "North";
-                directions[1] = "South";
-                directions[2] = "East";
+                directions[1] = "East";
+                directions[2] = "South";
                 directions[3] = "West";
             }
         }
         else if (diff % board.Matrix.GetLength(0) == 0)
         {
             bool sameBoat = true;
-            int smallerNumber = 0;
-            int largerNumber = 0;
-
-
-            if (LastTwoHits[0] < LastTwoHits[1])
-            {
-                smallerNumber = LastTwoHits[0];
-                largerNumber = LastTwoHits[1];
-            }
-            else
-            {
-                smallerNumber = LastTwoHits[1];
-                largerNumber = LastTwoHits[0];
-            }
+            int smallerNumber = Mathf.Min(LastTwoHits[0], LastTwoHits[1]);
+            int largerNumber = Mathf.Max(LastTwoHits[0], LastTwoHits[1]);
 
             for (int i = smallerNumber; i < largerNumber; i += board.Matrix.GetLength(0))
             {
@@ -511,7 +495,7 @@ public class AI : MonoBehaviour
                 {
                     cardinalPositionsAroundString += cardinalPosition.Position + ", ";
                 }
-                Debug.Log("Cardinal Positions Around: " + cardinalPositionsAroundString);
+                //Debug.Log("Cardinal Positions Around: " + cardinalPositionsAroundString);
 
                 // For each of the positions around the previous guess, add them to the front of the target stack
                 foreach ((int Position, string Direction) cardinalPosition in cardinalPositionsAround)
@@ -544,11 +528,11 @@ public class AI : MonoBehaviour
         {
             // Get the last two positions in the previous guesses list where it was a hit
             int[] LastTwoHits = GetLastTwoHits();
-            Debug.Log("LastTwoHits: " + LastTwoHits[0] + ", " + LastTwoHits[1]);
+            //Debug.Log("LastTwoHits: " + LastTwoHits[0] + ", " + LastTwoHits[1]);
 
             // Get the absolute value of the difference between the last two positions that were hit
             int diff = Mathf.Abs(LastTwoHits[0] - LastTwoHits[1]);
-            Debug.Log("Diff: " + diff);
+            //Debug.Log("Diff: " + diff);
 
             // If the difference is 1 then removes any positions in the target stack that are not in the same column as the last two positions that were hit
             if (diff == 1)
@@ -617,7 +601,16 @@ public class AI : MonoBehaviour
                 
                 case Difficulty.Hard:
                     int currentHighestWeight = uncheckedPositions[0].Weight;
-                    int lastElementWithHighestWeight = uncheckedPositions.FindIndex(x => x.Weight != currentHighestWeight) - 1;
+                    int lastElementWithHighestWeight = uncheckedPositions.FindIndex(x => x.Weight < currentHighestWeight);
+                    if (DifferentWeights() > deviation)
+                    {
+                        deviation = DifferentWeights() - 1;
+                    }
+                    for (int i = 0; i < deviation; i++)
+                    {
+                        currentHighestWeight = uncheckedPositions[lastElementWithHighestWeight].Weight;
+                        lastElementWithHighestWeight = uncheckedPositions.FindIndex(x => x.Weight < currentHighestWeight);
+                    }
                     position = uncheckedPositions[UnityEngine.Random.Range(0, lastElementWithHighestWeight)].Position;
                     break;
                 
@@ -638,6 +631,21 @@ public class AI : MonoBehaviour
         }
     }
 
+    private int DifferentWeights()
+    {
+        List<int> weights = new List<int>();
+
+        foreach ((int Position, int Weight) i in uncheckedPositions)
+        {
+            if (!weights.Contains(i.Weight))
+            {
+                weights.Add(i.Weight);
+            }
+        }
+
+        return weights.Count;
+    }
+
     private void CalculateHeatMap()
     {
         ClearUncheckedPositionWeight();
@@ -646,14 +654,14 @@ public class AI : MonoBehaviour
         {
             if (boat.RemainingPositions.Count > 0)
             {
-                Debug.Log("Boat: " + boat.Name + " Length: " + boat.Positions.Length);
+                //Debug.Log("Boat: " + boat.Name + " Length: " + boat.Positions.Length);
                 ProbabilityDensity(boat.Positions.Length, "Horizontal");
             }
         }
 
         uncheckedPositions = uncheckedPositions.OrderByDescending(x => x.Weight).ToList();
 
-        DisplayPositionWeights();
+        //DisplayPositionWeights();
     }
 
     private void ClearUncheckedPositionWeight()
@@ -722,7 +730,7 @@ public class AI : MonoBehaviour
                 }
             }
 
-            Debug.Log("BoatPositionsToCheck: " + boatPositionsToCheckString + " Valid: " + valid);
+            //Debug.Log("BoatPositionsToCheck: " + boatPositionsToCheckString + " Valid: " + valid);
 
             if (valid)
             {

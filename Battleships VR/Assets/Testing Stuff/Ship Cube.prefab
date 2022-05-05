@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7097636268963851351}
   m_Layer: 0
   m_Name: Ship Cube
-  m_TagString: Untagged
+  m_TagString: StuffToDestroy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
