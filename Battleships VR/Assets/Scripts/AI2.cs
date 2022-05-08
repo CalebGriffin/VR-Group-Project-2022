@@ -29,15 +29,42 @@ public class AI2 : MonoBehaviour
 
     private bool targetMode = false;
     private bool huntMode = true;
+
+    public bool resetting = false;
     
     // Start is called before the first frame update
     [ContextMenu("Start")]
     public void Start()
     {
-        CreateBoats();
 
+        //string boatPositionsWithBorders = "";
+        //foreach (int position in board.currentBoatPositionsWithBorders)
+        //{
+            //boatPositionsWithBorders += position + ", ";
+            //if (!board.currentBoatPositions.Contains(position))
+            //{
+                //int row = (position - 1) / board.Matrix.GetLength(0);
+                //int col = (position - 1) % board.Matrix.GetLength(0);
+                //GameObject.Instantiate(borderCube, new Vector3(row, 0, col), Quaternion.identity);
+            //}
+        //}
+        //Debug.Log(boatPositionsWithBorders);
+    }
+
+    public IEnumerator Reset()
+    {
+        resetting = true;
         positionGuesses.Clear();
         positionGuessesWithParity.Clear();
+        targetMode = false;
+        huntMode = true;
+        targetStack.Clear();
+        previousGuesses.Clear();
+
+        board.currentBoatPositions.Clear();
+        board.currentBoatPositionsWithBorders.Clear();
+
+        yield return new WaitForSeconds(0.001f);
 
         foreach (int i in board.Matrix)
         {
@@ -54,42 +81,60 @@ public class AI2 : MonoBehaviour
             }   
         }
 
-        targetMode = false;
-        huntMode = true;
-        targetStack.Clear();
-        previousGuesses.Clear();
+        CreateBoats();
+        yield return new WaitForSeconds(0.001f);
+        DisplayBoats();
+        if (previousGuesses.Count > 0 && previousGuesses[0].Item3)
+        {
+            //Debug.Log("Found the error 2");
+            positionGuesses.RemoveAt(0);
+        }
 
-        board.currentBoatPositions.Clear();
-        board.currentBoatPositionsWithBorders.Clear();
-        
+        if (positionGuesses.Count < 100)
+        {
+            //Debug.LogError("Not enough positions");
+            positionGuesses.Clear();
+            foreach (int i in board.Matrix)
+            {
+                positionGuesses.Add(i);
+            }
+        }
+        resetting = false;
+    }
 
-        //string boatPositions = "";
-        //foreach (Boat boat in boats)
-        //{
+    public void DisplayBoats()
+    {
+        string boatPositions = "";
+        foreach (Boat boat in boats)
+        {
             //Debug.Log(boat.Name + ":");
-            //foreach (int position in boat.Positions)
-            //{
-                //boatPositions += position + ", ";
-                //int row = (position - 1) / board.Matrix.GetLength(0);
-                //int col = (position - 1) % board.Matrix.GetLength(0);
+            foreach (int position in boat.Positions)
+            {
+                boatPositions += position + ", ";
+                int row = (position - 1) / board.Matrix.GetLength(0);
+                int col = (position - 1) % board.Matrix.GetLength(0);
                 //GameObject.Instantiate(shipCube, new Vector3(row, 0, col + 11), Quaternion.identity);
-            //}
+            }
             //Debug.Log(boatPositions);
-            //boatPositions = "";
-        //}
+            boatPositions = "";
+        }
+    }
 
-        //string boatPositionsWithBorders = "";
-        //foreach (int position in board.currentBoatPositionsWithBorders)
-        //{
-            //boatPositionsWithBorders += position + ", ";
-            //if (!board.currentBoatPositions.Contains(position))
-            //{
-                //int row = (position - 1) / board.Matrix.GetLength(0);
-                //int col = (position - 1) % board.Matrix.GetLength(0);
-                //GameObject.Instantiate(borderCube, new Vector3(row, 0, col), Quaternion.identity);
-            //}
-        //}
-        //Debug.Log(boatPositionsWithBorders);
+    void Update()
+    {
+        var duplicates = previousGuesses
+            .GroupBy(x => x.Position)
+            .Where(g => g.Count() > 1)
+            .Select(g => g.Key);
+        if (duplicates.Count() > 0)
+        {
+            string duplicatesString = "";
+            foreach (int position in duplicates)
+            {
+                duplicatesString += position + ", ";
+            }
+            Debug.LogError("AI2 Duplicate positions found: " + duplicatesString);
+        }
     }
 
     #region Testing Methods
@@ -117,6 +162,39 @@ public class AI2 : MonoBehaviour
             }
             Debug.Log(remainingPositions);
         }
+    }
+
+    [ContextMenu(nameof(PrintPreviousGuesses))]
+    private void PrintPreviousGuesses()
+    {
+        string previousGuessesString = "";
+        for (int i = 0; i < previousGuesses.Count; i++)
+        {
+            previousGuessesString = i + ", " + previousGuesses[i].Position + ", " + previousGuesses[i].Hit + ", " + previousGuesses[i].Sunk;
+            Debug.Log(previousGuessesString);
+        }
+    }
+
+    [ContextMenu(nameof(PrintTargetStack))]
+    private void PrintTargetStack()
+    {
+        string targetStackString = "";
+        foreach ((int Position, string Direction) target in targetStack)
+        {
+            targetStackString = target.Position + ", " + target.Direction;
+            Debug.Log(targetStackString);
+        }
+    }
+
+    [ContextMenu(nameof(PrintUncheckedPositions))]
+    private void PrintUncheckedPositions()
+    {
+        string positionGuessesString = "";
+        foreach (int i in positionGuesses)
+        {
+            positionGuessesString += i + ", ";
+        }
+        Debug.Log(positionGuessesString);
     }
     #endregion
 
@@ -181,6 +259,10 @@ public class AI2 : MonoBehaviour
             {
                 positionGuesses.Remove(i);
             }   
+            if (positionGuessesWithParity.Contains(i))
+            {
+                positionGuessesWithParity.Remove(i);
+            }
         }
     }
 
@@ -231,8 +313,10 @@ public class AI2 : MonoBehaviour
         int[] LastTwoHits = GetLastTwoHits();
 
         int diff = Mathf.Abs(LastTwoHits[0] - LastTwoHits[1]);
+        int row1 = (LastTwoHits[0] - 1) / board.Matrix.GetLength(0);
+        int row2 = (LastTwoHits[1] - 1) / board.Matrix.GetLength(0);
 
-        if (diff == 1)
+        if (diff == 1 && row1 == row2)
         {
             directions[0] = "East";
             directions[1] = "West";
@@ -242,7 +326,7 @@ public class AI2 : MonoBehaviour
             directions[0] = "North";
             directions[1] = "South";
         }
-        else if (diff < board.Matrix.GetLength(0))
+        else if (diff < board.Matrix.GetLength(0) && row1 == row2)
         {
             bool sameBoat = true;
             int smallerNumber = Mathf.Min(LastTwoHits[0], LastTwoHits[1]);
@@ -348,31 +432,42 @@ public class AI2 : MonoBehaviour
     [ContextMenu(nameof(Decision))]
     public void Decision()
     {
-        if (targetMode)
+        if (previousGuesses.Count > 0 && previousGuesses[0].Sunk)
         {
-            if (previousGuesses.Last().Item2)
+            previousGuesses.RemoveAt(0);
+        }
+        if (!resetting)
+        {
+            if (targetMode)
             {
-                List<(int Position, string Direction)> cardinalPositionsAround = GetCardinalPositionsAround(previousGuesses.Last().Item1);
-
-                for (int i = cardinalPositionsAround.Count - 1; i > -1; i--)
+                if (previousGuesses.Last().Item2)
                 {
-                    if (positionGuesses.Contains(cardinalPositionsAround[i].Position) && !TargetStackContains(cardinalPositionsAround[i].Position) && cardinalPositionsAround[i].Position != 0)
-                    {
-                        targetStack.Insert(0, cardinalPositionsAround[i]);
-                    }
-                }
-                Target();
-            }
-            else if (!previousGuesses.Last().Item2)
-            {
-                Target();
-            }
-        }
-        else
-        {
-            Hunt();
-        }
+                    List<(int Position, string Direction)> cardinalPositionsAround = GetCardinalPositionsAround(previousGuesses.Last().Item1);
 
+                    for (int i = cardinalPositionsAround.Count - 1; i >= 0; i--)
+                    {
+                        if (TargetStackContains(cardinalPositionsAround[i].Position) || !positionGuesses.Contains(cardinalPositionsAround[i].Position))
+                        {
+                            cardinalPositionsAround.RemoveAt(i);
+                        }
+                    }
+
+                    foreach ((int Position, string Direction) cardinalPosition in cardinalPositionsAround)
+                    {
+                        targetStack.Insert(0, cardinalPosition);
+                    }
+                    Target();
+                }
+                else if (!previousGuesses.Last().Item2)
+                {
+                    Target();
+                }
+            }
+            else
+            {
+                Hunt();
+            }
+        }
     }
 
     private void Target()
@@ -382,8 +477,10 @@ public class AI2 : MonoBehaviour
             int[] LastTwoHits = GetLastTwoHits();
 
             int diff = Mathf.Abs(LastTwoHits[0] - LastTwoHits[1]);
+            int row1 = (LastTwoHits[0] - 1) / board.Matrix.GetLength(0);
+            int row2 = (LastTwoHits[1] - 1) / board.Matrix.GetLength(0);
 
-            if (diff == 1)
+            if (diff == 1 && row1 == row2)
             {
                 for (int i = targetStack.Count - 1; i > -1; i--)
                 {
@@ -405,33 +502,39 @@ public class AI2 : MonoBehaviour
             }
 
             int target = targetStack[0].Position;
-            targetStack.RemoveAt(0);
             if (positionGuesses.Contains(target))
             {
+                targetStack.RemoveAt(0);
                 positionGuesses.Remove(target);
                 if (positionGuessesWithParity.Contains(target))
                 {
                     positionGuessesWithParity.Remove(target);
                 }
-            }
-            previousGuesses.Add(AI.ShotFired(target));
-            if (previousGuesses.Last().Item2 && previousGuesses.Last().Item3)
-            {
-                foreach ((int Position, string Direction) i in targetStack)
+
+                previousGuesses.Add(AI.ShotFired(target));
+
+                if (previousGuesses.Last().Item2 && previousGuesses.Last().Item3)
                 {
-                    if (positionGuesses.Contains(i.Position))
+                    foreach ((int Position, string Direction) i in targetStack)
                     {
-                        positionGuesses.Remove(i.Position);
-                        if (positionGuessesWithParity.Contains(i.Position))
+                        if (positionGuesses.Contains(i.Position))
                         {
-                            positionGuessesWithParity.Remove(i.Position);
+                            positionGuesses.Remove(i.Position);
+                            if (positionGuessesWithParity.Contains(i.Position))
+                            {
+                                positionGuessesWithParity.Remove(i.Position);
+                            }
                         }
                     }
-                }
-                targetStack.Clear();
+                    targetStack.Clear();
 
-                targetMode = false;
-                huntMode = true;
+                    targetMode = false;
+                    huntMode = true;
+                }
+            }
+            else
+            {
+                Debug.LogError("(AI2) Target stack contains a position that is not in the position guesses list");
             }
         }
     }
@@ -450,13 +553,12 @@ public class AI2 : MonoBehaviour
                 huntMode = false;
                 targetMode = true;
             }
+            if (previousGuesses.Last().Item3)
+            {
+                Debug.Log("AI returned Sunk when it shouldn't have");
+                previousGuesses.Remove(previousGuesses.Last());
+                targetMode = false;
+            }
         }
-    }
-
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }
