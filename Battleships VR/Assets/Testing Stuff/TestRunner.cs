@@ -188,7 +188,7 @@ public class TestRunner : MonoBehaviour
 
     private void WriteToFile()
     {
-        StreamWriter writer = new StreamWriter($"Assets/Testing Stuff/Output{ai.StartingDeviation}.txt", true);
+        StreamWriter writer = new StreamWriter($"Assets/Testing Stuff/Output2{ai.StartingDeviation}.txt", true);
         float aiWinPercentage = ((float)aiWins / (float)simulationsRun) * 100;
         writer.WriteLine($"{simulationsRun}, {aiWinPercentage.ToString("F5")}");
         writer.Close();

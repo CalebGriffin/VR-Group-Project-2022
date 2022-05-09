@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using TMPro;
 
 public class AI2 : MonoBehaviour
 {
@@ -31,6 +32,8 @@ public class AI2 : MonoBehaviour
     private bool huntMode = true;
 
     public bool resetting = false;
+
+    public GameObject textParent;
     
     // Start is called before the first frame update
     [ContextMenu("Start")]
@@ -70,16 +73,8 @@ public class AI2 : MonoBehaviour
         {
             positionGuesses.Add(i);
         }
-        foreach (int i in positionGuesses)
-        {
-            int row = (i - 1) / board.Matrix.GetLength(0);
-            int col = (i - 1) % board.Matrix.GetLength(0);
-
-            if ((row % 2 == 1 && col % 2 == 0) || (row % 2 == 0 && col % 2 == 1))
-            {
-                positionGuessesWithParity.Add(i);
-            }   
-        }
+        SetUpParity();
+        //DisplayParity();
 
         CreateBoats();
         yield return new WaitForSeconds(0.001f);
@@ -100,6 +95,48 @@ public class AI2 : MonoBehaviour
             }
         }
         resetting = false;
+    }
+
+    public void SetUpParity()
+    {
+        int smallestBoatLength = 10;
+        foreach (Boat boat in AI.Boats)
+        {
+            if (boat.Positions.Length < smallestBoatLength && boat.RemainingPositions.Count > 0)
+            {
+                smallestBoatLength = boat.Positions.Length;
+            }
+        }
+        positionGuessesWithParity.Clear();
+        foreach (int i in positionGuesses)
+        {
+            int row = (i - 1) / board.Matrix.GetLength(0);
+            int col = (i - 1) % board.Matrix.GetLength(0);
+
+            if ((row % smallestBoatLength) + (col % smallestBoatLength) == (smallestBoatLength-1))
+            {
+                positionGuessesWithParity.Add(i);
+            }
+
+            // Dan's old parity algorithm
+            //if ((row % 3 == 1 && col % 3 == 0) || (row % 3 == 0 && col % 3 == 1))
+            //{
+                //positionGuessesWithParity.Add(i);
+            //}   
+        }
+    }
+
+    public void DisplayParity()
+    {
+        foreach (int i in board.Matrix)
+        {
+            textParent.transform.Find(i.ToString()).GetChild(0).GetComponent<TextMeshProUGUI>().color = Color.black;
+
+            if (positionGuessesWithParity.Contains(i))
+            {
+                textParent.transform.Find(i.ToString()).GetChild(0).GetComponent<TextMeshProUGUI>().color = Color.green;
+            }
+        }
     }
 
     public void DisplayBoats()
@@ -526,6 +563,8 @@ public class AI2 : MonoBehaviour
                             }
                         }
                     }
+                    SetUpParity();
+                    //DisplayParity();
                     targetStack.Clear();
 
                     targetMode = false;
