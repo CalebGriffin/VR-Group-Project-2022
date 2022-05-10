@@ -9556,14 +9556,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   aiDifficulty: 1
-  shipCube: {fileID: 5588860171104075591, guid: 608fa2e625f9d4cadb4a1ab051ce67f9, type: 3}
-  borderCube: {fileID: 101433240222102563, guid: c792a228bcec04ca380cf958d16ab05f, type: 3}
-  hitCube: {fileID: 8328950938369313233, guid: cf33652d2d36648e2af975ec1da161ba, type: 3}
-  missCube: {fileID: 8252262346220011297, guid: 4abaa4469a9004e35b094c89b61a8845, type: 3}
   otherAI: {fileID: 447897292}
   testRunner: {fileID: 1021885191}
   targetMode: 0
-  textParent: {fileID: 479896690}
   resetting: 0
 --- !u!4 &968627306
 Transform:
@@ -9730,7 +9725,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 53.7
+  m_fontSize: 24.1
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -10350,6 +10345,36 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1026782051}
   m_CullTransparentMesh: 1
+--- !u!1 &1027901988
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1027901989}
+  m_Layer: 0
+  m_Name: AI Helper
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1027901989
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1027901988}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.886462, y: -22.572285, z: 11.6237135}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 12
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1035017064
 GameObject:
   m_ObjectHideFlags: 0

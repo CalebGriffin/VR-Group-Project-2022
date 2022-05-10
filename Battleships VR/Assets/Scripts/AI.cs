@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using static BattleshipAI.AIHelper;
+using static BattleshipAI.AIDebug;
 // TESTING // REMOVE
 using TMPro;
 
@@ -19,11 +20,6 @@ public class AI : MonoBehaviour
     [SerializeField] private Difficulty aiDifficulty;
 
     // TESTING // REMOVE
-    // Cube prefabs to display different objects on the board
-    public GameObject shipCube;
-    public GameObject borderCube;
-    public GameObject hitCube;
-    public GameObject missCube;
     public AI2 otherAI; // Reference to the other AI script
     public TestRunner testRunner; // Calls the Decision method on each of the AI scripts to run the simulation
 
@@ -33,7 +29,6 @@ public class AI : MonoBehaviour
 
     // A list to store all of the boats
     private List<Boat> boats = new List<Boat>();
-    // TESTING // REMOVE
     public List<Boat> Boats { get { return boats; } }
 
     // A list to store all of the guesses that have not been made yet
@@ -48,114 +43,21 @@ public class AI : MonoBehaviour
 
     // A boolean to determine whether the AI is in target mode or not
     [SerializeField] private bool targetMode = false;
+    public bool TargetMode { get { return targetMode; } set { targetMode = value; } }
 
     // An integer to store how far below the optimal move the AI could potentially shoot at
     private int deviation = 0;
+    public int Deviation { get { return deviation; } }
     private int startingDeviation = 0;
     public int StartingDeviation { get { return startingDeviation; } }
-
-    // TESTING // REMOVE
-    public GameObject textParent;
 
     public bool resetting = false;
 
     #endregion
-    
-    // ContextMenu allows this method to be run from within the Inspector
-    [ContextMenu("Start")]
-    // Start is called before the first frame update
-    public void Start()
-    {
-        // TESTING // REMOVE
-        // Prints out the borders
-        //string boatPositionsWithBorders = "";
-        //foreach (int position in board.currentBoatPositionsWithBorders)
-        //{
-            //boatPositionsWithBorders += position + ", ";
-            //if (!board.currentBoatPositions.Contains(position))
-            //{
-                //int row = (position - 1) / board.Matrix.GetLength(0);
-                //int col = (position - 1) % board.Matrix.GetLength(0);
-                //GameObject.Instantiate(borderCube, new Vector3(row, 0, col), Quaternion.identity);
-            //}
-        //}
-        //Debug.Log(boatPositionsWithBorders);
-    }
 
-    public IEnumerator Reset()
-    {
-        resetting = true;
-        // TESTING // REMOVE
-        // Reset from the previous time the game was played
-        uncheckedPositions.Clear();
-        targetMode = false;
-        targetStack.Clear();
-        previousGuesses.Clear();
-        board.currentBoatPositions.Clear();
-        board.currentBoatPositionsWithBorders.Clear();
-
-        // Initialize the position guesses list with the values from the board
-        foreach (int i in board.Matrix)
-        {
-            uncheckedPositions.Add((i, 0));
-        }
-        //DisplayPositionWeights();
-
-        // TESTING // REMOVE
-        CreateBoats();
-        yield return new WaitForSeconds(0.001f);
-        DisplayBoats();
-        if (previousGuesses.Count > 0 && previousGuesses[0].Sunk)
-        {
-            // TESTING // REMOVE
-            //Debug.Log("Found the error");
-            previousGuesses.RemoveAt(0);
-        }
-        resetting = false;
-    }
-
-    public void DisplayBoats()
-    {
-        // TESTING // REMOVE
-        // Prints out the boats and their positions
-        string boatPositions = "";
-        foreach (Boat boat in boats)
-        {
-            //Debug.Log(boat.Name + ":");
-            foreach (int position in boat.Positions)
-            {
-                boatPositions += position + ", ";
-                int row = (position - 1) / board.Matrix.GetLength(0);
-                int col = (position - 1) % board.Matrix.GetLength(0);
-                //GameObject.Instantiate(shipCube, new Vector3(row, 0, col), Quaternion.identity);
-            }
-            //Debug.Log(boatPositions);
-            boatPositions = "";
-        }
-    }
-
-    void Update()
-    {
-        var duplicates = previousGuesses
-            .GroupBy(x => x.Position)
-            .Where(g => g.Count() > 1)
-            .Select(g => g.Key);
-        if (duplicates.Count() > 0)
-        {
-            string duplicatesString = "";
-            foreach (int position in duplicates)
-            {
-                duplicatesString += position + ", ";
-            }
-            Debug.LogError("AI Duplicate positions found: " + duplicatesString);
-        }
-    }
-
-    #region Testing Methods
-    // TESTING // MOVE
     // Clears the boats list and fills it with the relevant boats
     [ContextMenu(nameof(CreateBoats))]
-    private void CreateBoats()
+    public void CreateBoats()
     {
         boats.Clear();
         boats.Add(new Boat(board, "Carrier", 5));
@@ -164,89 +66,6 @@ public class AI : MonoBehaviour
         boats.Add(new Boat(board, "Submarine", 3));
         boats.Add(new Boat(board, "Destroyer", 2));
     }
-
-    // TESTING // REMOVE
-    // Prints out the un-hit positions for each boat
-    [ContextMenu(nameof(PrintRemainingPositions))]
-    private void PrintRemainingPositions()
-    {
-        foreach (Boat boat in boats)
-        {
-            string remainingPositions = "";
-            Debug.Log(boat.Name + ":");
-            foreach (int position in boat.RemainingPositions)
-            {
-                remainingPositions += position + ", ";
-            }
-            Debug.Log(remainingPositions);
-        }
-    }
-
-    [ContextMenu(nameof(PrintPreviousGuesses))]
-    private void PrintPreviousGuesses()
-    {
-        string previousGuessesString = "";
-        for (int i = 0; i < previousGuesses.Count; i++)
-        {
-            previousGuessesString = i + ", " + previousGuesses[i].Position + ", " + previousGuesses[i].Hit + ", " + previousGuesses[i].Sunk;
-            Debug.Log(previousGuessesString);
-        }
-    }
-
-    [ContextMenu(nameof(PrintTargetStack))]
-    private void PrintTargetStack()
-    {
-        string targetStackString = "";
-        foreach ((int Position, string Direction) target in targetStack)
-        {
-            targetStackString = target.Position + ", " + target.Direction;
-            Debug.Log(targetStackString);
-        }
-    }
-
-    [ContextMenu(nameof(PrintUncheckedPositions))]
-    private void PrintUncheckedPositions()
-    {
-        string uncheckedPositionsString = "";
-        foreach ((int Position, int Weight) uncheckedPosition in uncheckedPositions)
-        {
-            uncheckedPositionsString = uncheckedPosition.Position + ", " + uncheckedPosition.Weight;
-            Debug.Log(uncheckedPositionsString);
-        }
-    }
-
-    [ContextMenu(nameof(DisplayPositionWeights))]
-    private void DisplayPositionWeights()
-    {
-        int currentHighestWeight = uncheckedPositions.Max(x => x.Weight);
-
-        foreach (int i in board.Matrix)
-        {
-            if (UncheckedPositionsContains(i))
-            {
-                textParent.transform.Find(i.ToString()).GetChild(0).GetComponent<TextMeshProUGUI>().text = uncheckedPositions.Find(x => x.Position == i).Weight.ToString();
-                textParent.transform.Find(i.ToString()).GetChild(0).GetComponent<TextMeshProUGUI>().color = Color.black;
-
-                if (uncheckedPositions.Find(x => x.Position == i).Weight == currentHighestWeight && currentHighestWeight != 0)
-                {
-                    textParent.transform.Find(i.ToString()).GetChild(0).GetComponent<TextMeshProUGUI>().color = Color.green;
-                }
-            }
-            else
-            {
-                textParent.transform.Find(i.ToString()).GetChild(0).GetComponent<TextMeshProUGUI>().text = "0";
-                textParent.transform.Find(i.ToString()).GetChild(0).GetComponent<TextMeshProUGUI>().color = Color.black;
-            }
-        }
-    }
-
-    [ContextMenu(nameof(PrintDeviation))]
-    private void PrintDeviation()
-    {
-        Debug.Log("Deviation: " + deviation);
-        Debug.Log("Starting Deviation: " + startingDeviation);
-    }
-    #endregion
 
     // This method will be called by the Player when they choose a position on the board to shoot
     // Returns a Tuple containing the position that was shot and whether it was a hit or a miss
@@ -331,31 +150,6 @@ public class AI : MonoBehaviour
             {
                 uncheckedPositions.Remove(uncheckedPositions.Find(x => x.Position == i));
             }   
-        }
-    }
-
-    // This method will check each of the boats and if none have any remaining positions then the player has won
-    private void WinCheck()
-    {
-        bool win = true;
-
-        foreach (Boat boat in boats)
-        {
-            if (!boat.SunkCheck())
-            {
-                win = false;
-                break;
-            }
-        }
-
-        if (win)
-        {
-            // Call a GameOver method to end the game because the player has won
-            // TESTING // REMOVE
-            if (testRunner.playing)
-            {
-                testRunner.Button("AI2");
-            }
         }
     }
 

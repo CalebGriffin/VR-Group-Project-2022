@@ -259,7 +259,7 @@ public class AI2 : MonoBehaviour
 
                     foreach (int positionAround in positionsAround)
                     {
-                        if (positionAround != 0 && AI.UncheckedPositionsContains(positionAround))
+                        if (positionAround != 0 && BattleshipAI.AIHelper.UncheckedPositionsContains(positionAround))
                         {
                             // Enable the object on that position with the 'miss' object
                             row = (positionAround - 1) / board.Matrix.GetLength(0);

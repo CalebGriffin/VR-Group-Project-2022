@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static BattleshipAI.AIDebug;
 
 namespace BattleshipAI
 {
@@ -57,6 +58,61 @@ namespace BattleshipAI
             {
                 ai.uncheckedPositions[i] = (ai.uncheckedPositions[i].Position, 0);
             }
+        }
+
+        // This method will check each of the boats and if none have any remaining positions then the player has won
+        public static void WinCheck()
+        {
+            bool win = true;
+
+            foreach (Boat boat in ai.Boats)
+            {
+                if (!boat.SunkCheck())
+                {
+                    win = false;
+                    break;
+                }
+            }
+
+            if (win)
+            {
+                // Call a GameOver method to end the game because the player has won
+                // TESTING // REMOVE
+                if (ai.testRunner.playing)
+                {
+                    ai.testRunner.Button("AI2");
+                }
+            }
+        }
+
+        public IEnumerator Reset()
+        {
+            ai.resetting = true;
+            // Reset from the previous time the game was played
+            ai.uncheckedPositions.Clear();
+            ai.TargetMode = false;
+            ai.targetStack.Clear();
+            ai.previousGuesses.Clear();
+            ai.Board.currentBoatPositions.Clear();
+            ai.Board.currentBoatPositionsWithBorders.Clear();
+
+            // Initialize the position guesses list with the values from the board
+            foreach (int i in ai.Board.Matrix)
+            {
+                ai.uncheckedPositions.Add((i, 0));
+            }
+            //DisplayPositionWeights();
+
+            ai.CreateBoats();
+            yield return new WaitForSeconds(0.001f);
+            DisplayBoats();
+            if (ai.previousGuesses.Count > 0 && ai.previousGuesses[0].Sunk)
+            {
+                // TESTING // REMOVE
+                //Debug.Log("Found the error");
+                ai.previousGuesses.RemoveAt(0);
+            }
+            ai.resetting = false;
         }
 
         // This method takes in a position and returns a list of all the positions around it in the 4 cardinal directions
