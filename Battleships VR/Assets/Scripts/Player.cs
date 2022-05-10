@@ -100,4 +100,9 @@ public class Player : MonoBehaviour
             // Call a GameOver method to end the game because the AI has won
         }
     }
+
+    public void Decision(int position)
+    {
+        // Call the ShotFired method on the AI and get the return values and add them to the previous guesses list
+    }
 }

@@ -90,6 +90,48 @@ public class ModelBoat : MonoBehaviour
 
         placed = true;
 
+        // Set the positions of the boat based on the location of the model boat gameobject
+        int startingPosition = player.Board.Matrix[(int)this.GetComponent<LockToPoint>().snapTo.position.x, (int)this.GetComponent<LockToPoint>().snapTo.position.z];
+        positions = new int[length];
+        positions[0] = startingPosition;
+        switch(direction)
+        {
+            case "up":
+                for (int i = 1; i < length; i++)
+                {
+                    int newPosition = startingPosition - (i * 10);
+                    positions[i] = newPosition;
+                }
+                break;
+            
+            case "down":
+                for (int i = 1; i < length; i++)
+                {
+                    int newPosition = startingPosition + (i * 10);
+                    positions[i] = newPosition;
+                }
+                break;
+            
+            case "left":
+                for (int i = 1; i < length; i++)
+                {
+                    int newPosition = startingPosition - i;
+                    positions[i] = newPosition;
+                }
+                break;
+            
+            case "right":
+                for (int i = 1; i < length; i++)
+                {
+                    int newPosition = startingPosition + i;
+                    positions[i] = newPosition;
+                }
+                break;
+            
+            default:
+                break;
+        }
+
         // Call a method on the player to create a boat with the length and direction
         player.AddShip(this);
     }
