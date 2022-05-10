@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static BattleshipAI.AIHelper;
 // TESTING // REMOVE
 using TMPro;
 
@@ -40,10 +41,10 @@ public class AI : MonoBehaviour
 
     // A list to store all of the previous guesses and whether they were hits or misses and whether they sunk a boat
     // Uses ValueTuples to store the data which allow each entry to have a name and a value
-    private List<(int Position, bool Hit, bool Sunk)> previousGuesses = new List<(int, bool, bool)>();
+    public List<(int Position, bool Hit, bool Sunk)> previousGuesses = new List<(int, bool, bool)>();
 
     // A list of positions that is used in target mode to pick points around the currently targeted boat
-    private List<(int Position, string Direction)> targetStack = new List<(int Position, string Direction)>();
+    public List<(int Position, string Direction)> targetStack = new List<(int Position, string Direction)>();
 
     // A boolean to determine whether the AI is in target mode or not
     [SerializeField] private bool targetMode = false;
@@ -358,163 +359,6 @@ public class AI : MonoBehaviour
         }
     }
 
-    public int[] GetLastTwoHits()
-    {
-        var temp = new List<(int Position, bool Hit, bool Sunk)>(previousGuesses);
-
-        var lastPosition = temp.LastOrDefault(x => x.Hit == true);
-
-        temp.Remove(lastPosition);
-
-        var lastPosition2 = temp.LastOrDefault(x => x.Hit == true);
-
-        return new int[] { lastPosition.Position, lastPosition2.Position };
-    }
-
-    // This method takes in a position and returns a list of all the positions around it in the 4 cardinal directions
-    public List<(int, string)> GetCardinalPositionsAround(int position)
-    {
-        string[] directions = new string[4];
-
-        List<(int Position, string Direction)> returnValues = new List<(int, string)>();
-
-        int row = (position - 1) / board.Matrix.GetLength(0);
-        int col = (position - 1) % board.Matrix.GetLength(0);
-
-        // Get the last two positions in the previous guesses list where it was a hit
-        int[] LastTwoHits = GetLastTwoHits();
-        //Debug.Log("LastTwoHits: " + LastTwoHits[0] + ", " + LastTwoHits[1]);
-
-        // Get the absolute value of the difference between the last two positions that were hit
-        int diff = Mathf.Abs(LastTwoHits[0] - LastTwoHits[1]);
-        int row1 = (LastTwoHits[0] - 1) / board.Matrix.GetLength(0);
-        int row2 = (LastTwoHits[1] - 1) / board.Matrix.GetLength(0);
-        //Debug.Log("Diff: " + diff);
-
-        // If the difference is 1 then only check in left and right directions
-        if (diff == 1 && row1 == row2)
-        {
-            directions[0] = "East";
-            directions[1] = "West";
-        }
-        // If the difference is 10 then only check in up and down directions
-        else if (diff == board.Matrix.GetLength(0))
-        {
-            directions[0] = "North";
-            directions[1] = "South";
-        }
-        else if (diff < board.Matrix.GetLength(0) && row1 == row2)
-        {
-            bool sameBoat = true;
-            int smallerNumber = Mathf.Min(LastTwoHits[0], LastTwoHits[1]);
-            int largerNumber = Mathf.Max(LastTwoHits[0], LastTwoHits[1]);
-
-            for (int i = smallerNumber; i < largerNumber; i++)
-            {
-                if (!previousGuesses.Contains((i, true, false)))
-                {
-                    sameBoat = false;
-                    break;
-                }
-            }
-
-            if (sameBoat)
-            {
-                directions[0] = "East";
-                directions[1] = "West";
-            }
-            else
-            {
-                directions[0] = "North";
-                directions[1] = "East";
-                directions[2] = "South";
-                directions[3] = "West";
-            }
-        }
-        else if (diff % board.Matrix.GetLength(0) == 0)
-        {
-            bool sameBoat = true;
-            int smallerNumber = Mathf.Min(LastTwoHits[0], LastTwoHits[1]);
-            int largerNumber = Mathf.Max(LastTwoHits[0], LastTwoHits[1]);
-
-            for (int i = smallerNumber; i < largerNumber; i += board.Matrix.GetLength(0))
-            {
-                if (!previousGuesses.Contains((i, true, false)))
-                {
-                    sameBoat = false;
-                    break;
-                }
-            }
-
-            if (sameBoat)
-            {
-                directions[0] = "North";
-                directions[1] = "South";
-            }
-            else
-            {
-                directions[0] = "North";
-                directions[1] = "South";
-                directions[2] = "East";
-                directions[3] = "West";
-            }
-        }
-        // Else, check in all directions
-        else
-        {
-            directions[0] = "North";
-            directions[1] = "East";
-            directions[2] = "South";
-            directions[3] = "West";
-        }
-
-        // The positions are added to the target stack in the reverse order that they are checked
-        foreach (string direction in directions)
-        {
-            switch (direction)
-            {
-                case "North":
-                    if (row - 1 >= 0)
-                    {
-                        returnValues.Add(ValueTuple.Create(board.Matrix[row - 1, col], direction));
-                    }
-                    break;
-                case "East":
-                    if (col + 1 < board.Matrix.GetLength(0))
-                    {
-                        returnValues.Add(ValueTuple.Create(board.Matrix[row, col + 1], direction));
-                    }
-                    break;
-                case "South":
-                    if (row + 1 < board.Matrix.GetLength(0))
-                    {
-                        returnValues.Add(ValueTuple.Create(board.Matrix[row + 1, col], direction));
-                    }
-                    break;
-                case "West":
-                    if (col - 1 >= 0)
-                    {
-                        returnValues.Add(ValueTuple.Create(board.Matrix[row, col - 1], direction));
-                    }
-                    break;
-            }
-        }
-
-        return returnValues;
-    }
-
-    // Returns a bool of whether or not the position is in the target stack
-    private bool TargetStackContains(int point)
-    {
-        return targetStack.Any(x => x.Position == point);
-    }
-
-    // Returns a bool of whether or not the position is in the unchecked positions list
-    public bool UncheckedPositionsContains(int point)
-    {
-        return uncheckedPositions.Any(x => x.Position == point);
-    }
-
     // TESTING
     [ContextMenu(nameof(Decision))]
     // This method is the decision of the AI and will be called by the Player after they have played their turn
@@ -707,23 +551,6 @@ public class AI : MonoBehaviour
         }
     }
 
-    [ContextMenu(nameof(DifferentWeights))]
-    private int DifferentWeights()
-    {
-        List<int> weights = new List<int>();
-
-        foreach ((int Position, int Weight) i in uncheckedPositions)
-        {
-            if (!weights.Contains(i.Weight))
-            {
-                weights.Add(i.Weight);
-            }
-        }
-
-        //Debug.Log("Different Weights: " + weights.Count);
-        return weights.Count;
-    }
-
     private void CalculateHeatMap()
     {
         ClearUncheckedPositionWeight();
@@ -737,6 +564,7 @@ public class AI : MonoBehaviour
             }
         }
 
+        // REMOVE
         // Fixes a strange bug where some positions had a weight of 0 but weren't being removed
         //if (uncheckedPositions.Any(x => x.Weight == 0))
         //{
@@ -752,14 +580,6 @@ public class AI : MonoBehaviour
         uncheckedPositions = uncheckedPositions.OrderByDescending(x => x.Weight).ToList();
 
         //DisplayPositionWeights();
-    }
-
-    private void ClearUncheckedPositionWeight()
-    {
-        for (int i = 0; i < uncheckedPositions.Count; i++)
-        {
-            uncheckedPositions[i] = (uncheckedPositions[i].Position, 0);
-        }
     }
 
     private void ProbabilityDensity(int boatLength, string directionToCheck)
