@@ -5,13 +5,12 @@ using System.Linq;
 using UnityEngine;
 using static BattleshipAI.AIHelper;
 using static BattleshipAI.AIDebug;
-// TESTING // REMOVE
-using TMPro;
 
 public class AI : MonoBehaviour
 {
     #region Variable Declarations
 
+    // Custom enum for AI difficulty, can be changed in the Inspector
     public enum Difficulty
     {
         Normal,
@@ -42,15 +41,17 @@ public class AI : MonoBehaviour
     public List<(int Position, string Direction)> targetStack = new List<(int Position, string Direction)>();
 
     // A boolean to determine whether the AI is in target mode or not
-    [SerializeField] private bool targetMode = false;
-    public bool TargetMode { get { return targetMode; } set { targetMode = value; } }
+    public bool targetMode = false;
 
     // An integer to store how far below the optimal move the AI could potentially shoot at
     private int deviation = 0;
     public int Deviation { get { return deviation; } }
+
+    // An integer to remember the original deviation value so that it can be dynamically changed at runtime
     private int startingDeviation = 0;
     public int StartingDeviation { get { return startingDeviation; } }
 
+    // A boolean that stops functions from running if the AI is clearing all of the information at the end of a game
     public bool resetting = false;
 
     #endregion
@@ -68,9 +69,10 @@ public class AI : MonoBehaviour
     }
 
     // This method will be called by the Player when they choose a position on the board to shoot
-    // Returns a Tuple containing the position that was shot and whether it was a hit or a miss
+    // Returns a ValueTuple containing the position that was shot and whether it was a hit or a miss and whether it sunk a boat
     public (int, bool, bool) ShotFired(int position)
     {
+        // A guard clause to make sure that the AI is not resetting
         if (otherAI.resetting || resetting)
         {
             return (0, false, false);
@@ -115,8 +117,8 @@ public class AI : MonoBehaviour
                         }
                     }
 
-                    // TESTING // REMOVE
-                    // Call the method to remove the points around the boat from the other AI's position guesses
+                    // Call the method to remove the points around the boat from the player's list of unchecked positions
+                    // TESTING // CHANGE
                     otherAI.RemoveSunkPoints(positionsAround);
 
                     // Call the method to check if the player has won
@@ -129,10 +131,10 @@ public class AI : MonoBehaviour
         // If the shot was a miss
         if (!hit)
         {
-            // TESTING // CHANGE
             // Enable the object on that position with the 'miss' object
             int row = (position - 1) / board.Matrix.GetLength(0);
             int col = (position- 1) % board.Matrix.GetLength(0);
+            // TESTING // CHANGE
             //GameObject.Instantiate(missCube, new Vector3(row, 1, col), Quaternion.identity);
             //Debug.Log("Miss!");
         }
@@ -158,15 +160,15 @@ public class AI : MonoBehaviour
     // This method is the decision of the AI and will be called by the Player after they have played their turn
     public void Decision()
     {
+        // Removes the first element from the list of previous guesses if it sunk a ship to fix a bug that didn't correctly reset the list
         if (previousGuesses.Count > 0 && previousGuesses[0].Sunk)
         {
             previousGuesses.RemoveAt(0);
         }
+
+        // Only run the decision if the AI is not resetting
         if (!resetting)
         {
-            // TESTING // REMOVE
-            //CalculateHeatMap();
-
             if (targetMode)
             {
                 // If the AI is in target mode and the previous shot was a hit then get all the positions around that point and add them to the target stack
@@ -183,18 +185,13 @@ public class AI : MonoBehaviour
                             cardinalPositionsAround.RemoveAt(i);
                         }
                     }
-                    string cardinalPositionsAroundString = "";
-                    foreach ((int Position, string Direction) cardinalPosition in cardinalPositionsAround)
-                    {
-                        cardinalPositionsAroundString += cardinalPosition.Position + ", ";
-                    }
-                    //Debug.Log("Cardinal Positions Around: " + cardinalPositionsAroundString);
 
                     // For each of the positions around the previous guess, add them to the front of the target stack
                     foreach ((int Position, string Direction) cardinalPosition in cardinalPositionsAround)
                     {
                         targetStack.Insert(0, cardinalPosition);
                     }
+
                     // Call the Target method
                     Target();
                 }
@@ -204,15 +201,12 @@ public class AI : MonoBehaviour
                     Target();
                 }
             }
-            // Else if the AI is not in target mode then call the Hunt method
+            // Else if the AI is not in target mode then calculate the heat map for the board and call the Hunt method
             else
             {
                 CalculateHeatMap();
                 Hunt();
             }
-
-            // TESTING // REMOVE
-            //CalculateHeatMap();
         }
     }
 
@@ -223,18 +217,15 @@ public class AI : MonoBehaviour
         {
             // Get the last two positions in the previous guesses list where it was a hit
             int[] LastTwoHits = GetLastTwoHits();
-            //Debug.Log("LastTwoHits: " + LastTwoHits[0] + ", " + LastTwoHits[1]);
 
             // Get the absolute value of the difference between the last two positions that were hit
             int diff = Mathf.Abs(LastTwoHits[0] - LastTwoHits[1]);
             int row1 = (LastTwoHits[0] - 1) / board.Matrix.GetLength(0);
             int row2 = (LastTwoHits[1] - 1) / board.Matrix.GetLength(0);
-            //Debug.Log("Diff: " + diff);
 
-            // If the difference is 1 then removes any positions in the target stack that are not in the same column as the last two positions that were hit
+            // If the difference is 1 and they are in the same row, then removes any positions in the target stack that are not in the same row as the last two positions that were hit
             if (diff == 1 && row1 == row2)
             {
-                // Loop through the target stack backwards, removing any elements where the Direction is "North" or "South"
                 for (int i = targetStack.Count - 1; i >= 0; i--)
                 {
                     if (targetStack[i].Direction == "North" || targetStack[i].Direction == "South")
@@ -243,10 +234,9 @@ public class AI : MonoBehaviour
                     }
                 }
             }
-            // If the difference is 10 then removes any positions in the target stack that are not in the same row as the last two positions that were hit
+            // If the difference is 10 then removes any positions in the target stack that are not in the same column as the last two positions that were hit
             else if (diff == board.Matrix.GetLength(0))
             {
-                // Loop through the target stack backwards, removing any elements where the Direction is "East" or "West"
                 for (int i = targetStack.Count - 1; i >= 0; i--)
                 {
                     if (targetStack[i].Direction == "East" || targetStack[i].Direction == "West")
@@ -256,12 +246,12 @@ public class AI : MonoBehaviour
                 }
             }
 
-            // Get the first position in the target stack and fire at it by calling the ShotFired method on the player's script
+            // Get the first position in the target stack and fire at it by calling the ShotFired method on the player's script only if the position hasn't already been checked
             int target = targetStack[0].Position;
             if (UncheckedPositionsContains(target))
             {
                 targetStack.RemoveAt(0);
-                uncheckedPositions.Remove(uncheckedPositions.FirstOrDefault(x => x.Position == target));
+                uncheckedPositions.Remove(uncheckedPositions.First(x => x.Position == target));
             }
             // TESTING // CHANGE
             previousGuesses.Add(otherAI.ShotFired(target));
@@ -273,7 +263,7 @@ public class AI : MonoBehaviour
                 {
                     if (UncheckedPositionsContains(i.Position))
                     {
-                        uncheckedPositions.Remove(uncheckedPositions.FirstOrDefault(x => x.Position == i.Position));
+                        uncheckedPositions.Remove(uncheckedPositions.First(x => x.Position == i.Position));
                     }
                 }
                 targetStack.Clear();
@@ -286,62 +276,76 @@ public class AI : MonoBehaviour
     // Choose a random position from the position guesses list and fire at it, if the shot is a hit then set the AI to target mode
     private void Hunt()
     {
-        // Make sure that the position guesses list isn't empty
-        if (uncheckedPositions.Count > 0)
+        // If the unchecked positions list is empty then return without doing anything
+        if (uncheckedPositions.Count == 0)
         {
-            int position = 0;
-            switch(aiDifficulty)
+            return;
+        }
+
+        // Create a temporary integer to store the chosen position that will be fired at
+        int position = 0;
+
+        switch(aiDifficulty)
+        {
+            // If the AI is normal difficulty then choose a random position from the unchecked positions list
+            case Difficulty.Normal:
+                position = uncheckedPositions[UnityEngine.Random.Range(0, uncheckedPositions.Count)].Position;
+                break;
+            
+            // If the AI is hard difficulty
+            case Difficulty.Hard:
+                // Get the first position in the list which will have the highest weight
+                int currentWeight = uncheckedPositions[0].Weight;
+                // Find the first element in the list that has a lower weight than the current highest weight
+                int indexOfFirstLowerWeight = uncheckedPositions.FindIndex(x => x.Weight < currentWeight);
+
+                // Clamp the deviation value to the number of different weights in the unchecked positions list
+                // This prevents the AI firing at a position that has a weight that doesn't exist
+                deviation = Mathf.Clamp(DifferentWeights() - 2, 0, startingDeviation);
+
+                // If the deviation is 0 then this loop will be ignored
+                // Otherwise it will repeat the process above of finding the first element in the list that has a lower weight than the current highest weight the number of times specified by the deviation
+                for (int i = 0; i < deviation; i++)
+                {
+                    currentWeight = uncheckedPositions[indexOfFirstLowerWeight].Weight;
+                    indexOfFirstLowerWeight = uncheckedPositions.FindIndex(x => x.Weight < currentWeight);
+                }
+
+                // The position will then be set as the position of a random element in the list that has a weight greater than or equal to the current weight
+                position = uncheckedPositions[UnityEngine.Random.Range(0, indexOfFirstLowerWeight)].Position;
+                break;
+            
+            default:
+                break;
+        }
+
+        // Verify that the position hasn't already been checked
+        if (UncheckedPositionsContains(position))
+        {
+            // Remove the position from the unchecked positions list
+            // Fire at it by calling the ShotFired method on the player's script and add the result to the previous guesses list
+            uncheckedPositions.Remove(uncheckedPositions.FirstOrDefault(x => x.Position == position));
+            // TESTING // CHANGE
+            previousGuesses.Add(otherAI.ShotFired(position));
+
+            // If the shot was a hit, then set the target mode to true
+            if (previousGuesses.Last().Hit)
             {
-                case Difficulty.Normal:
-                    position = uncheckedPositions[UnityEngine.Random.Range(0, uncheckedPositions.Count)].Position;
-                    break;
-                
-                case Difficulty.Hard:
-                    int currentHighestWeight = uncheckedPositions[0].Weight;
-                    int lastElementWithHighestWeight = uncheckedPositions.FindIndex(x => x.Weight < currentHighestWeight);
-                    if (DifferentWeights() < startingDeviation + 2)
-                    {
-                        deviation = Mathf.Clamp(DifferentWeights() - 2, 0, startingDeviation);
-                    }
-                    else
-                    {
-                        deviation = startingDeviation;
-                    }
-                    for (int i = 0; i < deviation; i++)
-                    {
-                        currentHighestWeight = uncheckedPositions[lastElementWithHighestWeight].Weight;
-                        lastElementWithHighestWeight = uncheckedPositions.FindIndex(x => x.Weight < currentHighestWeight);
-                    }
-                    position = uncheckedPositions[UnityEngine.Random.Range(0, lastElementWithHighestWeight)].Position;
-                    break;
-                
-                default:
-                    break;
+                targetMode = true;
             }
 
-            if (UncheckedPositionsContains(position))
+            // If the shot sunk a boat, then an error will be thrown because a ship can't be sunk by the AI in hunt mode
+            if (previousGuesses.Last().Sunk)
             {
-                // Pick a random position, remove it from the positions guesses list and fire at it by calling the ShotFired method on the player's script
-                uncheckedPositions.Remove(uncheckedPositions.FirstOrDefault(x => x.Position == position));
-                // TESTING // CHANGE
-                previousGuesses.Add(otherAI.ShotFired(position));
-
-                // If the shot was a hit, then set the target mode to true
-                if (previousGuesses.Last().Hit)
-                {
-                    targetMode = true;
-                }
-                if (previousGuesses.Last().Sunk)
-                {
-                    Debug.Log("AI2 returned Sunk when it shouldn't have");
-                    previousGuesses.Remove(previousGuesses.Last());
-                    targetMode = false;
-                }
+                Debug.Log("AI2 returned Sunk when it shouldn't have");
+                previousGuesses.Remove(previousGuesses.Last());
+                targetMode = false;
             }
-            else
-            {
-                Debug.LogError("Position " + position + " is not in the unchecked positions list");
-            }
+        }
+        // Throw an error if the position has already been checked
+        else
+        {
+            Debug.LogError("Position " + position + " is not in the unchecked positions list");
         }
     }
 
@@ -358,21 +362,9 @@ public class AI : MonoBehaviour
             }
         }
 
-        // REMOVE
-        // Fixes a strange bug where some positions had a weight of 0 but weren't being removed
-        //if (uncheckedPositions.Any(x => x.Weight == 0))
-        //{
-            //for (int i = uncheckedPositions.Count - 1; i >= 0; i--)
-            //{
-                //if (uncheckedPositions[i].Weight == 0)
-                //{
-                    //uncheckedPositions.RemoveAt(i);
-                //}
-            //}
-        //}
-
         uncheckedPositions = uncheckedPositions.OrderByDescending(x => x.Weight).ToList();
 
+        // TESTING // REMOVE
         //DisplayPositionWeights();
     }
 

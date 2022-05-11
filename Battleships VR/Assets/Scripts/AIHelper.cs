@@ -90,7 +90,7 @@ namespace BattleshipAI
             ai.resetting = true;
             // Reset from the previous time the game was played
             ai.uncheckedPositions.Clear();
-            ai.TargetMode = false;
+            ai.targetMode = false;
             ai.targetStack.Clear();
             ai.previousGuesses.Clear();
             ai.Board.currentBoatPositions.Clear();
