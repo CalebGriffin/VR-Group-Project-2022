@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BoardInput : MonoBehaviour
+public class PlayerBoardInput : MonoBehaviour
 {
-    private int lowerX, lowerZ, upperX, upperZ;
+    [SerializeField] private int lowerX, lowerZ, upperX, upperZ;
 
     public Player player;
 
@@ -30,108 +30,78 @@ public class BoardInput : MonoBehaviour
         upperZ = 9;
     }
 
-    void OnTriggerEnter(Collider other)
+    private void AdjustBounds(GameObject modelBoat)
     {
-        Debug.Log("Collision with " + other.gameObject.name);
+        int boatLength = modelBoat.GetComponent<ModelBoat>().Length;
 
-        GameObject modelBoat;
-        //if (other.gameObject.transform.parent != null)
-        //{
-            //modelBoat = other.gameObject.transform.parent.gameObject;
-        //}
-        //else
-        //{
-            //modelBoat = other.gameObject;
-        //}
-        modelBoat = other.gameObject;
+        string direction = modelBoat.GetComponent<ModelBoat>().Direction;
 
-        if (modelBoat.tag == "ModelBoat")
+        switch(direction)
         {
-            int boatLength = modelBoat.GetComponent<ModelBoat>().Length;
-
-            string direction = modelBoat.GetComponent<ModelBoat>().Direction;
-
-            ResetBounds();
-
-            switch(direction)
-            {
-                case "up":
-                    lowerX = 0 + boatLength - 1;
-                    break;
-                
-                case "down":
-                    upperX = 9 - boatLength + 1;
-                    break;
-                
-                case "left":
-                    lowerZ = 0 + boatLength - 1;
-                    break;
-                
-                case "right":
-                    upperZ = 9 - boatLength + 1;
-                    break;
-            }
+            case "up":
+                lowerX = 0 + boatLength - 1;
+                break;
+            
+            case "down":
+                upperX = 9 - boatLength + 1;
+                break;
+            
+            case "left":
+                lowerZ = 0 + boatLength - 1;
+                break;
+            
+            case "right":
+                upperZ = 9 - boatLength + 1;
+                break;
         }
     }
 
-    void OnTriggerStay(Collider other)
+    public void OnBoatHoverStay(GameObject modelBoat)
     {
-        Debug.Log("OnTriggerStay with " + other.gameObject.name);
-
-        GameObject modelBoat;
-        //if (other.gameObject.transform.parent != null)
-        //{
-            //modelBoat = other.gameObject.transform.parent.gameObject;
-        //}
-        //else
-        //{
-            //modelBoat = other.gameObject;
-        //}
-        modelBoat = other.gameObject;
-
-        if (modelBoat.tag == "ModelBoat" && modelBoat.GetComponent<ModelBoat>().Placed == false)
+        if (modelBoat.GetComponent<ModelBoat>().Placed == false && modelBoat.GetComponent<ModelBoat>().HoveringOverTheBoard == true)
         {
+            AdjustBounds(modelBoat);
+
             Vector3 previewPosition = FindRoundedPosition(this.gameObject.transform.InverseTransformPoint(modelBoat.transform.position), modelBoat.GetComponent<ModelBoat>().Direction, modelBoat.GetComponent<ModelBoat>().Length);
-            Debug.Log("Preview position: " + previewPosition);
+
             if (previewPosition.x >= lowerX && previewPosition.x <= upperX && previewPosition.z >= lowerZ && previewPosition.z <= upperZ && previewPosition != new Vector3(100, 100, 100))
             {
                 // Set the position of the preview boat to the preview position
-                previewBoat.Show();
-                previewBoat.ChangePosition(previewPosition, modelBoat.GetComponent<ModelBoat>().Direction, modelBoat.GetComponent<ModelBoat>().Name);
+                previewBoat.ChangePosition(previewPosition, modelBoat.GetComponent<ModelBoat>().Direction, modelBoat.GetComponent<ModelBoat>().BoatName);
 
                 // Set the lock to point of the model boat to the position of the preview boat
                 modelBoat.GetComponent<ModelBoat>().SetLockPoint(previewBoat.transform);
             }
-            
+            else
+            {
+                previewBoat.HideChildren();
+                modelBoat.GetComponent<ModelBoat>().ResetLockPoint();
+            }
+        }
+        else
+        {
+            previewBoat.HideChildren();
         }
     }
 
-    void OnTriggerExit(Collider other)
+    public void OnBoatHoverEnter(GameObject modelBoat)
     {
-        GameObject modelBoat;
-        //if (other.gameObject.transform.parent != null)
-        //{
-            //modelBoat = other.gameObject.transform.parent.gameObject;
-        //}
-        //else
-        //{
-            //modelBoat = other.gameObject;
-        //}
-        modelBoat = other.gameObject;
+        //Debug.Log("OnBoatHoverEnter with " + modelBoat.name);
 
-        Debug.Log(modelBoat.name);
+        ResetBounds();
+        AdjustBounds(modelBoat);
+    }
 
-        if (modelBoat.tag == "ModelBoat")
-        {
-            ResetBounds();
-            modelBoat.GetComponent<ModelBoat>().Placed = false;
+    public void OnBoatHoverExit(GameObject modelBoat)
+    {
+        ResetBounds();
+        modelBoat.GetComponent<ModelBoat>().Placed = false;
 
-            // Set the lock to point of the model boat to the original position
-            modelBoat.GetComponent<ModelBoat>().ResetLockPoint();
+        // Set the lock to point of the model boat to the original position
+        modelBoat.GetComponent<ModelBoat>().ResetLockPoint();
 
-            // Hide the preview boat
-            previewBoat.Hide();
-        }
+        // Hide the preview boat
+        previewBoat.HideChildren();
     }
 
     private Vector3 FindRoundedPosition(Vector3 position, string direction, int length)

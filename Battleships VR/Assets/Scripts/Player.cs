@@ -19,14 +19,37 @@ public class Player : MonoBehaviour
         
     }
 
+    [ContextMenu(nameof(PrintShipPositionsAndPositionsAround))]
+    private void PrintShipPositionsAndPositionsAround()
+    {
+        foreach (Boat boat in boats)
+        {
+            string boatPositionsString = "";
+            foreach (int position in boat.Positions)
+            {
+                boatPositionsString += position + ", ";
+            }
+            Debug.Log(boat.Name + ": " + boatPositionsString);
+
+            string boatPositionsAroundString = "";
+            foreach (int position in board.currentBoatPositionsWithBorders)
+            {
+                if (!board.currentBoatPositions.Contains(position))
+                    boatPositionsAroundString += position + ", ";
+            }
+            Debug.Log(boat.Name + ": " + boatPositionsAroundString);
+        }
+    }
+
     public void AddShip(ModelBoat boat)
     {
-        boats.Add(new Boat(this.board, boat.Name, boat.Length, boat.positions));
+        boats.Add(new Boat(this.board, boat.BoatName, boat.Length, boat.positions));
+        boat.positionsAround = boats[boats.Count - 1].Sunk(board);
     }
 
     public void RemoveShip(ModelBoat boat)
     {
-        boats.Remove(boats.Find(x => x.Name == boat.Name));
+        boats.Remove(boats.Find(x => x.Name == boat.BoatName));
         foreach(int position in boat.positions)
         {
             board.currentBoatPositions.Remove(position);

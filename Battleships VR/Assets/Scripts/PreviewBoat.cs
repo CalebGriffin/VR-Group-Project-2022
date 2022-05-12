@@ -16,18 +16,10 @@ public class PreviewBoat : MonoBehaviour
         
     }
 
-    public void Show()
+    public void HideChildren()
     {
-        gameObject.SetActive(true);
-    }
-
-    public void Hide()
-    {
-
         foreach(Transform child in transform)
         {
-            Debug.Log("Hiding preview boat");
-            Debug.Assert(child.gameObject.name == null, child.gameObject.name);
             child.gameObject.SetActive(false);
         }
     }
@@ -37,8 +29,10 @@ public class PreviewBoat : MonoBehaviour
         transform.localPosition = position;
 
         transform.Find(name).gameObject.SetActive(true);
-        Debug.Log(name);
-        Debug.Log(transform.Find(name).gameObject.name);
+        if (transform.Find(name) != null)
+        {
+            Debug.Log("Found " + name);
+        }
 
         switch(direction)
         {

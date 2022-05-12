@@ -6,6 +6,8 @@ TagManager:
   tags:
   - ModelBoat
   - StuffToDestroy
+  - Player Board
+  - Enemy Board
   layers:
   - Default
   - TransparentFX

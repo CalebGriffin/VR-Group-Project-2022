@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Valve.VR;
+using Valve.VR.InteractionSystem;
 using Valve.VR.InteractionSystem.Sample;
 
 public class ModelBoat : MonoBehaviour
@@ -16,35 +17,106 @@ public class ModelBoat : MonoBehaviour
     public bool Placed { get { return placed; } set { placed = value; } }
 
     [SerializeField] private string boatName;
-    public string Name { get { return boatName; } }
+    public string BoatName { get { return boatName; } }
 
     [SerializeField] public int[] positions;
     [SerializeField] public int[] positionsAround;
 
+    [SerializeField] private float handRotationY;
+
     [SerializeField] public Player player;
 
     [SerializeField] private Transform originalPosition;
+    [SerializeField] private Transform dynamicPosition;
+
+    public GameObject boardParent;
+
+    private RaycastHit hit;
+    private float raycastDistance = 1f;
+    private bool hoveringOverTheBoard = false;
+    public bool HoveringOverTheBoard { get { return hoveringOverTheBoard; } }
 
     // Start is called before the first frame update
     void Start()
     {
+        // This is just a comment to force the project to compile
         
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+    }
+
+    void FixedUpdate()
+    {
+        if (!placed)
+        {
+            SetDirection();
+            FireRaycast();
+        }
+    }
+
+    public void FireRaycast()
+    {
+        Debug.DrawRay(transform.position, Vector3.down * raycastDistance, Color.red);
+        if (Physics.Raycast(transform.position, Vector3.down, out hit, raycastDistance) && hit.collider.gameObject.tag == "Player Board")
+        {
+            if (hoveringOverTheBoard == false)
+            {
+                hoveringOverTheBoard = true;
+                boardParent.GetComponent<PlayerBoardInput>().OnBoatHoverEnter(this.gameObject);
+            }
+            else
+            {
+                boardParent.GetComponent<PlayerBoardInput>().OnBoatHoverStay(this.gameObject);
+            }
+
+        }
+        else
+        {
+            hoveringOverTheBoard = false;
+            boardParent.GetComponent<PlayerBoardInput>().OnBoatHoverExit(this.gameObject);
+        }
     }
     
-    public void SetLockPoint(Transform previewBoatPosition)
+    public void SetLockPoint(Transform previewBoatTransform)
     {
-        this.GetComponent<LockToPoint>().snapTo = previewBoatPosition;
+        dynamicPosition.position = previewBoatTransform.position;
+        dynamicPosition.rotation = previewBoatTransform.rotation;
+        this.GetComponent<LockToPoint>().snapTo = dynamicPosition;
     }
 
     public void ResetLockPoint()
     {
         this.GetComponent<LockToPoint>().snapTo = originalPosition;
+    }
+
+    private void SetDirection()
+    {
+        switch (transform.localEulerAngles.y)
+        {
+            case float x when x > -45 && x < 45:
+                direction = "up";
+                break;
+            
+            case float x when x > 45 && x < 135:
+                direction = "right";
+                break;
+            
+            case float x when x > 135 && x < 225:
+                direction = "down";
+                break;
+            
+            case float x when x > 225 && x < 315:
+                direction = "left";
+                break;
+            
+            default:
+                break;
+        }
+
+        boardParent.SendMessage("AdjustBounds", this.gameObject);
     }
 
     public void SetDirection(string direction)
@@ -82,6 +154,9 @@ public class ModelBoat : MonoBehaviour
         placed = false;
 
         player.RemoveShip(this);
+
+        positions = null;
+        positionsAround = null;
     }
 
     public void OnLetGo()
@@ -89,9 +164,12 @@ public class ModelBoat : MonoBehaviour
         Debug.Log("Let go");
 
         placed = true;
+        hoveringOverTheBoard = false;
+
+        boardParent.SendMessage("ResetBounds");
 
         // Set the positions of the boat based on the location of the model boat gameobject
-        int startingPosition = player.Board.Matrix[(int)this.GetComponent<LockToPoint>().snapTo.position.x, (int)this.GetComponent<LockToPoint>().snapTo.position.z];
+        int startingPosition = player.Board.Matrix[(int)this.GetComponent<LockToPoint>().snapTo.localPosition.x, (int)this.GetComponent<LockToPoint>().snapTo.localPosition.z];
         positions = new int[length];
         positions[0] = startingPosition;
         switch(direction)
