@@ -9,7 +9,9 @@ namespace BattleshipAI
 {
     public class AIHelper : MonoBehaviour
     {
+        // Reference to the AI script so that is can access the AI's variables and methods
         public static AI ai;
+
         // Returns a bool of whether or not the position is in the unchecked positions list
         public static bool UncheckedPositionsContains(int point)
         {
@@ -22,24 +24,34 @@ namespace BattleshipAI
             return ai.targetStack.Any(x => x.Position == point);
         }
 
+        // Returns an array of integers of the last two positions that were hit by the AI
         public static int[] GetLastTwoHits()
         {
+            // Create a copy of the previous guesses list
             var temp = new List<(int Position, bool Hit, bool Sunk)>(ai.previousGuesses);
 
+            // Get the last position that was hit
             var lastPosition = temp.LastOrDefault(x => x.Hit == true);
 
+            // Remove it from the temporary list
             temp.Remove(lastPosition);
 
+            // Get the last position in the updated list
             var lastPosition2 = temp.LastOrDefault(x => x.Hit == true);
 
+            // Return the positions
             return new int[] { lastPosition.Position, lastPosition2.Position };
         }
 
+        // TESTING // REMOVE
         [ContextMenu(nameof(DifferentWeights))]
+        // Returns an integer of the number of different waits in the unchecked positions list
         public static int DifferentWeights()
         {
+            // Create a temporary list to store the different weights
             List<int> weights = new List<int>();
 
+            // Foreach of the positions in the unchecked positions list, if the weight is not already in the temporary list, add it to the list
             foreach ((int Position, int Weight) i in ai.uncheckedPositions)
             {
                 if (!weights.Contains(i.Weight))
@@ -48,10 +60,11 @@ namespace BattleshipAI
                 }
             }
 
-            //Debug.Log("Different Weights: " + weights.Count);
+            // Return the number of elements in the temporary list
             return weights.Count;
         }
 
+        // Resets the weight of all positions in the unchecked positions list to 0
         public static void ClearUncheckedPositionWeight()
         {
             for (int i = 0; i < ai.uncheckedPositions.Count; i++)
@@ -85,14 +98,25 @@ namespace BattleshipAI
             }
         }
 
-        public IEnumerator Reset()
+        // Reset all of the AI's variables after a game has ended
+        public void Reset()
         {
+            // A boolean so that other methods can check if the AI is resetting
             ai.resetting = true;
-            // Reset from the previous time the game was played
+
+            // Clear the unchecked positions list
             ai.uncheckedPositions.Clear();
+
+            // Set the AI target mode to false
             ai.targetMode = false;
+
+            // Clear the target stack
             ai.targetStack.Clear();
+
+            // Clear the previous guesses list
             ai.previousGuesses.Clear();
+
+            // Clear the boat positions list and the boat positions with borders list
             ai.Board.currentBoatPositions.Clear();
             ai.Board.currentBoatPositionsWithBorders.Clear();
 
@@ -101,17 +125,20 @@ namespace BattleshipAI
             {
                 ai.uncheckedPositions.Add((i, 0));
             }
-            //DisplayPositionWeights();
 
+            // Call the method to create the AI's boats
             ai.CreateBoats();
-            yield return new WaitForSeconds(0.001f);
+
+            // Call the method to display the AI's boats on the board and on the sea
             DisplayBoats();
+
+            // Fixes a bug where the last shot of the previous game is added to the previous guesses list
             if (ai.previousGuesses.Count > 0 && ai.previousGuesses[0].Sunk)
             {
-                // TESTING // REMOVE
-                //Debug.Log("Found the error");
                 ai.previousGuesses.RemoveAt(0);
             }
+
+            // Set the boolean to false
             ai.resetting = false;
         }
 
@@ -147,8 +174,10 @@ namespace BattleshipAI
                 directions[0] = "North";
                 directions[1] = "South";
             }
+            // If the difference is less than 10 and the positions are in the same row
             else if (diff < ai.Board.Matrix.GetLength(0) && row1 == row2)
             {
+                // Verifies if the last two hits were in the same boat by checking each of the positions between them and if any of them weren't a hit then it's not in the same boat
                 bool sameBoat = true;
                 int smallerNumber = Mathf.Min(LastTwoHits[0], LastTwoHits[1]);
                 int largerNumber = Mathf.Max(LastTwoHits[0], LastTwoHits[1]);
@@ -162,6 +191,7 @@ namespace BattleshipAI
                     }
                 }
 
+                // If the last two hits were on the same boat then only check in left and right directions, else, check in all directions
                 if (sameBoat)
                 {
                     directions[0] = "East";
@@ -175,8 +205,10 @@ namespace BattleshipAI
                     directions[3] = "West";
                 }
             }
+            // If the last two hits were in the same column
             else if (diff % ai.Board.Matrix.GetLength(0) == 0)
             {
+                // Verifies if the last two hits were in the same boat by checking each of the positions between them and if any of them weren't a hit then it's not in the same boat
                 bool sameBoat = true;
                 int smallerNumber = Mathf.Min(LastTwoHits[0], LastTwoHits[1]);
                 int largerNumber = Mathf.Max(LastTwoHits[0], LastTwoHits[1]);
@@ -190,6 +222,7 @@ namespace BattleshipAI
                     }
                 }
 
+                // If the last two hits were on the same boat then only check in up and down directions, else, check in all directions
                 if (sameBoat)
                 {
                     directions[0] = "North";
@@ -212,7 +245,7 @@ namespace BattleshipAI
                 directions[3] = "West";
             }
 
-            // The positions are added to the target stack in the reverse order that they are checked
+            // Loop through the array of directions and add the positions to the return list
             foreach (string direction in directions)
             {
                 switch (direction)
@@ -244,6 +277,7 @@ namespace BattleshipAI
                 }
             }
 
+            // Return the list of positions and the directions to the calling method
             return returnValues;
         }
     }

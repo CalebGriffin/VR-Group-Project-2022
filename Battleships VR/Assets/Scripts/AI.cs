@@ -349,29 +349,35 @@ public class AI : MonoBehaviour
         }
     }
 
+    // Assigns weights to all of the unchecked positions based on how likely it is that a ship could be placed there
     private void CalculateHeatMap()
     {
+        // Reset the weight of all positions to 0
         ClearUncheckedPositionWeight();
 
+        // TESTING // CHANGE
         foreach (Boat boat in otherAI.Boats)
         {
             if (boat.RemainingPositions.Count > 0)
             {
                 //Debug.Log("Boat: " + boat.Name + " Length: " + boat.Positions.Length);
+                // For each of the boats that haven't been sunk, calculate the weight for each unchecked position if this boat could be placed there
                 ProbabilityDensity(boat.Positions.Length, "Horizontal");
             }
         }
 
+        // Order the list by weight from highest to lowest so that the AI can choose from the highest weighted positions
         uncheckedPositions = uncheckedPositions.OrderByDescending(x => x.Weight).ToList();
 
         // TESTING // REMOVE
         //DisplayPositionWeights();
     }
 
+    // Runs through all of the positions in the unchecked positions list and attempts to fit the boat in that position and direction and adds the weight to the positions it can fit
     private void ProbabilityDensity(int boatLength, string directionToCheck)
     {
+        // Create a temporary variable and set it's value based on the direction that is being checked
         int incrementValue = 0;
-
         switch (directionToCheck)
         {
             case "Horizontal":
@@ -386,24 +392,23 @@ public class AI : MonoBehaviour
                 break;
         }
 
+        // For each of the positions in the unchecked positions list
         for (int i = 0; i < uncheckedPositions.Count; i++)
         {
+            // Create a temporary array to store the positions that the boat will fill if placed in the current position
             int[] boatPositionsToCheck = new int[boatLength];
 
+            // Starting from the current position, add all of the positions to the array that the boat would take up if placed in the current position
             int loopNumber = uncheckedPositions[i].Position;
             for (int j = uncheckedPositions[i].Position; j < uncheckedPositions[i].Position + (boatLength * incrementValue); j += incrementValue)
             {
                 boatPositionsToCheck[loopNumber - uncheckedPositions[i].Position] = j;
                 loopNumber++;
             }
-            string boatPositionsToCheckString = "";
-            foreach (int j in boatPositionsToCheck)
-            {
-                boatPositionsToCheckString += j + ", ";
-            }
 
             bool valid = true;
-            // A strange edge case where the boat isn't in a straight line
+
+            // Verifies that all the positions of the boat are on the same row, if not, then the boat is invalid
             if (directionToCheck == "Horizontal")
             {
                 int startRow = (boatPositionsToCheck[0] - 1)/ board.Matrix.GetLength(0);
@@ -414,6 +419,7 @@ public class AI : MonoBehaviour
                 }
             }
 
+            // If the previous validation passed, then check that none of the positions have already been fired at by the AI
             if (valid)
             {
                 foreach (int k in boatPositionsToCheck)
@@ -426,19 +432,18 @@ public class AI : MonoBehaviour
                 }
             }
 
-            //Debug.Log("BoatPositionsToCheck: " + boatPositionsToCheckString + " Valid: " + valid);
-
+            // If both validations passed, then add 1 to the weight of each position that the boat would fill if it were fit in that position
             if (valid)
             {
                 foreach (int l in boatPositionsToCheck)
                 {
-                    //uncheckedPositions[l] = (l, uncheckedPositions[l].Weight + 1);
                     int index = uncheckedPositions.FindIndex(x => x.Position == l);
                     uncheckedPositions[index] = (l, uncheckedPositions[index].Weight + 1);
                 }
             }
         }
 
+        // If it has checked the horizontal direction for this boat then it will call the function again with the vertical direction
         if (directionToCheck == "Horizontal")
         {
             ProbabilityDensity(boatLength, "Vertical");
