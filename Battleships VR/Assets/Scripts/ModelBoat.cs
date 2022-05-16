@@ -30,6 +30,7 @@ public class ModelBoat : MonoBehaviour
     [SerializeField] private Transform dynamicPosition;
 
     public GameObject boardParent;
+    public GameObject modelBoatParent;
 
     private RaycastHit hit;
     private float raycastDistance = 1f;
@@ -119,6 +120,12 @@ public class ModelBoat : MonoBehaviour
         boardParent.SendMessage("AdjustBounds", this.gameObject);
     }
 
+    public void RefreshBoardPosition()
+    {
+        player.RemoveShip(this);
+        player.AddShip(this);
+    }
+
     public void SetDirection(string direction)
     {
         this.direction = direction;
@@ -154,6 +161,7 @@ public class ModelBoat : MonoBehaviour
         placed = false;
 
         player.RemoveShip(this);
+        modelBoatParent.GetComponent<ModelBoatParent>().RefreshBoatsOnBoard();
 
         positions = null;
         positionsAround = null;

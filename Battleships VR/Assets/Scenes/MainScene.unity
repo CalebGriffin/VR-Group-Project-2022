@@ -1083,6 +1083,7 @@ MonoBehaviour:
   originalPosition: {fileID: 318653414}
   dynamicPosition: {fileID: 2069331279}
   boardParent: {fileID: 1196471924}
+  modelBoatParent: {fileID: 1307028294}
 --- !u!1 &148961451
 GameObject:
   m_ObjectHideFlags: 0
@@ -2906,6 +2907,7 @@ MonoBehaviour:
   originalPosition: {fileID: 28790159}
   dynamicPosition: {fileID: 425656630}
   boardParent: {fileID: 1196471924}
+  modelBoatParent: {fileID: 1307028294}
 --- !u!1 &557518832
 GameObject:
   m_ObjectHideFlags: 0
@@ -3577,6 +3579,7 @@ MonoBehaviour:
   originalPosition: {fileID: 1688558373}
   dynamicPosition: {fileID: 1983551103}
   boardParent: {fileID: 1196471924}
+  modelBoatParent: {fileID: 1307028294}
 --- !u!65 &636109037
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5788,6 +5791,7 @@ MonoBehaviour:
   originalPosition: {fileID: 1597531005}
   dynamicPosition: {fileID: 419091097}
   boardParent: {fileID: 1196471924}
+  modelBoatParent: {fileID: 1307028294}
 --- !u!1 &974616313
 GameObject:
   m_ObjectHideFlags: 0
@@ -7336,6 +7340,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1307028295}
+  - component: {fileID: 1307028296}
   m_Layer: 0
   m_Name: Model Boats
   m_TagString: Untagged
@@ -7362,6 +7367,18 @@ Transform:
   m_Father: {fileID: 1196471928}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1307028296
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1307028294}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a649254caff39d43bd67804305a69f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1310401289
 GameObject:
   m_ObjectHideFlags: 0
@@ -10270,6 +10287,7 @@ MonoBehaviour:
   originalPosition: {fileID: 1170530717}
   dynamicPosition: {fileID: 557518833}
   boardParent: {fileID: 1196471924}
+  modelBoatParent: {fileID: 1307028294}
 --- !u!4 &1665711500
 Transform:
   m_ObjectHideFlags: 0
