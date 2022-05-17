@@ -8,7 +8,8 @@ public class ModelBoatParent : MonoBehaviour
     {
         foreach (Transform child in transform)
         {
-            child.GetComponent<ModelBoat>().RefreshBoardPosition();
+            if (child.GetComponent<ModelBoat>().Placed == true)
+                child.GetComponent<ModelBoat>().RefreshBoardPosition();
         }
     }
 }
