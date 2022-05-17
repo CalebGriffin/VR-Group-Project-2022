@@ -1756,6 +1756,7 @@ MonoBehaviour:
   dynamicPosition: {fileID: 2069331279}
   boardParent: {fileID: 1196471924}
   modelBoatParent: {fileID: 1307028294}
+  hoveringOverTheBoard: 0
 --- !u!1 &136710569
 GameObject:
   m_ObjectHideFlags: 0
@@ -4896,6 +4897,7 @@ MonoBehaviour:
   dynamicPosition: {fileID: 425656630}
   boardParent: {fileID: 1196471924}
   modelBoatParent: {fileID: 1307028294}
+  hoveringOverTheBoard: 0
 --- !u!1 &556665929
 GameObject:
   m_ObjectHideFlags: 0
@@ -6048,6 +6050,7 @@ MonoBehaviour:
   dynamicPosition: {fileID: 1983551103}
   boardParent: {fileID: 1196471924}
   modelBoatParent: {fileID: 1307028294}
+  hoveringOverTheBoard: 0
 --- !u!65 &636109037
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -10664,6 +10667,7 @@ MonoBehaviour:
   dynamicPosition: {fileID: 419091097}
   boardParent: {fileID: 1196471924}
   modelBoatParent: {fileID: 1307028294}
+  hoveringOverTheBoard: 0
 --- !u!1 &950209286
 GameObject:
   m_ObjectHideFlags: 0
@@ -18713,6 +18717,7 @@ MonoBehaviour:
   dynamicPosition: {fileID: 557518833}
   boardParent: {fileID: 1196471924}
   modelBoatParent: {fileID: 1307028294}
+  hoveringOverTheBoard: 0
 --- !u!4 &1665711500
 Transform:
   m_ObjectHideFlags: 0
