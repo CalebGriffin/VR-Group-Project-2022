@@ -34,7 +34,7 @@ public class PlayerBoardInput : MonoBehaviour
     {
         int boatLength = modelBoat.GetComponent<ModelBoat>().Length;
 
-        string direction = modelBoat.GetComponent<ModelBoat>().Direction;
+        string direction = modelBoat.GetComponent<ModelBoat>().direction;
 
         switch(direction)
         {
@@ -58,16 +58,17 @@ public class PlayerBoardInput : MonoBehaviour
 
     public void OnBoatHoverStay(GameObject modelBoat)
     {
-        if (modelBoat.GetComponent<ModelBoat>().Placed == false && modelBoat.GetComponent<ModelBoat>().HoveringOverTheBoard == true)
+        if (modelBoat.GetComponent<ModelBoat>().Placed == false && modelBoat.GetComponent<ModelBoat>().hoveringOverTheBoard == true)
         {
+            ResetBounds();
             AdjustBounds(modelBoat);
 
-            Vector3 previewPosition = FindRoundedPosition(this.gameObject.transform.InverseTransformPoint(modelBoat.transform.position), modelBoat.GetComponent<ModelBoat>().Direction, modelBoat.GetComponent<ModelBoat>().Length);
+            Vector3 previewPosition = FindRoundedPosition(modelBoat.transform.localPosition, modelBoat.GetComponent<ModelBoat>().direction, modelBoat.GetComponent<ModelBoat>().Length);
 
             if (previewPosition.x >= lowerX && previewPosition.x <= upperX && previewPosition.z >= lowerZ && previewPosition.z <= upperZ && previewPosition != new Vector3(100, 100, 100))
             {
                 // Set the position of the preview boat to the preview position
-                previewBoat.ChangePosition(previewPosition, modelBoat.GetComponent<ModelBoat>().Direction, modelBoat.GetComponent<ModelBoat>().BoatName);
+                previewBoat.ChangePosition(previewPosition, modelBoat.GetComponent<ModelBoat>().direction, modelBoat.GetComponent<ModelBoat>().BoatName);
 
                 // Set the lock to point of the model boat to the position of the preview boat
                 modelBoat.GetComponent<ModelBoat>().SetLockPoint(previewBoat.transform);

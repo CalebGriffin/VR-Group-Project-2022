@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -10,6 +11,8 @@ public class Player : MonoBehaviour
 
     private List<Boat> boats = new List<Boat>();
     public List<Boat> Boats { get { return boats; } }
+
+    public GameObject modelBoatParent;
 
     private List<(int Position, bool Hit, bool Sunk)> previousGuesses = new List<(int Position, bool Hit, bool Sunk)>();
 
@@ -60,6 +63,68 @@ public class Player : MonoBehaviour
             board.currentBoatPositionsWithBorders.Remove(position);
         }
     }
+
+    [ContextMenu(nameof(RandomizeButton))]
+    public void RandomizeButton()
+    {
+        // Clear the list of boats and populate it with random boats (the same way that the AI creates the boats)
+        board.currentBoatPositions.Clear();
+        board.currentBoatPositionsWithBorders.Clear();
+        boats.Clear();
+        boats.Add(new Boat(board, "Carrier", 5));
+        boats.Add(new Boat(board, "Battleship", 4));
+        boats.Add(new Boat(board, "Cruiser", 3));
+        boats.Add(new Boat(board, "Submarine", 3));
+        boats.Add(new Boat(board, "Destroyer", 2));
+
+        // Move the model boats to their positions
+        foreach (Boat boat in boats)
+        {
+            int x = UnityEngine.Random.Range(1, 3);
+            int rotation = 0;
+            int position = 0;
+
+            if (boat.Positions.Max() - boat.Positions.Min() < board.Matrix.GetLength(0))
+            {
+                if (x == 1)
+                {
+                    position = boat.Positions.Min();
+                    rotation = 90;
+                }
+                else
+                {
+                    position = boat.Positions.Max();
+                    rotation = -90;
+                }
+            }
+            else
+            {
+                if (x == 1)
+                {
+                    position = boat.Positions.Min();
+                    rotation = 180;
+                }
+                else
+                {
+                    position = boat.Positions.Max();
+                    rotation = 0;
+                }
+            }
+
+            modelBoatParent.GetComponent<ModelBoatParent>().PlaceBoat(boat.Name, position, rotation, boat, this);
+        }
+    }
+
+    [ContextMenu(nameof(ClearButton))]
+    public void ClearButton()
+    {
+        board.currentBoatPositions.Clear();
+        board.currentBoatPositionsWithBorders.Clear();
+        boats.Clear();
+
+        modelBoatParent.GetComponent<ModelBoatParent>().ResetAllBoatPositions();
+    }
+
 
     public (int, bool, bool) ShotFired(int position)
     {

@@ -10,8 +10,7 @@ public class ModelBoat : MonoBehaviour
     [SerializeField] private int length;
     public int Length { get { return length; } }
 
-    [SerializeField] private string direction;
-    public string Direction { get { return direction; } }
+    [SerializeField] public string direction;
 
     [SerializeField] private bool placed;
     public bool Placed { get { return placed; } set { placed = value; } }
@@ -19,23 +18,22 @@ public class ModelBoat : MonoBehaviour
     [SerializeField] private string boatName;
     public string BoatName { get { return boatName; } }
 
-    [SerializeField] public int[] positions;
-    [SerializeField] public int[] positionsAround;
+    [SerializeField] public int[] positions = null;
+    [SerializeField] public int[] positionsAround = null;
 
     [SerializeField] private float handRotationY;
 
     [SerializeField] public Player player;
 
-    [SerializeField] private Transform originalPosition;
-    [SerializeField] private Transform dynamicPosition;
+    [SerializeField] public Transform originalPosition;
+    [SerializeField] public Transform dynamicPosition;
 
     public GameObject boardParent;
     public GameObject modelBoatParent;
 
     private RaycastHit hit;
     private float raycastDistance = 1f;
-    private bool hoveringOverTheBoard = false;
-    public bool HoveringOverTheBoard { get { return hoveringOverTheBoard; } }
+    public bool hoveringOverTheBoard = false;
 
     // Start is called before the first frame update
     void Start()
@@ -160,7 +158,11 @@ public class ModelBoat : MonoBehaviour
     {
         placed = false;
 
-        player.RemoveShip(this);
+        if (positions != null)
+        {
+            player.RemoveShip(this);
+        }
+
         modelBoatParent.GetComponent<ModelBoatParent>().RefreshBoatsOnBoard();
 
         positions = null;
@@ -169,6 +171,11 @@ public class ModelBoat : MonoBehaviour
 
     public void OnLetGo()
     {
+        if (!hoveringOverTheBoard)
+        {
+            return;
+        }
+
         Debug.Log("Let go");
 
         placed = true;
