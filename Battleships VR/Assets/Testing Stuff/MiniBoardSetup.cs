@@ -29,7 +29,7 @@ public class MiniBoardSetup : MonoBehaviour
             for (int j = 0; j < 10; j++)
             {
                 GameObject go = Instantiate(cubePrefab, boardParent.transform.position + new Vector3(i * boardParent.transform.localScale.x, 0, j * boardParent.transform.localScale.z), Quaternion.identity, boardParent.transform);
-                go.name = "Piece " + i + "," + j;
+                go.name = i + "," + j;
             }
         }
     }

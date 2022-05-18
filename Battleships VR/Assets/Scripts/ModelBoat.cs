@@ -12,8 +12,7 @@ public class ModelBoat : MonoBehaviour
 
     [SerializeField] public string direction;
 
-    [SerializeField] private bool placed;
-    public bool Placed { get { return placed; } set { placed = value; } }
+    [SerializeField] public bool placed;
 
     [SerializeField] private string boatName;
     public string BoatName { get { return boatName; } }
@@ -70,9 +69,8 @@ public class ModelBoat : MonoBehaviour
             {
                 boardParent.GetComponent<PlayerBoardInput>().OnBoatHoverStay(this.gameObject);
             }
-
         }
-        else
+        else if (hoveringOverTheBoard == true)
         {
             hoveringOverTheBoard = false;
             boardParent.GetComponent<PlayerBoardInput>().OnBoatHoverExit(this.gameObject);
@@ -184,7 +182,7 @@ public class ModelBoat : MonoBehaviour
         boardParent.SendMessage("ResetBounds");
 
         // Set the positions of the boat based on the location of the model boat gameobject
-        int startingPosition = player.Board.Matrix[(int)this.GetComponent<LockToPoint>().snapTo.localPosition.x, (int)this.GetComponent<LockToPoint>().snapTo.localPosition.z];
+        int startingPosition = player.Board.Matrix[(int)dynamicPosition.localPosition.x, (int)dynamicPosition.localPosition.z];
         positions = new int[length];
         positions[0] = startingPosition;
         switch(direction)

@@ -14,6 +14,8 @@ public class Player : MonoBehaviour
 
     public GameObject modelBoatParent;
 
+    public List<int> uncheckedPositions = new List<int>();
+
     private List<(int Position, bool Hit, bool Sunk)> previousGuesses = new List<(int Position, bool Hit, bool Sunk)>();
 
     // Start is called before the first frame update

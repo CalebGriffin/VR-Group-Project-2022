@@ -10,8 +10,10 @@ public class ModelBoatParent : MonoBehaviour
     {
         foreach (Transform child in transform)
         {
-            if (child.GetComponent<ModelBoat>().Placed == true)
+            if (child.GetComponent<ModelBoat>().placed == true)
+            {
                 child.GetComponent<ModelBoat>().RefreshBoardPosition();
+            }
         }
     }
 
@@ -36,7 +38,7 @@ public class ModelBoatParent : MonoBehaviour
         modelBoatTransform.localPosition = new Vector3(row, 1, column);
         modelBoatTransform.localRotation = Quaternion.Euler(0, rotation, 0);
 
-        modelBoat.GetComponent<ModelBoat>().Placed = true;
+        modelBoat.GetComponent<ModelBoat>().placed = true;
         modelBoat.GetComponent<ModelBoat>().hoveringOverTheBoard = false;
 
         string direction = null;
@@ -87,7 +89,7 @@ public class ModelBoatParent : MonoBehaviour
             modelBoat.GetComponent<ModelBoat>().dynamicPosition.localRotation = Quaternion.Euler(0, 0, 0);
             child.localPosition = modelBoat.GetComponent<ModelBoat>().originalPosition.localPosition;
             child.localRotation = modelBoat.GetComponent<ModelBoat>().originalPosition.localRotation;
-            modelBoat.GetComponent<ModelBoat>().Placed = false;
+            modelBoat.GetComponent<ModelBoat>().placed = false;
             modelBoat.GetComponent<ModelBoat>().hoveringOverTheBoard = false;
             modelBoat.GetComponent<ModelBoat>().direction = "up";
             modelBoat.GetComponent<ModelBoat>().positions = null;

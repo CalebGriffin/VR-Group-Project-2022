@@ -58,7 +58,7 @@ public class PlayerBoardInput : MonoBehaviour
 
     public void OnBoatHoverStay(GameObject modelBoat)
     {
-        if (modelBoat.GetComponent<ModelBoat>().Placed == false && modelBoat.GetComponent<ModelBoat>().hoveringOverTheBoard == true)
+        if (modelBoat.GetComponent<ModelBoat>().placed == false && modelBoat.GetComponent<ModelBoat>().hoveringOverTheBoard == true)
         {
             ResetBounds();
             AdjustBounds(modelBoat);
@@ -96,7 +96,7 @@ public class PlayerBoardInput : MonoBehaviour
     public void OnBoatHoverExit(GameObject modelBoat)
     {
         ResetBounds();
-        modelBoat.GetComponent<ModelBoat>().Placed = false;
+        modelBoat.GetComponent<ModelBoat>().placed = false;
 
         // Set the lock to point of the model boat to the original position
         modelBoat.GetComponent<ModelBoat>().ResetLockPoint();
