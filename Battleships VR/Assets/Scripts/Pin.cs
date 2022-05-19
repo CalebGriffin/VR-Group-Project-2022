@@ -77,6 +77,7 @@ public class Pin : MonoBehaviour
     public void OnPickUp()
     {
         placed = false;
+        ResetLockPoint();
     }
 
     public void OnLetGo()

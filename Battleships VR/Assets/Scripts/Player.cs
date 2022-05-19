@@ -18,6 +18,9 @@ public class Player : MonoBehaviour
 
     private List<(int Position, bool Hit, bool Sunk)> previousGuesses = new List<(int Position, bool Hit, bool Sunk)>();
 
+    public GameObject[] modelBoats;
+    public BoatPlacer boatPlacer;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -125,6 +128,15 @@ public class Player : MonoBehaviour
         boats.Clear();
 
         modelBoatParent.GetComponent<ModelBoatParent>().ResetAllBoatPositions();
+    }
+    
+    [ContextMenu(nameof(ConfirmButton))]
+    public void ConfirmButton()
+    {
+        foreach (GameObject modelBoat in modelBoats)
+        {
+            boatPlacer.PlaceBoat(modelBoat.GetComponent<ModelBoat>().BoatName, modelBoat.transform);
+        }
     }
 
 

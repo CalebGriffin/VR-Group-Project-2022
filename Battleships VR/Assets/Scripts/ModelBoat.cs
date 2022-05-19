@@ -174,6 +174,11 @@ public class ModelBoat : MonoBehaviour
             return;
         }
 
+        if (GetComponent<LockToPoint>().snapTo != dynamicPosition)
+        {
+            return;
+        }
+
         Debug.Log("Let go");
 
         placed = true;

@@ -9,6 +9,8 @@ public class PlayerBoardInput : MonoBehaviour
     public Player player;
 
     public PreviewBoat previewBoat;
+
+    private string hoveringBoat = null;
     
     // Start is called before the first frame update
     void Start()
@@ -58,8 +60,14 @@ public class PlayerBoardInput : MonoBehaviour
 
     public void OnBoatHoverStay(GameObject modelBoat)
     {
+        if (hoveringBoat != modelBoat.GetComponent<ModelBoat>().BoatName)
+        {
+            return;
+        }
+    
         if (modelBoat.GetComponent<ModelBoat>().placed == false && modelBoat.GetComponent<ModelBoat>().hoveringOverTheBoard == true)
         {
+            hoveringBoat = modelBoat.GetComponent<ModelBoat>().BoatName;
             ResetBounds();
             AdjustBounds(modelBoat);
 
@@ -87,14 +95,31 @@ public class PlayerBoardInput : MonoBehaviour
 
     public void OnBoatHoverEnter(GameObject modelBoat)
     {
+        if (hoveringBoat != modelBoat.GetComponent<ModelBoat>().BoatName)
+        {
+            return;
+        }
+
         //Debug.Log("OnBoatHoverEnter with " + modelBoat.name);
 
         ResetBounds();
         AdjustBounds(modelBoat);
+
+        if (hoveringBoat == null)
+        {
+            hoveringBoat = modelBoat.GetComponent<ModelBoat>().BoatName;
+        }
     }
 
     public void OnBoatHoverExit(GameObject modelBoat)
     {
+        if (hoveringBoat != modelBoat.GetComponent<ModelBoat>().BoatName)
+        {
+            return;
+        }
+
+        hoveringBoat = null;
+
         ResetBounds();
         modelBoat.GetComponent<ModelBoat>().placed = false;
 
