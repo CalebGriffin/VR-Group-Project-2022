@@ -60,6 +60,11 @@ public class PlayerBoardInput : MonoBehaviour
 
     public void OnBoatHoverStay(GameObject modelBoat)
     {
+        if (hoveringBoat == null)
+        {
+            hoveringBoat = modelBoat.GetComponent<ModelBoat>().BoatName;
+        }
+
         if (hoveringBoat != modelBoat.GetComponent<ModelBoat>().BoatName)
         {
             return;
@@ -90,6 +95,7 @@ public class PlayerBoardInput : MonoBehaviour
         else
         {
             previewBoat.HideChildren();
+            hoveringBoat = null;
         }
     }
 
