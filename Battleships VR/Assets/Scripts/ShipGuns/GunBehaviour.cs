@@ -77,7 +77,7 @@ public class GunBehaviour : MonoBehaviour
         {
             Debug.Log("Rotating");
             //Slowly transition from the current rotation to the target angle
-            transform.rotation = Quaternion.Lerp(transform.rotation, angleAxis, Time.maximumDeltaTime * rotationSpeed);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, angleAxis, Time.deltaTime * rotationSpeed);
 
             yield return new WaitForEndOfFrame();
         }

@@ -16215,7 +16215,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 756746570}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -122, y: -91.7, z: 659.8}
+  m_LocalPosition: {x: -122, y: -200, z: 1671.5}
   m_LocalScale: {x: 50, y: 50, z: 50}
   m_Children: []
   m_Father: {fileID: 0}
@@ -44054,7 +44054,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1984234508}
   m_LocalRotation: {x: 0.020560315, y: 0.97923124, z: -0.15246817, w: 0.13204922}
-  m_LocalPosition: {x: 26.6, y: 4.68, z: 5}
+  m_LocalPosition: {x: -2.9, y: 4.68, z: 12.98}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4945063966723612891}
@@ -50478,7 +50478,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   compensationRotation: 180
-  rotationSpeed: 0.004
+  rotationSpeed: 15
   gunBarrels: []
   explosionParticle: {fileID: 0}
 --- !u!4 &984911729034611512
@@ -51661,7 +51661,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   compensationRotation: 0
-  rotationSpeed: 0.004
+  rotationSpeed: 15
   gunBarrels: []
   explosionParticle: {fileID: 0}
 --- !u!23 &1408054159748628659
@@ -52976,7 +52976,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   compensationRotation: 180
-  rotationSpeed: 0.005
+  rotationSpeed: 20
   gunBarrels: []
   explosionParticle: {fileID: 0}
 --- !u!33 &1810832771497793671
@@ -57569,7 +57569,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   compensationRotation: 0
-  rotationSpeed: 0.01
+  rotationSpeed: 30
   gunBarrels: []
   explosionParticle: {fileID: 0}
 --- !u!23 &3359426268656817476
@@ -59649,7 +59649,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   compensationRotation: 0
-  rotationSpeed: 0.005
+  rotationSpeed: 20
   gunBarrels: []
   explosionParticle: {fileID: 0}
 --- !u!1 &4063418786060185981
@@ -63806,7 +63806,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   compensationRotation: 0
-  rotationSpeed: 0.01
+  rotationSpeed: 25
   gunBarrels: []
   explosionParticle: {fileID: 0}
 --- !u!1 &5435396539814207489
@@ -66372,7 +66372,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   compensationRotation: 180
-  rotationSpeed: 0.005
+  rotationSpeed: 20
   gunBarrels: []
   explosionParticle: {fileID: 0}
 --- !u!33 &6284426465108274600
@@ -71892,7 +71892,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   compensationRotation: 0
-  rotationSpeed: 0.005
+  rotationSpeed: 20
   gunBarrels: []
   explosionParticle: {fileID: 0}
 --- !u!4 &8325836065431128779
