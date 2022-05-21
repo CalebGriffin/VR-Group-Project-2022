@@ -9,7 +9,10 @@ public class GunBehaviour : MonoBehaviour
     [SerializeField] private float rotationSpeed = 3f;
     [SerializeField] private List<GameObject> gunBarrels;
     [SerializeField] private GameObject explosionParticle;
+
+    //TESTING
     private Transform barrel;
+
     private Vector3 directionToLook;
 
     // Start is called before the first frame update
@@ -30,7 +33,10 @@ public class GunBehaviour : MonoBehaviour
         Transform barrel = gameObject.GetComponentInChildren<Transform>();
         Vector3 direction = target - barrel.position;
 
+        //TESTING
         this.barrel = barrel;
+
+
         directionToLook = direction;
 
         if (Physics.Raycast(transform.position, direction, 200f, LayerMask.GetMask("Ships")))
@@ -44,6 +50,7 @@ public class GunBehaviour : MonoBehaviour
 
     private void Update()
     {
+        //TESTING
         if (barrel == null && directionToLook == Vector3.zero)
             return;
         Debug.DrawRay(barrel.position, directionToLook, Color.green);
@@ -81,10 +88,21 @@ public class GunBehaviour : MonoBehaviour
 
     private bool CalculateDotProduct(Vector3 direction)
     {
-        float dotProduct = Vector3.Dot(transform.forward, direction);
+        Vector3 forwardDirection = transform.forward;
+        direction.y = 0;
+        forwardDirection.y = 0;
+        forwardDirection.Normalize();
+        direction.Normalize();
+
+        float dotProduct;
+        if (compensationRotation != 0)
+            dotProduct = Vector3.Dot(-transform.forward, direction);
+        else
+            dotProduct = Vector3.Dot(transform.forward, direction);
+
         //Check if the local forward vector of the guns is in the same direction as the target direction
-        Debug.Log(dotProduct);
-        if(dotProduct >= 0.99 || dotProduct <= -0.99)
+        //Debug.Log(dotProduct);
+        if(dotProduct >= 0.99)
         {
             Debug.Log("Value is true");
             return true;
