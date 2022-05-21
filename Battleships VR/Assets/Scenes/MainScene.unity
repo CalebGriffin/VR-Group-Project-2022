@@ -16214,7 +16214,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 756746570}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -165.34927, y: -188.57452, z: 1487.6}
+  m_LocalPosition: {x: -234, y: -188.57452, z: 407}
   m_LocalScale: {x: 50, y: 50, z: 50}
   m_Children: []
   m_Father: {fileID: 0}
@@ -44040,7 +44040,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1984234508}
   m_LocalRotation: {x: 0.020560315, y: 0.97923124, z: -0.15246817, w: 0.13204922}
-  m_LocalPosition: {x: -3.08, y: 4.68, z: 12.85}
+  m_LocalPosition: {x: 27.01, y: 4.68, z: 4.28}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4945063966723612891}
@@ -53037,8 +53037,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   guns:
-  - {fileID: 5421059541616480918}
   - {fileID: 3342285044595069386}
+  - {fileID: 5421059541616480918}
   id: 2
 --- !u!33 &1874578480119703764
 MeshFilter:
@@ -63786,7 +63786,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5421059541616480918}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 50d1fa23a922b2b42bf8de519f7d459e, type: 3}
   m_Name: 
