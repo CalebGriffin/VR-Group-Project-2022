@@ -83,6 +83,7 @@ public class GunBehaviour : MonoBehaviour
     {
         float dotProduct = Vector3.Dot(transform.forward, direction);
         //Check if the local forward vector of the guns is in the same direction as the target direction
+        Debug.Log(dotProduct);
         if(dotProduct >= 0.99 || dotProduct <= -0.99)
         {
             Debug.Log("Value is true");
