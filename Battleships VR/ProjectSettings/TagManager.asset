@@ -8,6 +8,7 @@ TagManager:
   - StuffToDestroy
   - Player Board
   - Enemy Board
+  - Barrel
   layers:
   - Default
   - TransparentFX
@@ -15,7 +16,7 @@ TagManager:
   - Model Boats
   - Water
   - UI
-  - 
+  - Ships
   - 
   - 
   - 
