@@ -45005,10 +45005,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ships:
   - {fileID: 4945063966723612891}
-  height: -100
+  - {fileID: 5483776896316378799}
+  - {fileID: 636738556824589183}
+  - {fileID: 1346672883191238670}
+  - {fileID: 3630681399391052231}
+  height: 0
   radius: 150
   rotationSpeed: 0.5
-  remainStatic: 1
+  remainStatic: 0
   dronePos: {fileID: 0}
 --- !u!20 &1984234511
 Camera:

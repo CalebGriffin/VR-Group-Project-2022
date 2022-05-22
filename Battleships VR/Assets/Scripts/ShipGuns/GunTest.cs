@@ -18,7 +18,7 @@ public class GunTest : MonoBehaviour
         countdown -= Time.deltaTime;
         if(countdown <= 0f)
         {
-            GameFeedbackEvents.instance.FireGuns(4, testTarget.position, 2);
+            GameFeedbackEvents.instance.FireGuns(2, testTarget.position, 2);
             countdown = 20f;
         }
     }

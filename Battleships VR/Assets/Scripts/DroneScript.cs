@@ -25,7 +25,8 @@ public class DroneScript : MonoBehaviour
     void Start()
     {
 
-        SwitchToShip(ships[0]);
+        //SwitchToShip(ships[3]);
+        target = ships[3];
         //target = ships[0];
         //SwitchTarget(target);
     }
@@ -38,17 +39,7 @@ public class DroneScript : MonoBehaviour
         float x = Mathf.Cos(Time.time * rotationSpeed) * radius;
         float z = Mathf.Sin(Time.time * rotationSpeed) * radius;
 
-        
-
-        
-
-
-        
-
         transform.LookAt(target);
-
-
-
 
         if (!remainStatic)
         {
@@ -83,11 +74,5 @@ public class DroneScript : MonoBehaviour
     public void SwitchTarget(Transform target)
     {
         this.target = target;
-
-
-
-
-
-
     }
 }
