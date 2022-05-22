@@ -10,10 +10,7 @@ public class GunBehaviour : MonoBehaviour
     [SerializeField] private List<GameObject> gunBarrels;
     [SerializeField] private GameObject explosionParticle;
 
-    //TESTING
-    private Transform barrel;
 
-    private Vector3 directionToLook;
 
     // Start is called before the first frame update
     void Start()
@@ -29,16 +26,11 @@ public class GunBehaviour : MonoBehaviour
 
     public void Fire(Vector3 target, int amount)
     {
-        //Only rotate the guns that are on the correct side by firing a raycast and checking if it collides with anything
+        //Barrel used here instead of the gun transform because the origin is too far back on some guns
         Transform barrel = gameObject.GetComponentInChildren<Transform>();
         Vector3 direction = target - barrel.position;
 
-        //TESTING
-        this.barrel = barrel;
-
-
-        directionToLook = direction;
-
+        //Ensure that the guns don't rotate and fire on themselves 
         if (Physics.Raycast(transform.position, direction, 200f, LayerMask.GetMask("Ships")))
         {
             Debug.Log("Hitting something");
@@ -48,22 +40,15 @@ public class GunBehaviour : MonoBehaviour
         StartCoroutine(RotateGuns(direction.normalized, amount));
     }
 
-    private void Update()
-    {
-        //TESTING
-        if (barrel == null && directionToLook == Vector3.zero)
-            return;
-        Debug.DrawRay(barrel.position, directionToLook, Color.green);
-    }
-
 
     private IEnumerator RotateGuns(Vector3 direction, int amount)
     {
-        Debug.DrawRay(transform.position, direction);
 
-        //Get the angle 
+        //Get the angle needed to turn to face the direction
         float angle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
 
+        //Some of the guns are defaulted to face the opposite direction of the local z transfrom 
+        //the compensation angle makes up for that 180 degree rotation
         if (compensationRotation != 0)
             angle += compensationRotation;
         Debug.Log("Calculated angle " + angle);
@@ -89,11 +74,14 @@ public class GunBehaviour : MonoBehaviour
     private bool CalculateDotProduct(Vector3 direction)
     {
         Vector3 forwardDirection = transform.forward;
+        //Set both direction vector's y value to 0 to calculate the dot product across a flat plane
         direction.y = 0;
         forwardDirection.y = 0;
+        //Normlize both vectors after the y value has been changed to ensure they are properly normalized
         forwardDirection.Normalize();
         direction.Normalize();
 
+        //Find the dot prodcut but acount for the guns facing the wrong direction
         float dotProduct;
         if (compensationRotation != 0)
             dotProduct = Vector3.Dot(-transform.forward, direction);
@@ -101,7 +89,6 @@ public class GunBehaviour : MonoBehaviour
             dotProduct = Vector3.Dot(transform.forward, direction);
 
         //Check if the local forward vector of the guns is in the same direction as the target direction
-        //Debug.Log(dotProduct);
         if(dotProduct >= 0.99)
         {
             Debug.Log("Value is true");
@@ -113,6 +100,7 @@ public class GunBehaviour : MonoBehaviour
 
     private IEnumerator ShootGuns(int amount)
     {
+        //Return if there aren't any gun barrels to avoid a null reference 
         if (gunBarrels.Count <= 0)
             yield return null;
 
@@ -129,6 +117,7 @@ public class GunBehaviour : MonoBehaviour
             yield return new WaitForSeconds(2.5f);
         }
 
+        //THIS IS WHERE THE PLAYERS TURN SHOULD BE NOTIFIED TO END
 
     }
 
@@ -138,10 +127,5 @@ public class GunBehaviour : MonoBehaviour
         yield return new WaitForSeconds(2f);
         anim.SetBool("isFiring", false);
         explosionParticle.SetActive(false);
-    }
-
-    private void RotateBarrles()
-    {
-
     }
 }

@@ -12,14 +12,10 @@ public class ShipController : MonoBehaviour
         GameFeedbackEvents.instance.fireGuns += FireGuns;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
+    //This method is called when the event "fireGuns" is executed
     public void FireGuns(int id, Vector3 target, int amount)
     {
+        //Check the id passed in so only the correct ship guns are called
         if(id == this.id)
         {
             foreach (GameObject gun in guns)
