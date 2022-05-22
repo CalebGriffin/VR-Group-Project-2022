@@ -119,7 +119,7 @@ public class GunBehaviour : MonoBehaviour
         {
             Animator anim = barrel.GetComponent<Animator>();
             anim.SetBool("isFiring", true);
-            //explosionParticle.SetActive(true);
+            explosionParticle.SetActive(true);
             Debug.Log("Ran shoot animation");
             StartCoroutine(StopShooting(anim));
         }
@@ -131,7 +131,7 @@ public class GunBehaviour : MonoBehaviour
     {
         yield return new WaitForSeconds(2f);
         anim.SetBool("isFiring", false);
-        //explosionParticle.SetActive(false);
+        explosionParticle.SetActive(false);
     }
 
     private void RotateBarrles()
