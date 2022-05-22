@@ -14,10 +14,10 @@ public class GameFeedbackEvents : MonoBehaviour
     }
     #endregion
 
-    public Action<int, Vector3> fireGuns;
-    public void FireGuns(int id, Vector3 target)
+    public Action<int, Vector3, int> fireGuns;
+    public void FireGuns(int id, Vector3 target, int amount = 1)
     {
-        fireGuns.Invoke(id, target);
+        fireGuns.Invoke(id, target, amount);
     }
 
 }

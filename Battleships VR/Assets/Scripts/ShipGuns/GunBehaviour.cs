@@ -27,7 +27,7 @@ public class GunBehaviour : MonoBehaviour
 
     }
 
-    public void Fire(Vector3 target)
+    public void Fire(Vector3 target, int amount)
     {
         //Only rotate the guns that are on the correct side by firing a raycast and checking if it collides with anything
         Transform barrel = gameObject.GetComponentInChildren<Transform>();
@@ -45,7 +45,7 @@ public class GunBehaviour : MonoBehaviour
             return;
         }
 
-        StartCoroutine(RotateGuns(direction.normalized));
+        StartCoroutine(RotateGuns(direction.normalized, amount));
     }
 
     private void Update()
@@ -57,7 +57,7 @@ public class GunBehaviour : MonoBehaviour
     }
 
 
-    private IEnumerator RotateGuns(Vector3 direction)
+    private IEnumerator RotateGuns(Vector3 direction, int amount)
     {
         Debug.DrawRay(transform.position, direction);
 
@@ -82,7 +82,7 @@ public class GunBehaviour : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }
         
-        ShootGuns();
+        StartCoroutine(ShootGuns(amount));
 
     }
 
@@ -111,18 +111,24 @@ public class GunBehaviour : MonoBehaviour
     }
 
 
-    private void ShootGuns()
+    private IEnumerator ShootGuns(int amount)
     {
         if (gunBarrels.Count <= 0)
-            return;
-        foreach(GameObject barrel in gunBarrels)
+            yield return null;
+
+        for(int i = 0; i < amount; i++)
         {
-            Animator anim = barrel.GetComponent<Animator>();
-            anim.SetBool("isFiring", true);
-            explosionParticle.SetActive(true);
-            Debug.Log("Ran shoot animation");
-            StartCoroutine(StopShooting(anim));
+            foreach (GameObject barrel in gunBarrels)
+            {
+                Animator anim = barrel.GetComponent<Animator>();
+                anim.SetBool("isFiring", true);
+                explosionParticle.SetActive(true);
+                Debug.Log("Ran shoot animation");
+                StartCoroutine(StopShooting(anim));
+            }
+            yield return new WaitForSeconds(2.5f);
         }
+
 
     }
 

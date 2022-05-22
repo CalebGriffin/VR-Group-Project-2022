@@ -18,14 +18,17 @@ public class ShipController : MonoBehaviour
         
     }
 
-    public void FireGuns(int id, Vector3 target)
+    public void FireGuns(int id, Vector3 target, int amount)
     {
         if(id == this.id)
         {
-            foreach(GameObject gun in guns)
+            foreach (GameObject gun in guns)
             {
-                gun.GetComponent<GunBehaviour>().Fire(target);
+                gun.GetComponent<GunBehaviour>().Fire(target, amount);
             }
+
         }
     }
+
+
 }
