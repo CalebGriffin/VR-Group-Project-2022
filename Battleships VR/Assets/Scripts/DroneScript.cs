@@ -5,28 +5,27 @@ using UnityEngine;
 
 public class DroneScript : MonoBehaviour
 {
+    [Header("Move camera to ship")]
     [SerializeField] private List<Transform> ships = new List<Transform>();
+    private int index;
 
+    [Header("Camera values")]
     [SerializeField] private float height = 7f;
     [SerializeField] private float radius = 10f;
     [SerializeField] private float rotationSpeed = 0.5f;
     [SerializeField] private bool remainStatic = false;
+
     private bool assignPosition = true;
     private Transform target;
-
-    [SerializeField] private Transform dronePos;
-    private List<Transform> gunsToLook = new List<Transform>();
-
-
 
 
 
     // Start is called before the first frame update
     void Start()
     {
-
+        GameFeedbackEvents.instance.switchViewToShip += SwitchToShip;
         //SwitchToShip(ships[3]);
-        target = ships[3];
+        //target = ships[3];
         //target = ships[0];
         //SwitchTarget(target);
     }
@@ -34,6 +33,9 @@ public class DroneScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
+
+
         if (target == null)
             return;
         float x = Mathf.Cos(Time.time * rotationSpeed) * radius;
@@ -54,25 +56,29 @@ public class DroneScript : MonoBehaviour
     }
 
 
-    private void AdjustCameraRotation()
+    public void SwitchToShip(Vector3 targetPos)
     {
-        //Get the current rotation of the boat 
-        float targetRotation = target.transform.localRotation.eulerAngles.y;
-        //when rotation is 0
-        //x + 3f, z - 8f
-    }
+        //Transform ship = ReturnShip();
+        Transform ship = ships[1];
+        Vector3 direction = (targetPos - ship.position).normalized;
+        Vector3 cameraPoint = ship.position + (170f * direction);
+        transform.position = new Vector3(cameraPoint.x, -100, cameraPoint.z);
 
 
-    public void SwitchToShip(Transform ship)
-    {
-        Vector3 position = new Vector3(ship.position.x, 0, ship.position.z);
-        transform.position = position;
         transform.LookAt(ship);
     }
+
 
 
     public void SwitchTarget(Transform target)
     {
         this.target = target;
+    }
+
+    private Transform ReturnShip()
+    {
+        Transform shipToReturn = ships[index];
+        index++;
+        return shipToReturn;
     }
 }

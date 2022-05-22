@@ -12,8 +12,14 @@ public class ShipController : MonoBehaviour
         GameFeedbackEvents.instance.fireGuns += FireGuns;
     }
 
+    private void Update()
+    {
+        float y = Mathf.Sin(Time.time) * 3f;
+        //transform.position = new Vector3(transform.position.x, transform.position.y + y, transform.position.z);
+    }
+
     //This method is called when the event "fireGuns" is executed
-    public void FireGuns(int id, Vector3 target, int amount)
+    private void FireGuns(int id, Vector3 target, int amount)
     {
         //Check the id passed in so only the correct ship guns are called
         if(id == this.id)

@@ -9,14 +9,12 @@ public class GunBehaviour : MonoBehaviour
     [SerializeField] private float rotationSpeed = 3f;
     [SerializeField] private List<GameObject> gunBarrels;
     [SerializeField] private GameObject explosionParticle;
-    private bool isActive = false;
-    public bool IsActive { get { return isActive; } }
+
 
 
     // Start is called before the first frame update
     void Start()
     {
-        isActive = false;
         foreach (Transform child in transform)
         {
             if (child.CompareTag("Barrel"))
@@ -38,7 +36,6 @@ public class GunBehaviour : MonoBehaviour
             Debug.Log("Hitting something");
             return;
         }
-        isActive = true;
         StartCoroutine(RotateGuns(direction.normalized, amount));
     }
 
@@ -118,7 +115,6 @@ public class GunBehaviour : MonoBehaviour
             }
             yield return new WaitForSeconds(2.5f);
         }
-        isActive = false;
         //THIS IS WHERE THE PLAYERS TURN SHOULD BE NOTIFIED TO END
 
     }
