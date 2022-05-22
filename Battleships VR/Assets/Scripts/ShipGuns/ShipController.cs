@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ShipController : MonoBehaviour
 {
-    [SerializeField] private GameObject[] guns;
+    public GameObject[] guns;
     [SerializeField] private int id;
     // Start is called before the first frame update
     void Start()
