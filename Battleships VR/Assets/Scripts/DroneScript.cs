@@ -7,7 +7,7 @@ public class DroneScript : MonoBehaviour
 {
     [Header("Move camera to ship")]
     [SerializeField] private List<Transform> ships = new List<Transform>();
-    private int index;
+    [SerializeField] private float distanceFromShip = 100f;
 
     [Header("Camera values")]
     [SerializeField] private float height = 7f;
@@ -41,12 +41,12 @@ public class DroneScript : MonoBehaviour
         float x = Mathf.Cos(Time.time * rotationSpeed) * radius;
         float z = Mathf.Sin(Time.time * rotationSpeed) * radius;
 
+        transform.position = new Vector3(target.position.x + x, height, target.position.z + z);
         transform.LookAt(target);
-
         if (!remainStatic)
         {
 
-            transform.position = new Vector3(target.position.x + x, height, target.position.z + z);
+            
             return;
             //transform.position = new Vector3(target.position.x + 12f, height, target.position.z + 3f);
             //transform.position = new Vector3(target.position.x + 3f, height, target.position.z - 8f);
@@ -56,12 +56,13 @@ public class DroneScript : MonoBehaviour
     }
 
 
-    public void SwitchToShip(Vector3 targetPos)
+    public void SwitchToShip(Vector3 targetPos, int index)
     {
-        //Transform ship = ReturnShip();
-        Transform ship = ships[1];
+        target = null;
+        //Called from the players side when the player takes a shot
+        Transform ship = ships[index];
         Vector3 direction = (targetPos - ship.position).normalized;
-        Vector3 cameraPoint = ship.position + (170f * direction);
+        Vector3 cameraPoint = ship.position + (distanceFromShip * direction);
         transform.position = new Vector3(cameraPoint.x, -100, cameraPoint.z);
 
 
@@ -72,13 +73,8 @@ public class DroneScript : MonoBehaviour
 
     public void SwitchTarget(Transform target)
     {
+        //Called from the AI's side to focus on the attacked point
         this.target = target;
     }
 
-    private Transform ReturnShip()
-    {
-        Transform shipToReturn = ships[index];
-        index++;
-        return shipToReturn;
-    }
 }
