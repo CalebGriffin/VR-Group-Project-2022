@@ -21,10 +21,15 @@ public class Player : MonoBehaviour
     public GameObject[] modelBoats;
     public BoatPlacer boatPlacer;
 
+    public AI ai;
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        foreach (int i in board.Matrix)
+        {
+            uncheckedPositions.Add(i);
+        }
     }
 
     [ContextMenu(nameof(PrintShipPositionsAndPositionsAround))]
@@ -133,10 +138,16 @@ public class Player : MonoBehaviour
     [ContextMenu(nameof(ConfirmButton))]
     public void ConfirmButton()
     {
+        if (boats.Count < 5)
+        {
+            return;
+        }
+
         foreach (GameObject modelBoat in modelBoats)
         {
             boatPlacer.PlaceBoat(modelBoat.GetComponent<ModelBoat>().BoatName, modelBoat.transform);
         }
+        gVar.playerTurn = true;
     }
 
 
@@ -153,6 +164,8 @@ public class Player : MonoBehaviour
             {
                 hit = true;
 
+                HitOrMissManager.instance.ResultOfAttack("AI", position, true);
+
                 // Enable the hit object at the position in the sea and on the mini board
 
                 if (boat.SunkCheck())
@@ -163,9 +176,10 @@ public class Player : MonoBehaviour
                     int[] positionsAround = boat.Sunk(this.board);
                     foreach (int positionAround in positionsAround)
                     {
-                        if (positionAround != 0)
+                        if (positionAround != 0 && ai.uncheckedPositions.Any(x => x.Position == positionAround))
                         {
                             // Enable the miss object at the position in the sea and on the mini board
+                            HitOrMissManager.instance.ResultOfAttack("AI", position, false);
                         }
                     }
 
@@ -179,9 +193,21 @@ public class Player : MonoBehaviour
         if (!hit)
         {
             // Enable the miss object at the position in the sea and on the mini board
+            HitOrMissManager.instance.ResultOfAttack("AI", position, true);
         }
 
         return ValueTuple.Create(position, hit, sunk);
+    }
+
+    public void RemoveSunkPoints(int[] pointsAround)
+    {
+        foreach (int i in pointsAround)
+        {
+            if (uncheckedPositions.Contains(i))
+            {
+                uncheckedPositions.Remove(i);
+            }
+        }
     }
 
     private void WinCheck()
@@ -206,5 +232,13 @@ public class Player : MonoBehaviour
     public void Decision(int position)
     {
         // Call the ShotFired method on the AI and get the return values and add them to the previous guesses list
+        previousGuesses.Add(ai.ShotFired(position));
+
+        // Calculate where to fire the guns and call the event to fire them
+        int row = (position - 1) / board.Matrix.GetLength(0);
+        int col = (position - 1) % board.Matrix.GetLength(0);
+        GameFeedbackEvents.instance.FireGuns(3, new Vector3(row * 60, 0, col * 60), 2);
+
+        gVar.playerTurn = false;
     }
 }

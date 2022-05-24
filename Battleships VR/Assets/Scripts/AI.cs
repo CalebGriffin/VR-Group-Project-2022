@@ -19,8 +19,9 @@ public class AI : MonoBehaviour
     [SerializeField] private Difficulty aiDifficulty;
 
     // TESTING // REMOVE
-    public AI2 otherAI; // Reference to the other AI script
     public TestRunner testRunner; // Calls the Decision method on each of the AI scripts to run the simulation
+
+    public Player player;
 
     // Creates a new instance of the Board class and stores its data
     private Board board = new Board(10);
@@ -73,7 +74,7 @@ public class AI : MonoBehaviour
     public (int, bool, bool) ShotFired(int position)
     {
         // A guard clause to make sure that the AI is not resetting
-        if (otherAI.resetting || resetting)
+        if (resetting)
         {
             return (0, false, false);
         }
@@ -97,6 +98,8 @@ public class AI : MonoBehaviour
                 //GameObject.Instantiate(hitCube, new Vector3(row, 1, col), Quaternion.identity);
                 //Debug.Log("Hit!");
 
+                HitOrMissManager.instance.ResultOfAttack("Player", position, true);
+
                 // Calls the method on the Boat class that returns a bool of whether the boat has any remaining positions left
                 if (boat.SunkCheck())
                 {
@@ -107,19 +110,21 @@ public class AI : MonoBehaviour
                     int[] positionsAround = boat.Sunk(this.board);
                     foreach (int positionAround in positionsAround)
                     {
-                        if (positionAround != 0 && otherAI.positionGuesses.Contains(positionAround))
+                        if (positionAround != 0 && player.uncheckedPositions.Contains(positionAround))
                         {
                             // TESTING // CHANGE
                             // Enable the object on that position with the 'miss' object
                             row = (positionAround - 1) / board.Matrix.GetLength(0);
                             col = (positionAround - 1) % board.Matrix.GetLength(0);
                             //GameObject.Instantiate(missCube, new Vector3(row, 1, col), Quaternion.identity);
+
+                            HitOrMissManager.instance.ResultOfAttack("Player", positionAround, false);
                         }
                     }
 
                     // Call the method to remove the points around the boat from the player's list of unchecked positions
                     // TESTING // CHANGE
-                    otherAI.RemoveSunkPoints(positionsAround);
+                    player.RemoveSunkPoints(positionsAround);
 
                     // Call the method to check if the player has won
                     WinCheck();
@@ -137,6 +142,7 @@ public class AI : MonoBehaviour
             // TESTING // CHANGE
             //GameObject.Instantiate(missCube, new Vector3(row, 1, col), Quaternion.identity);
             //Debug.Log("Miss!");
+            HitOrMissManager.instance.ResultOfAttack("Player", position, false);
         }
 
         // Return the ValueTuple with the hit and sunk booleans
@@ -254,7 +260,7 @@ public class AI : MonoBehaviour
                 uncheckedPositions.Remove(uncheckedPositions.First(x => x.Position == target));
             }
             // TESTING // CHANGE
-            previousGuesses.Add(otherAI.ShotFired(target));
+            previousGuesses.Add(player.ShotFired(target));
 
             // If the shot was a hit and sunk then clear the target stack and remove the elements from the position guesses list and set the target mode to false
             if (previousGuesses.Last().Hit && previousGuesses.Last().Sunk)
@@ -326,7 +332,7 @@ public class AI : MonoBehaviour
             // Fire at it by calling the ShotFired method on the player's script and add the result to the previous guesses list
             uncheckedPositions.Remove(uncheckedPositions.FirstOrDefault(x => x.Position == position));
             // TESTING // CHANGE
-            previousGuesses.Add(otherAI.ShotFired(position));
+            previousGuesses.Add(player.ShotFired(position));
 
             // If the shot was a hit, then set the target mode to true
             if (previousGuesses.Last().Hit)
@@ -356,7 +362,7 @@ public class AI : MonoBehaviour
         ClearUncheckedPositionWeight();
 
         // TESTING // CHANGE
-        foreach (Boat boat in otherAI.Boats)
+        foreach (Boat boat in player.Boats)
         {
             if (boat.RemainingPositions.Count > 0)
             {
