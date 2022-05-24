@@ -136,6 +136,11 @@ public class PlayerBoardInput : MonoBehaviour
         previewBoat.HideChildren();
     }
 
+    public void ResetHoveringBoat()
+    {
+        hoveringBoat = null;
+    }
+
     private Vector3 FindRoundedPosition(Vector3 position, string direction, int length)
     {
         int newX = RoundFloat(position.x);
