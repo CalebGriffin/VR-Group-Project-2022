@@ -21,6 +21,8 @@ public class Pin : MonoBehaviour
 
     [SerializeField] private Player player;
 
+    public PinHolder pinHolder;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -35,6 +37,14 @@ public class Pin : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (gVar.playerTurn)
+            GetComponent<Rigidbody>().WakeUp();
+        else
+            GetComponent<Rigidbody>().Sleep();
+
+        GetComponent<Interactable>().enabled = gVar.playerTurn ? true : false;
+        GetComponent<Throwable>().enabled = GetComponent<Interactable>().enabled;
+
         if (!placed)
         {
             FireRaycast();
@@ -82,7 +92,8 @@ public class Pin : MonoBehaviour
 
     public void OnLetGo()
     {
-        if (!hoveringOverTheBoard)
+        Debug.Log("Getting Here 0");
+        if (!GetComponent<LockToPoint>().snapTo == dynamicPosition)
         {
             return;
         }
@@ -90,9 +101,36 @@ public class Pin : MonoBehaviour
         placed = true;
         hoveringOverTheBoard = false;
 
+
+        Debug.Log("Getting Here 1");
+
+        StartCoroutine(Disappear());
+    }
+
+    public IEnumerator Disappear()
+    {
+        Debug.Log("Getting Here 2");
+        yield return new WaitForSeconds(1);
+
+        Debug.Log("Getting Here 3");
+        transform.GetChild(0).gameObject.SetActive(false);
+        transform.GetChild(1).gameObject.SetActive(true);
+
+        Debug.Log("Getting Here 4");
+        yield return new WaitForSeconds(0.5f);
+
         // Call the method to shoot at the AI
         int shootPosition = player.Board.Matrix[(int)dynamicPosition.localPosition.x, (int)dynamicPosition.localPosition.z];
 
         player.Decision(shootPosition);
+
+        Debug.Log("Getting Here 5");
+        // Call a method to spawn the next pin
+        pinHolder.SpawnPin();
+        Debug.Log("Getting Here 6");
+
+        // Destroy this GameObject
+        Destroy(this.gameObject);
+        Debug.Log("Getting Here 7");
     }
 }
