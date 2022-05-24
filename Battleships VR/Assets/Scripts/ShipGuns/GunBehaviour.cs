@@ -31,7 +31,7 @@ public class GunBehaviour : MonoBehaviour
         Vector3 direction = target - barrel.position;
 
         //Ensure that the guns don't rotate and fire on themselves 
-        if (Physics.Raycast(transform.position, direction, 200f, LayerMask.GetMask("Ships")))
+        if (Physics.Raycast(transform.position, direction, 60f, LayerMask.GetMask("Ships")))
         {
             Debug.Log("Hitting something");
             return;
