@@ -20,10 +20,10 @@ public class HitOrMissManager : MonoBehaviour
         {
             case "Player":
                 UpdateResult("AIBoardInCC", position, hit);
-                UpdateResult("AIBoardInSea", position, hit);
+                //UpdateResult("AIBoardInSea", position, hit);
                 break;
             case "AI":
-                UpdateResult("PlayerBoarInCC", position, hit);
+                //UpdateResult("PlayerBoarInCC", position, hit);
                 UpdateResult("PlayerBoardInSea", position, hit);
                 break;
         }

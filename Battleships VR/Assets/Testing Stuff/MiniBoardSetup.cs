@@ -29,7 +29,13 @@ public class MiniBoardSetup : MonoBehaviour
             for (int j = 0; j < 10; j++)
             {
                 GameObject go = Instantiate(cubePrefab, boardParent.transform.position + new Vector3(i * boardParent.transform.localScale.x, 0, j * boardParent.transform.localScale.z), Quaternion.identity, boardParent.transform);
-                go.name = i + "," + j;
+                go.transform.localPosition = new Vector3(i, 0, j);
+                if (i == 0)
+                    go.name = (j + 1).ToString();
+                else if (j == 9)
+                    go.name = int.Parse((i + 1).ToString() + "0").ToString();
+                else
+                    go.name = int.Parse(i.ToString() + (j + 1).ToString()).ToString();
             }
         }
     }

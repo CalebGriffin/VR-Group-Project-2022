@@ -32,6 +32,7 @@ public class EnemyBoardInput : MonoBehaviour
 
             if (previewPosition != new Vector3(100, 100, 100))
             {
+                previewPin.Show();
                 previewPin.ChangePosition(previewPosition);
 
                 pin.GetComponent<Pin>().SetLockPoint(previewPin.transform);
