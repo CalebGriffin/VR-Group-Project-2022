@@ -33,7 +33,7 @@ public class GunBehaviour : MonoBehaviour
         //Ensure that the guns don't rotate and fire on themselves 
         if (Physics.Raycast(transform.position, direction, 60f, LayerMask.GetMask("Ships")))
         {
-            Debug.Log("Hitting something");
+            //Debug.Log("Hitting something");
             return;
         }
         StartCoroutine(RotateGuns(direction.normalized, amount));
@@ -50,7 +50,7 @@ public class GunBehaviour : MonoBehaviour
         //the compensation angle makes up for that 180 degree rotation
         if (compensationRotation != 0)
             angle += compensationRotation;
-        Debug.Log("Calculated angle " + angle);
+        //Debug.Log("Calculated angle " + angle);
 
         Quaternion angleAxis = Quaternion.AngleAxis(angle, Vector3.up);
 
@@ -59,7 +59,7 @@ public class GunBehaviour : MonoBehaviour
 
         while (CalculateDotProduct(direction) == false)
         {
-            Debug.Log("Rotating");
+            //Debug.Log("Rotating");
             //Slowly transition from the current rotation to the target angle
             transform.rotation = Quaternion.RotateTowards(transform.rotation, angleAxis, Time.deltaTime * rotationSpeed);
 
@@ -76,11 +76,11 @@ public class GunBehaviour : MonoBehaviour
         //Set both direction vector's y value to 0 to calculate the dot product across a flat plane
         direction.y = 0;
         forwardDirection.y = 0;
-        //Normlize both vectors after the y value has been changed to ensure they are properly normalized
+        //Normalize both vectors after the y value has been changed to ensure they are properly normalized
         forwardDirection.Normalize();
         direction.Normalize();
 
-        //Find the dot prodcut but acount for the guns facing the wrong direction
+        //Find the dot prodcut but account for the guns facing the wrong direction
         float dotProduct;
         if (compensationRotation != 0)
             dotProduct = Vector3.Dot(-transform.forward, direction);
@@ -90,7 +90,7 @@ public class GunBehaviour : MonoBehaviour
         //Check if the local forward vector of the guns is in the same direction as the target direction
         if(dotProduct >= 0.99)
         {
-            Debug.Log("Value is true");
+            //Debug.Log("Value is true");
             return true;
         }
         return false;
@@ -99,6 +99,8 @@ public class GunBehaviour : MonoBehaviour
 
     private IEnumerator ShootGuns(int amount)
     {
+        gVar.playerTurnOver = false;
+
         //Return if there aren't any gun barrels to avoid a null reference 
         if (gunBarrels.Count <= 0)
             yield return null;
@@ -110,12 +112,14 @@ public class GunBehaviour : MonoBehaviour
                 Animator anim = barrel.GetComponent<Animator>();
                 anim.SetBool("isFiring", true);
                 explosionParticle.SetActive(true);
-                Debug.Log("Ran shoot animation");
+                //Debug.Log("Ran shoot animation");
                 StartCoroutine(StopShooting(anim));
             }
             yield return new WaitForSeconds(2.5f);
         }
         //THIS IS WHERE THE PLAYERS TURN SHOULD BE NOTIFIED TO END
+
+        gVar.playerTurnOver = true;
 
     }
 
