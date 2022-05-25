@@ -20,7 +20,13 @@ public class GameFeedbackEvents : MonoBehaviour
     {
         //IMPORTANT - id represents the index of the ship model in the drone camera list
         switchViewToShip.Invoke(target, id);
+
+        if (amount == 0)
+        {
+            gVar.playerTurnOver = true;
+            return;
+        }
+
         fireGuns.Invoke(id, target, amount);
     }
-
 }
