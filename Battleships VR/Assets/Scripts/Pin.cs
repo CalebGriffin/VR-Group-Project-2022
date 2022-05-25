@@ -73,6 +73,13 @@ public class Pin : MonoBehaviour
         }
     }
 
+    public void Reset()
+    {
+        ResetLockPoint();
+        hoveringOverTheBoard = false;
+        placed = false;
+    }
+
     public void SetLockPoint(Transform previewPinTransform)
     {
         dynamicPosition.position = previewPinTransform.position;
@@ -92,7 +99,6 @@ public class Pin : MonoBehaviour
 
     public void OnLetGo()
     {
-        Debug.Log("Getting Here 0");
         if (!GetComponent<LockToPoint>().snapTo == dynamicPosition)
         {
             return;
@@ -102,35 +108,33 @@ public class Pin : MonoBehaviour
         hoveringOverTheBoard = false;
 
 
-        Debug.Log("Getting Here 1");
 
         StartCoroutine(Disappear());
     }
 
     public IEnumerator Disappear()
     {
-        Debug.Log("Getting Here 2");
-        yield return new WaitForSeconds(1);
-
-        Debug.Log("Getting Here 3");
-        transform.GetChild(0).gameObject.SetActive(false);
-        transform.GetChild(1).gameObject.SetActive(true);
-
-        Debug.Log("Getting Here 4");
-        yield return new WaitForSeconds(0.5f);
-
         // Call the method to shoot at the AI
         int shootPosition = player.Board.Matrix[(int)dynamicPosition.localPosition.x, (int)dynamicPosition.localPosition.z];
 
         player.Decision(shootPosition);
 
-        Debug.Log("Getting Here 5");
+        while (gVar.playerTurnOver == false)
+        {
+            yield return null;
+        }
+
+        transform.GetChild(0).gameObject.SetActive(false);
+        transform.GetChild(1).gameObject.SetActive(true);
+
+        yield return new WaitForSeconds(0.5f);
+
+        gVar.playerTurnOver = false;
+
         // Call a method to spawn the next pin
         pinHolder.SpawnPin();
-        Debug.Log("Getting Here 6");
 
-        // Destroy this GameObject
-        Destroy(this.gameObject);
-        Debug.Log("Getting Here 7");
+        transform.GetChild(0).gameObject.SetActive(true);
+        transform.GetChild(1).gameObject.SetActive(false);
     }
 }

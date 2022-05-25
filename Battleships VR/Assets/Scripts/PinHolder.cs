@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PinHolder : MonoBehaviour
 {
-    public GameObject pinPrefab;
+    public GameObject pinObj;
     public Transform originalPosition;
 
     // Start is called before the first frame update
@@ -21,6 +21,10 @@ public class PinHolder : MonoBehaviour
 
     public void SpawnPin()
     {
-        Instantiate(pinPrefab, originalPosition.position, Quaternion.identity, this.transform);
+        //Instantiate(pinPrefab, originalPosition.position, Quaternion.identity, this.transform);
+        pinObj.SetActive(false);
+        pinObj.transform.localPosition = originalPosition.localPosition;
+        pinObj.GetComponent<Pin>().Reset();
+        pinObj.SetActive(true);
     }
 }
