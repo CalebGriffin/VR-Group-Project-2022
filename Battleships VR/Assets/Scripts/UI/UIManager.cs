@@ -18,10 +18,9 @@ public class UIManager : MonoBehaviour
         for(int i = 0; i < stringTextFile.Length; i++)
         {
             text.text += stringTextFile[i];
-            if (stringTextFile[i] == '_')
-                Alpha(stringTextFile[i]);
-
             yield return new WaitForSeconds(0.08f);
+            //if (stringTextFile[i] == '_')
+            //Alpha(stringTextFile[i]);
         }
     }
     private void Alpha(char c)
