@@ -16,6 +16,7 @@ public class GameFeedbackEvents : MonoBehaviour
 
     public Action<int, Vector3, int> fireGuns;
     public Action<Vector3, int> switchViewToShip;
+    public Action switchToBirdsEye;
     public void FireGuns(int id, Vector3 target, int amount = 1)
     {
         //IMPORTANT - id represents the index of the ship model in the drone camera list
@@ -28,5 +29,9 @@ public class GameFeedbackEvents : MonoBehaviour
         }
 
         fireGuns.Invoke(id, target, amount);
+    }
+    public void SwitchToBirdsEye()
+    {
+        switchToBirdsEye.Invoke();
     }
 }
