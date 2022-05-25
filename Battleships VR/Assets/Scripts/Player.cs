@@ -193,7 +193,7 @@ public class Player : MonoBehaviour
         if (!hit)
         {
             // Enable the miss object at the position in the sea and on the mini board
-            HitOrMissManager.instance.ResultOfAttack("AI", position, true);
+            HitOrMissManager.instance.ResultOfAttack("AI", position, false);
         }
 
         return ValueTuple.Create(position, hit, sunk);
@@ -237,7 +237,43 @@ public class Player : MonoBehaviour
         // Calculate where to fire the guns and call the event to fire them
         int row = (position - 1) / board.Matrix.GetLength(0);
         int col = (position - 1) % board.Matrix.GetLength(0);
-        GameFeedbackEvents.instance.FireGuns(3, new Vector3(row * 60, 0, col * 60), 2);
+        int boatID = -1;
+        int amount = 0;
+
+        if (boats.Find(x => x.Name == "Battleship").RemainingPositions.Count > 0)
+        {
+            boatID = 3;
+        }
+        else if (boats.Find(x => x.Name == "Cruiser").RemainingPositions.Count > 0)
+        {
+            boatID = 2;
+        }
+        else if (boats.Find(x => x.Name == "Destroyer").RemainingPositions.Count > 0)
+        {
+            boatID = 0;
+        }
+        else if (boats.Find(x => x.Name == "Carrier").RemainingPositions.Count > 0)
+        {
+            boatID = 4;
+        }
+        else
+        {
+            boatID = 1;
+        }
+
+        switch (boatID)
+        {
+            case 2:
+            case 3:
+                amount = 2;
+                break;
+
+            case 0:
+                amount = 1;
+                break;
+        }
+        
+        GameFeedbackEvents.instance.FireGuns(boatID, new Vector3(row * 60, 0, col * 60), amount);
 
         gVar.playerTurn = false;
     }
