@@ -6,6 +6,7 @@ public class GunTest : MonoBehaviour
 {
     float countdown = 5f;
     [SerializeField] private Transform testTarget;
+    public DroneScript drone;
     // Start is called before the first frame update
     void Start()
     {
@@ -18,7 +19,8 @@ public class GunTest : MonoBehaviour
         countdown -= Time.deltaTime;
         if(countdown <= 0f)
         {
-            GameFeedbackEvents.instance.FireGuns(2, testTarget.position, 2);
+            //GameFeedbackEvents.instance.FireGuns(3, testTarget.position, 2);
+            drone.BirdsEyeView();
             countdown = 20f;
         }
     }

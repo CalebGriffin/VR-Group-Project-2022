@@ -10,6 +10,7 @@ public class DroneScript : MonoBehaviour
     [SerializeField] private float distanceFromShip = 100f;
 
     [Header("Camera values")]
+    [SerializeField] private float birdsEyeHeight = 200f;
     [SerializeField] private float height = 7f;
     [SerializeField] private float radius = 10f;
     [SerializeField] private float rotationSpeed = 0.5f;
@@ -63,12 +64,17 @@ public class DroneScript : MonoBehaviour
         Transform ship = ships[index];
         Vector3 direction = (targetPos - ship.position).normalized;
         Vector3 cameraPoint = ship.position + (distanceFromShip * direction);
-        transform.position = new Vector3(cameraPoint.x, -100, cameraPoint.z);
+        transform.position = new Vector3(cameraPoint.x, height, cameraPoint.z);
 
 
         transform.LookAt(ship);
     }
 
+    public void BirdsEyeView()
+    {
+        transform.position = new Vector3(0, birdsEyeHeight, 0);
+        transform.LookAt(Vector3.down);
+    }
 
 
     public void SwitchTarget(Transform target)
