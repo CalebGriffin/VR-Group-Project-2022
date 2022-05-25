@@ -33,7 +33,7 @@ public class GunBehaviour : MonoBehaviour
         //Ensure that the guns don't rotate and fire on themselves 
         if (Physics.Raycast(transform.position, direction, 60f, LayerMask.GetMask("Ships")))
         {
-            //Debug.Log("Hitting something");
+            gameObject.GetComponentInParent<ShipController>().FinishedFiring();
             return;
         }
         StartCoroutine(RotateGuns(direction.normalized, amount));
@@ -118,8 +118,8 @@ public class GunBehaviour : MonoBehaviour
             yield return new WaitForSeconds(2.5f);
         }
         //THIS IS WHERE THE PLAYERS TURN SHOULD BE NOTIFIED TO END
-
-        gVar.playerTurnOver = true;
+        gameObject.GetComponentInParent<ShipController>().FinishedFiring();
+        
 
     }
 

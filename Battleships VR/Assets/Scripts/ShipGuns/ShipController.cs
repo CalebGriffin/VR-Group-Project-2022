@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class ShipController : MonoBehaviour
 {
-    public GameObject[] guns;
+    [SerializeField] private GameObject[] guns;
     [SerializeField] private int id;
+    private int gunCount;
     // Start is called before the first frame update
     void Start()
     {
@@ -24,11 +25,21 @@ public class ShipController : MonoBehaviour
         //Check the id passed in so only the correct ship guns are called
         if(id == this.id)
         {
+            gunCount = 0;
             foreach (GameObject gun in guns)
             {
                 gun.GetComponent<GunBehaviour>().Fire(target, amount);
             }
 
+        }
+    }
+    public void FinishedFiring()
+    {
+        gunCount++;
+        if(gunCount == guns.Length)
+        {
+            gVar.playerTurnOver = true;
+            GameFeedbackEvents.instance.SwitchToBirdsEye();
         }
     }
 

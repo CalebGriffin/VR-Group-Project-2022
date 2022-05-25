@@ -18,8 +18,8 @@ public class GunTest : MonoBehaviour
         countdown -= Time.deltaTime;
         if(countdown <= 0f)
         {
-            //GameFeedbackEvents.instance.FireGuns(3, testTarget.position, 2);
-            GameFeedbackEvents.instance.SwitchToBirdsEye();
+            GameFeedbackEvents.instance.FireGuns(3, testTarget.position, 2);
+            //GameFeedbackEvents.instance.SwitchToBirdsEye();
             countdown = 20f;
         }
     }
