@@ -5,4 +5,5 @@ using UnityEngine;
 public class gVar
 {
     public static bool playerTurn = false;
+    public static bool playerTurnOver;
 }
