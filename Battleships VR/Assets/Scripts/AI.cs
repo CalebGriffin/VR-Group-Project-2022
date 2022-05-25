@@ -8,6 +8,18 @@ using static BattleshipAI.AIDebug;
 
 public class AI : MonoBehaviour
 {
+    #region Singleton
+    public static AI instance;
+    private void Awake()
+    {
+        if (instance == null)
+            instance = this;
+
+        AISetup(instance);
+        Reset();
+    }
+    #endregion
+
     #region Variable Declarations
 
     // Custom enum for AI difficulty, can be changed in the Inspector

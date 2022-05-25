@@ -12,6 +12,11 @@ namespace BattleshipAI
         // Reference to the AI script so that is can access the AI's variables and methods
         public static AI ai;
 
+        public static void AISetup(AI actualAI)
+        {
+            ai = actualAI;
+        }
+
         // Returns a bool of whether or not the position is in the unchecked positions list
         public static bool UncheckedPositionsContains(int point)
         {
@@ -99,7 +104,7 @@ namespace BattleshipAI
         }
 
         // Reset all of the AI's variables after a game has ended
-        public void Reset()
+        public static void Reset()
         {
             // A boolean so that other methods can check if the AI is resetting
             ai.resetting = true;
@@ -130,7 +135,7 @@ namespace BattleshipAI
             ai.CreateBoats();
 
             // Call the method to display the AI's boats on the board and on the sea
-            DisplayBoats();
+            //DisplayBoats();
 
             // Fixes a bug where the last shot of the previous game is added to the previous guesses list
             if (ai.previousGuesses.Count > 0 && ai.previousGuesses[0].Sunk)
