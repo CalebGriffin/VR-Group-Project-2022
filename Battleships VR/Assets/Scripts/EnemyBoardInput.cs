@@ -57,8 +57,12 @@ public class EnemyBoardInput : MonoBehaviour
     {
         int newX = RoundFloat(position.x);
         int newZ = RoundFloat(position.z);
+        int boardPosition = -1;
 
-        int boardPosition = int.Parse(newX.ToString() + (newZ + 1).ToString());
+        if (newZ == 9)
+            boardPosition = int.Parse((newX + 1).ToString() + "0");
+        else
+            boardPosition = int.Parse(newX.ToString() + (newZ + 1).ToString());
 
         if (player.uncheckedPositions.Contains(boardPosition))
         {
