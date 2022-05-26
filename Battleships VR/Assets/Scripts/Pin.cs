@@ -37,17 +37,47 @@ public class Pin : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (gVar.playerTurn)
-            GetComponent<Rigidbody>().WakeUp();
-        else
-            GetComponent<Rigidbody>().Sleep();
-
-        GetComponent<Interactable>().enabled = gVar.playerTurn ? true : false;
-        GetComponent<Throwable>().enabled = GetComponent<Interactable>().enabled;
+        if (placed)
+        {
+            AddIgnoreHovering();
+        }
+        else if (!gVar.playerTurn)
+        {
+            AddIgnoreHovering();
+        }
+        else if (this.gameObject.GetComponent<IgnoreHovering>() != null)
+        {
+            RemoveIgnoreHovering();
+        }
 
         if (!placed)
         {
             FireRaycast();
+        }
+    }
+
+    private void AddIgnoreHovering()
+    {
+        if (this.gameObject.GetComponent<IgnoreHovering>() != null)
+            return;
+
+        this.gameObject.AddComponent<IgnoreHovering>();
+        foreach (Transform child in transform)
+        {
+            child.gameObject.AddComponent<IgnoreHovering>();
+        }
+    }
+
+    private void RemoveIgnoreHovering()
+    {
+        if (this.gameObject.GetComponent<IgnoreHovering>() == null)
+            return;
+        
+        Destroy(this.gameObject.GetComponent<IgnoreHovering>());
+
+        foreach (Transform child in transform)
+        {
+            Destroy(child.gameObject.GetComponent<IgnoreHovering>());
         }
     }
 
