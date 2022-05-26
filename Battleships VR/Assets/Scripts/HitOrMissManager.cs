@@ -32,6 +32,19 @@ public class HitOrMissManager : MonoBehaviour
         
     }
 
+    public void ResultOfAttack(string name, int position, bool hit, bool sunk)
+    {
+        switch (name)
+        {
+            case "Player":
+                UpdateResult("AIBoardInCC", position, hit);
+                break;
+            case "AI":
+                UpdateResult("PlayerBoardInSea", position, hit);
+                break;
+        }
+    }
+
     private IEnumerator Wait(string name, int position, bool hit)
     {
         while (gVar.playerTurnOver == false)
@@ -42,7 +55,7 @@ public class HitOrMissManager : MonoBehaviour
         yield return new WaitForSeconds(0.1f);
 
         UpdateResult("AIBoardInCC", position, hit);
-        AI.instance.Decision();
+        AI.instance.StartCoroutine("WaitToDecide");
     }
     
 
