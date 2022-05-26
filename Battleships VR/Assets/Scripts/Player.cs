@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static BattleshipAI.AIHelper;
 
 public class Player : MonoBehaviour
 {
@@ -176,12 +177,14 @@ public class Player : MonoBehaviour
                     int[] positionsAround = boat.Sunk(this.board);
                     foreach (int positionAround in positionsAround)
                     {
-                        if (positionAround != 0 && ai.uncheckedPositions.Any(x => x.Position == positionAround))
+                        if (positionAround != 0 && UncheckedPositionsContains(positionAround))
                         {
                             // Enable the miss object at the position in the sea and on the mini board
-                            HitOrMissManager.instance.ResultOfAttack("AI", position, false);
+                            HitOrMissManager.instance.ResultOfAttack("AI", positionAround, false, true);
                         }
                     }
+
+                    ai.RemoveSunkPoints(positionsAround);
 
                     WinCheck();
                 }
@@ -231,8 +234,11 @@ public class Player : MonoBehaviour
 
     public void Decision(int position)
     {
+        Debug.Log("Player shot at " + position.ToString());
         // Call the ShotFired method on the AI and get the return values and add them to the previous guesses list
         previousGuesses.Add(ai.ShotFired(position));
+        Debug.Log("AI Returned " + previousGuesses.Last().Hit + " at position " + previousGuesses.Last().Position);
+        uncheckedPositions.Remove(position);
 
         // Calculate where to fire the guns and call the event to fire them
         int row = (position - 1) / board.Matrix.GetLength(0);
@@ -273,7 +279,7 @@ public class Player : MonoBehaviour
                 break;
         }
         
-        GameFeedbackEvents.instance.FireGuns(boatID, new Vector3(row * 60, 0, col * 60), amount);
+        GameFeedbackEvents.instance.FireGuns(boatID, new Vector3((row * 60) - 270, 0, (col * 60) + 1550), amount);
 
         gVar.playerTurn = false;
     }
