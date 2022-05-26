@@ -20,7 +20,7 @@ public class HitOrMissManager : MonoBehaviour
         switch (name)
         {
             case "Player":
-                StartCoroutine(Wait(name, position, hit));
+                StartCoroutine(Wait(name, position, hit, false));
                 //UpdateResult("AIBoardInSea", position, hit);
                 break;
             case "AI":
@@ -37,7 +37,7 @@ public class HitOrMissManager : MonoBehaviour
         switch (name)
         {
             case "Player":
-                UpdateResult("AIBoardInCC", position, hit);
+                StartCoroutine(Wait(name, position, hit, true));
                 break;
             case "AI":
                 UpdateResult("PlayerBoardInSea", position, hit);
@@ -45,7 +45,7 @@ public class HitOrMissManager : MonoBehaviour
         }
     }
 
-    private IEnumerator Wait(string name, int position, bool hit)
+    private IEnumerator Wait(string name, int position, bool hit, bool sunk)
     {
         while (gVar.playerTurnOver == false)
         {
@@ -55,7 +55,8 @@ public class HitOrMissManager : MonoBehaviour
         yield return new WaitForSeconds(0.1f);
 
         UpdateResult("AIBoardInCC", position, hit);
-        AI.instance.StartCoroutine("WaitToDecide");
+        if (!sunk)
+            AI.instance.StartCoroutine("WaitToDecide");
     }
     
 
