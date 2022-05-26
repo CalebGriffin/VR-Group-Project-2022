@@ -21,7 +21,10 @@ public class ShipController : MonoBehaviour
         //transform.position = new Vector3(transform.position.x, transform.position.y + y, transform.position.z);
     }
 
-
+    public void FindParticle(string shipName, int position)
+    {
+        //Need to check 
+    }
 
     //This method is called when the event "fireGuns" is executed
     private void FireGuns(int id, Vector3 target, int amount)
