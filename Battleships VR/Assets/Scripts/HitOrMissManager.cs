@@ -1,7 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Threading.Tasks;
 
 public class HitOrMissManager : MonoBehaviour
 {
@@ -43,6 +43,17 @@ public class HitOrMissManager : MonoBehaviour
 
         UpdateResult("AIBoardInCC", position, hit);
         AI.instance.Decision();
+    }
+    
+
+    public void SpawnFireOnBoats(int positionFromCC)
+    {
+        //Assign a number to the fire which is the same as the grid position
+        //Get the position of the AI's attack
+        //Translate that into the players board on sea position
+        //Activate the fire particles in that position
+
+
     }
 
 
