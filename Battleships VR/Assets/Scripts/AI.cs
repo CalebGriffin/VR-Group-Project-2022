@@ -130,7 +130,7 @@ public class AI : MonoBehaviour
                             col = (positionAround - 1) % board.Matrix.GetLength(0);
                             //GameObject.Instantiate(missCube, new Vector3(row, 1, col), Quaternion.identity);
 
-                            HitOrMissManager.instance.ResultOfAttack("Player", positionAround, false);
+                            HitOrMissManager.instance.ResultOfAttack("Player", positionAround, false, true);
                         }
                     }
 
@@ -171,6 +171,15 @@ public class AI : MonoBehaviour
                 uncheckedPositions.Remove(uncheckedPositions.Find(x => x.Position == i));
             }   
         }
+    }
+
+    public IEnumerator WaitToDecide()
+    {
+        float randTime = UnityEngine.Random.Range(2f, 5f);
+
+        yield return new WaitForSeconds(randTime);
+
+        Decision();
     }
 
     // TESTING
@@ -226,6 +235,8 @@ public class AI : MonoBehaviour
                 Hunt();
             }
         }
+        Debug.Log("AI shot at " + previousGuesses.Last().Position);
+        Debug.Log("Player Returned " + previousGuesses.Last().Hit + " at position " + previousGuesses.Last().Position);
     }
 
     // Choose the first position in the target stack and fire at it, if the shot is a hit and sunk then clear the target stack
