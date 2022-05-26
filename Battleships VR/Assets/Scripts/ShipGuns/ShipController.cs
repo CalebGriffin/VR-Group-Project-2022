@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,6 +6,7 @@ using UnityEngine;
 public class ShipController : MonoBehaviour
 {
     [SerializeField] private GameObject[] guns;
+    List<Tuple<GameObject, int>> fireParticleList = new List<Tuple<GameObject, int>>();
     [SerializeField] private int id;
     private int gunCount;
     // Start is called before the first frame update
@@ -18,6 +20,8 @@ public class ShipController : MonoBehaviour
         float y = Mathf.Sin(Time.time) * 3f;
         //transform.position = new Vector3(transform.position.x, transform.position.y + y, transform.position.z);
     }
+
+
 
     //This method is called when the event "fireGuns" is executed
     private void FireGuns(int id, Vector3 target, int amount)

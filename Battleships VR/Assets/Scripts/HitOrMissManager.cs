@@ -55,6 +55,11 @@ public class HitOrMissManager : MonoBehaviour
         yield return new WaitForSeconds(0.1f);
 
         UpdateResult("AIBoardInCC", position, hit);
+        if(hit == true)
+        {
+            SpawnFireOnBoats(position);
+        }
+
         if (!sunk)
             AI.instance.StartCoroutine("WaitToDecide");
     }
@@ -62,6 +67,9 @@ public class HitOrMissManager : MonoBehaviour
 
     public void SpawnFireOnBoats(int positionFromCC)
     {
+        
+        //When the boat is being created 
+
         //Assign a number to the fire which is the same as the grid position
         //Get the position of the AI's attack
         //Translate that into the players board on sea position
@@ -74,5 +82,9 @@ public class HitOrMissManager : MonoBehaviour
     private void UpdateResult(string name, int position, bool hit)
     {
         GameObject.Find(name).transform.Find(position.ToString()).GetChild(hit ? 1 : 0).gameObject.SetActive(true);
+        if(name == "PlayerBoardInSea")
+        {
+            GameObject.Find(name).transform.Find(position.ToString()).GetChild(0).gameObject.SetActive(true);
+        }
     }
 }
