@@ -37,8 +37,34 @@ public class ModelBoat : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        // This is just a comment to force the project to compile
-        
+        StartCoroutine(IgnoreHovering());
+    }
+
+    private IEnumerator IgnoreHovering()
+    {
+        AddIgnoreHovering();
+
+        yield return new WaitForSeconds(5f);
+
+        RemoveIgnoreHovering();
+    }
+
+    private void AddIgnoreHovering()
+    {
+        this.gameObject.AddComponent<IgnoreHovering>();
+        foreach (Transform child in transform)
+        {
+            child.gameObject.AddComponent<IgnoreHovering>();
+        }
+    }
+
+    private void RemoveIgnoreHovering()
+    {
+        Destroy(this.gameObject.GetComponent<IgnoreHovering>());
+        foreach (Transform child in transform)
+        {
+            Destroy(child.gameObject.GetComponent<IgnoreHovering>());
+        }
     }
 
     // Update is called once per frame

@@ -53,4 +53,12 @@ public class ModelBoatAnimator : MonoBehaviour
     {
         isAnimatingOut = true;
     }
+
+    public void EndAnimation()
+    {
+        isAnimatingIn = false;
+        isAnimatingOut = false;
+
+        dissolveMat.SetFloat("_Cutoff", 0);
+    }
 }
