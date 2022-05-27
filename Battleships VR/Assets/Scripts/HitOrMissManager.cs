@@ -82,9 +82,9 @@ public class HitOrMissManager : MonoBehaviour
     private void UpdateResult(string name, int position, bool hit)
     {
         GameObject.Find(name).transform.Find(position.ToString()).GetChild(hit ? 1 : 0).gameObject.SetActive(true);
-        if(name == "PlayerBoardInSea")
-        {
-            GameObject.Find(name).transform.Find(position.ToString()).GetChild(0).gameObject.SetActive(true);
-        }
+        //if(name == "PlayerBoardInSea")
+        //{
+            //GameObject.Find(name).transform.Find(position.ToString()).GetChild(0).gameObject.SetActive(true);
+        //}
     }
 }
