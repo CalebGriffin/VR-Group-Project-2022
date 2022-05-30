@@ -3,7 +3,67 @@ guid: f386bf9028e980a4bb6f7147623b6676
 ModelImporter:
   serializedVersion: 21100
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Book1
+    second: {fileID: 2100000, guid: f1561554e8e67fc4e899edbf846a4ee2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Book10
+    second: {fileID: 2100000, guid: b840fe424998b5a45aaaf81bba7f460f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Book11
+    second: {fileID: 2100000, guid: 983a1d604fcf94347a505f241bcd3419, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Book12
+    second: {fileID: 2100000, guid: c24ad4ebd6e64524eac2f6c0cc0f9b7a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Book2
+    second: {fileID: 2100000, guid: ecc1c883a8b9d6b42809a6542c238a27, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Book3
+    second: {fileID: 2100000, guid: c0eef7ee9b2072d4392ba50ed8638187, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Book4
+    second: {fileID: 2100000, guid: 4efd5f8b24d5e88478bb289de614609a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Book5
+    second: {fileID: 2100000, guid: 6c77ffeb3739d724fad9eb0ea1cdb812, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Book6
+    second: {fileID: 2100000, guid: 9ec22b40be823a74ab19b0266f10be8c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Book7
+    second: {fileID: 2100000, guid: 44425214326e35943a0a6c9a6cb330c9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Book8
+    second: {fileID: 2100000, guid: 64d14fb08001f6947b2efaac639bc30e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Book9
+    second: {fileID: 2100000, guid: 08a84b18ec94b104199deaf99b1d9845, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
