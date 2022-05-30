@@ -6,7 +6,7 @@ public class Plane : MonoBehaviour
 {
     [Header("References")]
     private Rigidbody rb;
-    private MeshRenderer renderer;
+    private MeshRenderer rend;
 
     private Vector3 targetObj;
 
@@ -20,9 +20,9 @@ public class Plane : MonoBehaviour
     void Start()
     {
         rb = gameObject.GetComponent<Rigidbody>();
-        renderer = gameObject.GetComponent<MeshRenderer>();
+        rend = gameObject.GetComponent<MeshRenderer>();
 
-        renderer.gameObject.SetActive(false);
+        rend.gameObject.SetActive(false);
         isMoving = false;
         //Invoke("ReachedEnd", 1.5f);
     }
@@ -53,7 +53,7 @@ public class Plane : MonoBehaviour
 
     public void StartPlaneMovement(Vector3 target)
     {
-        renderer.gameObject.SetActive(true);
+        rend.gameObject.SetActive(true);
         targetObj = target;
         isMoving = true;
         Invoke("ReachedEnd", 3f);
@@ -73,7 +73,6 @@ public class Plane : MonoBehaviour
 
         while (CalculateDotProduct(directionToTarget) == false)
         {
-            Debug.Log("Coroutine ran");
             transform.rotation = Quaternion.RotateTowards(transform.rotation, angleAxis, 10f * Time.deltaTime);
             
             yield return new WaitForEndOfFrame();
@@ -105,7 +104,6 @@ public class Plane : MonoBehaviour
         float yValue = 0.02f;
         for(int i = 0; i < 1000; i++)
         {
-            Debug.Log("Increasing height");
             if (i >= 30)
                 yValue += 0.01f;
 
