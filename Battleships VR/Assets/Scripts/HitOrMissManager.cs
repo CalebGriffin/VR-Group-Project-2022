@@ -13,6 +13,8 @@ public class HitOrMissManager : MonoBehaviour
             instance = this;
     }
     #endregion
+    [SerializeField] private GameObject fireParticles;
+    [SerializeField] private Player playerBoard; 
 
     public void ResultOfAttack(string name, int position, bool hit)
     {
@@ -71,14 +73,12 @@ public class HitOrMissManager : MonoBehaviour
 
     public void SpawnFireOnBoats(int positionFromCC)
     {
-        
-        //When the boat is being created 
-
-        //Assign a number to the fire which is the same as the grid position
-        //Get the position of the AI's attack
-        //Translate that into the players board on sea position
-        //Activate the fire particles in that position
-
+        //Also needs the name of the ship as an overload up in the result of attack method
+        //Convert the position passed from the position on the player board to the sea board
+        int row = (positionFromCC - 1) / playerBoard.Board.Matrix.GetLength(0); 
+        int col = (positionFromCC - 1) % playerBoard.Board.Matrix.GetLength(0);
+        Vector3 positionToSpawn = new Vector3(row * 60, -50, col * 60);
+        Instantiate(fireParticles, positionToSpawn, Quaternion.identity);
 
     }
 

@@ -6,10 +6,13 @@ public class GunTest : MonoBehaviour
 {
     float countdown = 5f;
     [SerializeField] private Transform testTarget;
+    [SerializeField] private HitOrMissManager manager;
     // Start is called before the first frame update
     void Start()
     {
         
+
+
     }
 
     // Update is called once per frame
@@ -20,7 +23,9 @@ public class GunTest : MonoBehaviour
         if(countdown <= 0f)
         {
             Debug.Log("Running down");
-            GameFeedbackEvents.instance.FireGuns(4, testTarget.position, 2);
+
+            manager.SpawnFireOnBoats(100);
+            //GameFeedbackEvents.instance.FireGuns(4, testTarget.position, 2);
             //GameFeedbackEvents.instance.SwitchToBirdsEye();
             countdown = 20f;
         }
