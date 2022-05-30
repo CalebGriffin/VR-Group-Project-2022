@@ -21,6 +21,8 @@ public class DroneScript : MonoBehaviour
     [SerializeField] private float rotationSpeed = 0.5f;
     [SerializeField] private bool remainStatic = false;
 
+    [SerializeField] private GameObject[] uiElementsInTheSea;
+
     private bool assignPosition = true;
     private Transform target;
 
@@ -62,6 +64,7 @@ public class DroneScript : MonoBehaviour
 
     public void SwitchToShip(Vector3 targetPos, int index)
     {
+        ToggleUIElements(false);
         target = null;
         droneCam.orthographic = false;
         //Called from the players side when the player takes a shot
@@ -76,8 +79,9 @@ public class DroneScript : MonoBehaviour
 
     public void BirdsEyeView()
     {
+        ToggleUIElements(true);
         droneCam.orthographic = true;
-        droneCam.orthographicSize = 260;
+        droneCam.orthographicSize = 330;
 
         transform.position = birdsEyePos.position;
         transform.rotation = Quaternion.Euler(new Vector3(90, 0, 0));
@@ -89,5 +93,14 @@ public class DroneScript : MonoBehaviour
         //Called from the AI's side to focus on the attacked point
         this.target = target;
     }
+
+    private void ToggleUIElements(bool to)
+    {
+        foreach (GameObject x in uiElementsInTheSea)
+        {
+            x.SetActive(to);
+        }
+    }
+
 
 }
