@@ -26,6 +26,7 @@ public class HitOrMissManager : MonoBehaviour
             case "AI":
                 //UpdateResult("PlayerBoarInCC", position, hit);
                 UpdateResult("PlayerBoardInSea", position, hit);
+                TurnClockAnimator.instance.AnimateTo("Player");
                 gVar.playerTurn = true;
                 break;
         }
@@ -61,7 +62,10 @@ public class HitOrMissManager : MonoBehaviour
         }
 
         if (!sunk)
+        {
+            TurnClockAnimator.instance.AnimateTo("AI");
             AI.instance.StartCoroutine("WaitToDecide");
+        }
     }
     
 
@@ -81,7 +85,14 @@ public class HitOrMissManager : MonoBehaviour
 
     private void UpdateResult(string name, int position, bool hit)
     {
-        GameObject.Find(name).transform.Find(position.ToString()).GetChild(hit ? 1 : 0).gameObject.SetActive(true);
+        try
+        {
+            GameObject.Find(name).transform.Find(position.ToString()).GetChild(hit ? 1 : 0).gameObject.SetActive(true);
+        }
+        catch (NullReferenceException)
+        {
+            Debug.LogError("The position wasn't found on the board!");
+        }
         //if(name == "PlayerBoardInSea")
         //{
             //GameObject.Find(name).transform.Find(position.ToString()).GetChild(0).gameObject.SetActive(true);
