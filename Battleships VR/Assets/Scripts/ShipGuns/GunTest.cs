@@ -20,7 +20,7 @@ public class GunTest : MonoBehaviour
         if(countdown <= 0f)
         {
             Debug.Log("Running down");
-            GameFeedbackEvents.instance.FireGuns(4, testTarget.position, false, 2);
+            GameFeedbackEvents.instance.FireGuns(4, testTarget.position, 2);
             //GameFeedbackEvents.instance.SwitchToBirdsEye();
             countdown = 20f;
         }

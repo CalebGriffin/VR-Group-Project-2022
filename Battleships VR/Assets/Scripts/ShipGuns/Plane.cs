@@ -56,7 +56,7 @@ public class Plane : MonoBehaviour
         renderer.gameObject.SetActive(true);
         targetObj = target;
         isMoving = true;
-        Invoke("ReachedEnd", 2f);
+        Invoke("ReachedEnd", 3f);
     }
 
     private void ReachedEnd()
