@@ -14,10 +14,10 @@ public class GameFeedbackEvents : MonoBehaviour
     }
     #endregion
 
-    public Action<int, Vector3, int> fireGuns;
+    public Action<int, Vector3, bool, int> fireGuns;
     public Action<Vector3, int> switchViewToShip;
     public Action switchToBirdsEye;
-    public void FireGuns(int id, Vector3 target, int amount = 1)
+    public void FireGuns(int id, Vector3 target, bool isGun, int amount = 1)
     {
         //IMPORTANT - id represents the index of the ship model in the drone camera list
         switchViewToShip.Invoke(target, id);
@@ -28,7 +28,7 @@ public class GameFeedbackEvents : MonoBehaviour
             return;
         }
 
-        fireGuns.Invoke(id, target, amount);
+        fireGuns.Invoke(id, target, isGun, amount);
     }
     public void SwitchToBirdsEye()
     {

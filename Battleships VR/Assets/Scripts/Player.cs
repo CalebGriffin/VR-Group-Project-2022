@@ -248,26 +248,32 @@ public class Player : MonoBehaviour
         int col = (position - 1) % board.Matrix.GetLength(0);
         int boatID = -1;
         int amount = 0;
+        bool isGun = false;
 
         if (boats.Find(x => x.Name == "Battleship").RemainingPositions.Count > 0)
         {
             boatID = 3;
+            isGun = true;
         }
         else if (boats.Find(x => x.Name == "Cruiser").RemainingPositions.Count > 0)
         {
             boatID = 2;
+            isGun = true;
         }
         else if (boats.Find(x => x.Name == "Destroyer").RemainingPositions.Count > 0)
         {
             boatID = 0;
+            isGun = true;
         }
         else if (boats.Find(x => x.Name == "Carrier").RemainingPositions.Count > 0)
         {
             boatID = 4;
+            isGun = false;
         }
         else
         {
             boatID = 1;
+            isGun = false;
         }
 
         switch (boatID)
@@ -282,7 +288,7 @@ public class Player : MonoBehaviour
                 break;
         }
         
-        GameFeedbackEvents.instance.FireGuns(boatID, new Vector3((row * 60) - 270, 0, (col * 60) + 1550), amount);
+        GameFeedbackEvents.instance.FireGuns(boatID, new Vector3((row * 60) - 270, 0, (col * 60) + 1550), isGun, amount);
 
         gVar.playerTurn = false;
     }
