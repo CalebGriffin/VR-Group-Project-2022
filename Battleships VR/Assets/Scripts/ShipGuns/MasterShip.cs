@@ -24,6 +24,7 @@ public class MasterShip : MonoBehaviour
 
                 break;
             case 4:
+                ships[id].GetComponent<Plane>().StartPlaneMovement(target);
                 break;
             case 1:
                 ships[id].GetComponent<Submarine>().Submerge();

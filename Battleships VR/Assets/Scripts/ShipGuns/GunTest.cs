@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GunTest : MonoBehaviour
 {
-    float countdown = 10f;
+    float countdown = 5f;
     [SerializeField] private Transform testTarget;
     // Start is called before the first frame update
     void Start()
@@ -20,7 +20,7 @@ public class GunTest : MonoBehaviour
         if(countdown <= 0f)
         {
             Debug.Log("Running down");
-            GameFeedbackEvents.instance.FireGuns(1, testTarget.position, false, 2);
+            GameFeedbackEvents.instance.FireGuns(4, testTarget.position, false, 2);
             //GameFeedbackEvents.instance.SwitchToBirdsEye();
             countdown = 20f;
         }
