@@ -106,6 +106,7 @@ public class Pin : MonoBehaviour
     public void Reset()
     {
         ResetLockPoint();
+        dynamicPosition.localPosition = new Vector3(0,0,0);
         hoveringOverTheBoard = false;
         placed = false;
     }
@@ -129,7 +130,7 @@ public class Pin : MonoBehaviour
 
     public void OnLetGo()
     {
-        if (!GetComponent<LockToPoint>().snapTo == dynamicPosition)
+        if (!GetComponent<LockToPoint>().snapTo == dynamicPosition || !hoveringOverTheBoard)
         {
             return;
         }
@@ -145,7 +146,10 @@ public class Pin : MonoBehaviour
     public IEnumerator Disappear()
     {
         // Call the method to shoot at the AI
-        int shootPosition = player.Board.Matrix[(int)dynamicPosition.localPosition.x, (int)dynamicPosition.localPosition.z];
+        int shootPosition = player.Board.Matrix[Mathf.RoundToInt(dynamicPosition.localPosition.x), Mathf.RoundToInt(dynamicPosition.localPosition.z)];
+        Debug.Log(dynamicPosition.localPosition.ToString());
+        Debug.Log(Mathf.RoundToInt(dynamicPosition.localPosition.x) + ", " + Mathf.RoundToInt(dynamicPosition.localPosition.z));
+        Debug.Log("Which means that the fired position is: " + player.Board.Matrix[Mathf.RoundToInt(dynamicPosition.localPosition.x), Mathf.RoundToInt(dynamicPosition.localPosition.z)]);
 
         player.Decision(shootPosition);
 

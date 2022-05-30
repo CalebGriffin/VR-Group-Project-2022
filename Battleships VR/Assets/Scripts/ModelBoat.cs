@@ -213,7 +213,7 @@ public class ModelBoat : MonoBehaviour
         boardParent.SendMessage("ResetBounds");
 
         // Set the positions of the boat based on the location of the model boat gameobject
-        int startingPosition = player.Board.Matrix[(int)dynamicPosition.localPosition.x, (int)dynamicPosition.localPosition.z];
+        int startingPosition = player.Board.Matrix[Mathf.RoundToInt(dynamicPosition.localPosition.x), Mathf.RoundToInt(dynamicPosition.localPosition.z)];
         positions = new int[length];
         positions[0] = startingPosition;
         switch(direction)
