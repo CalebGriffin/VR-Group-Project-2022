@@ -11,7 +11,7 @@ public class MasterShip : MonoBehaviour
         GameFeedbackEvents.instance.fireGuns += DetermineWhichShip;
     }
 
-    private void DetermineWhichShip(int id, Vector3 target, bool isGun, int amount)
+    private void DetermineWhichShip(int id, Vector3 target, int amount)
     {
         switch (id)
         {
@@ -20,10 +20,11 @@ public class MasterShip : MonoBehaviour
             case 0:
                 ShipController controller1 = ships[id].GetComponent<ShipController>();
                 if (id == controller1.Id)
-                    controller1.FireGuns(id, target, isGun, amount);
+                    controller1.FireGuns(id, target, amount);
 
                 break;
             case 4:
+                ships[id].GetComponent<Plane>().StartPlaneMovement(target);
                 break;
             case 1:
                 ships[id].GetComponent<Submarine>().Submerge();

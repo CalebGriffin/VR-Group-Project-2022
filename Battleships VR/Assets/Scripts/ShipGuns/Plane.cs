@@ -4,20 +4,26 @@ using UnityEngine;
 
 public class Plane : MonoBehaviour
 {
+    [Header("References")]
     private Rigidbody rb;
+    private MeshRenderer rend;
 
-    private Transform targetObj;
+    private Vector3 targetObj;
 
     Vector3 forward;
 
     private float speed = 1f;
+    private bool isMoving = false;
 
 
     // Start is called before the first frame update
     void Start()
     {
         rb = gameObject.GetComponent<Rigidbody>();
+        rend = gameObject.GetComponent<MeshRenderer>();
 
+        rend.gameObject.SetActive(false);
+        isMoving = false;
         //Invoke("ReachedEnd", 1.5f);
     }
 
@@ -25,9 +31,12 @@ public class Plane : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        forward = transform.TransformDirection(Vector3.forward);
-        rb.velocity = forward * speed;
-        Accellerate();
+        if(isMoving)
+        {
+            forward = transform.TransformDirection(Vector3.forward);
+            rb.velocity = forward * speed;
+            Accellerate();
+        }
     }
 
     private void Accellerate()
@@ -35,26 +44,28 @@ public class Plane : MonoBehaviour
         float initialVelocity = rb.velocity.magnitude;
         float finalVelocity = rb.velocity.magnitude + 2f;
         float initialTime = Time.time;
-        float finalTime = Time.time + 30f;
+        float finalTime = Time.time + 5f;
 
         speed += (finalVelocity - initialVelocity) / (finalTime - initialTime);
 
 
     }
 
-    public void StartPlaneMovement()
+    public void StartPlaneMovement(Vector3 target)
     {
-        Invoke("ReachedEnd", 1.5f);
+        rend.gameObject.SetActive(true);
+        targetObj = target;
+        isMoving = true;
+        Invoke("ReachedEnd", 3f);
     }
 
-    private void ReachedEnd(Vector3 target)
+    private void ReachedEnd()
     {
-        targetObj.position = target;
         StartCoroutine(TurnToTarget());
     }
     private IEnumerator TurnToTarget()
     {
-        Vector3 directionToTarget = targetObj.position - rb.transform.position;
+        Vector3 directionToTarget = targetObj - rb.transform.position;
         float angle = Mathf.Atan2(directionToTarget.x, directionToTarget.z) * Mathf.Rad2Deg;
         Quaternion angleAxis = Quaternion.AngleAxis(angle, Vector3.up);
 
@@ -62,7 +73,6 @@ public class Plane : MonoBehaviour
 
         while (CalculateDotProduct(directionToTarget) == false)
         {
-            Debug.Log("Coroutine ran");
             transform.rotation = Quaternion.RotateTowards(transform.rotation, angleAxis, 10f * Time.deltaTime);
             
             yield return new WaitForEndOfFrame();
@@ -94,7 +104,6 @@ public class Plane : MonoBehaviour
         float yValue = 0.02f;
         for(int i = 0; i < 1000; i++)
         {
-            Debug.Log("Increasing height");
             if (i >= 30)
                 yValue += 0.01f;
 
