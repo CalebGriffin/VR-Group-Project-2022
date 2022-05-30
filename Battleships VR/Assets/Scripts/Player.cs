@@ -22,6 +22,8 @@ public class Player : MonoBehaviour
     public GameObject[] modelBoats;
     public BoatPlacer boatPlacer;
 
+    public DeskAnimator deskAnimator;
+
     public AI ai;
 
     // Start is called before the first frame update
@@ -148,6 +150,7 @@ public class Player : MonoBehaviour
         {
             boatPlacer.PlaceBoat(modelBoat.GetComponent<ModelBoat>().BoatName, modelBoat.transform);
         }
+        deskAnimator.TransitionToGame();
         gVar.playerTurn = true;
     }
 
