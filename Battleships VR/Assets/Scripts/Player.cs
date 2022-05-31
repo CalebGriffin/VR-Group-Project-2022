@@ -176,6 +176,8 @@ public class Player : MonoBehaviour
                 {
                     sunk = true;
 
+                    GameFeedbackEvents.instance.ShipHasSunk(ConvertBoatNameToBoatID(boat));
+
                     // Get all of the points around the boat and place miss objects around them because the boats can't be there
                     int[] positionsAround = boat.Sunk(this.board);
                     foreach (int positionAround in positionsAround)
@@ -260,7 +262,7 @@ public class Player : MonoBehaviour
         int randomIndex = UnityEngine.Random.Range(0, listOfPossibleBoats.Count);
         int boatID = ConvertBoatNameToBoatID(listOfPossibleBoats[randomIndex]);
 
-        int amount = 0;
+        int amount = 1;
         switch (boatID)
         {
             case 2:

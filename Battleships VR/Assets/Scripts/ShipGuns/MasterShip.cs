@@ -9,10 +9,12 @@ public class MasterShip : MonoBehaviour
     private void Start()
     {
         GameFeedbackEvents.instance.fireGuns += DetermineWhichShip;
+        GameFeedbackEvents.instance.shipHasSunk += ShipHasSunk;
     }
 
     private void DetermineWhichShip(int id, Vector3 target, int amount)
     {
+        Debug.Log("Calling ship to hit" + id.ToString());
         switch (id)
         {
             case 3:
@@ -24,11 +26,16 @@ public class MasterShip : MonoBehaviour
 
                 break;
             case 4:
-                ships[id].GetComponent<Plane>().StartPlaneMovement(target);
+                ships[id].GetComponent<AircraftCarrier>().BeginPlane(target);
                 break;
             case 1:
                 ships[id].GetComponent<Submarine>().Submerge();
                 break;
         }
+    }
+
+    private void ShipHasSunk(int id)
+    {
+        ships[id].GetComponent<BoatSunk>().SinkShip();
     }
 }
