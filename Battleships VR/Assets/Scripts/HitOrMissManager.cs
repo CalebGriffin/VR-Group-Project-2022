@@ -38,6 +38,8 @@ public class HitOrMissManager : MonoBehaviour
             case "AI":
                 //UpdateResult("PlayerBoarInCC", position, hit);
                 UpdateResult("PlayerBoardInSea", position, hit);
+                if(hit == true)
+                    SpawnFireOnBoats(position);
                 TurnClockAnimator.instance.AnimateTo("Player");
                 gVar.playerTurn = true;
                 break;
@@ -70,7 +72,7 @@ public class HitOrMissManager : MonoBehaviour
         UpdateResult("AIBoardInCC", position, hit);
         if(hit == true)
         {
-            SpawnFireOnBoats(position);
+            //SpawnFireOnBoats(position);
         }
 
         if (!sunk)
@@ -87,7 +89,7 @@ public class HitOrMissManager : MonoBehaviour
         //Convert the position passed from the position on the player board to the sea board
         int row = (positionFromCC - 1) / playerBoard.Board.Matrix.GetLength(0); 
         int col = (positionFromCC - 1) % playerBoard.Board.Matrix.GetLength(0);
-        Debug.Log(positionFromCC);
+        Debug.Log("Trying to spawn fire " + positionFromCC);
         emptyMarker.transform.localPosition = new Vector3(row * 60, 0, col * 60);
         FindNearestFire().SetActive(true);
         //GameObject temp = Instantiate(fireParticles, new Vector3(0,0,0), Quaternion.identity, GameObject.Find("Full Board Parent").transform);
