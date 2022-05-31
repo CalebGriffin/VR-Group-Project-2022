@@ -246,30 +246,21 @@ public class Player : MonoBehaviour
         // Calculate where to fire the guns and call the event to fire them
         int row = (position - 1) / board.Matrix.GetLength(0);
         int col = (position - 1) % board.Matrix.GetLength(0);
-        int boatID = -1;
+
+        List<Boat> listOfPossibleBoats = new List<Boat>();
+
+        foreach (Boat boat in boats)
+        {
+            if (boat.RemainingPositions.Count > 0)
+            {
+                listOfPossibleBoats.Add(boat);
+            }
+        }
+
+        int randomIndex = UnityEngine.Random.Range(0, listOfPossibleBoats.Count);
+        int boatID = ConvertBoatNameToBoatID(listOfPossibleBoats[randomIndex]);
+
         int amount = 0;
-
-        if (boats.Find(x => x.Name == "Battleship").RemainingPositions.Count > 0)
-        {
-            boatID = 3;
-        }
-        else if (boats.Find(x => x.Name == "Cruiser").RemainingPositions.Count > 0)
-        {
-            boatID = 2;
-        }
-        else if (boats.Find(x => x.Name == "Destroyer").RemainingPositions.Count > 0)
-        {
-            boatID = 0;
-        }
-        else if (boats.Find(x => x.Name == "Carrier").RemainingPositions.Count > 0)
-        {
-            boatID = 4;
-        }
-        else
-        {
-            boatID = 1;
-        }
-
         switch (boatID)
         {
             case 2:
@@ -285,5 +276,15 @@ public class Player : MonoBehaviour
         GameFeedbackEvents.instance.FireGuns(boatID, new Vector3((row * 60) - 270, 0, (col * 60) + 1550), amount);
 
         gVar.playerTurn = false;
+    }
+
+    private int ConvertBoatNameToBoatID(Boat boat)
+    {
+        if (boat.Name == "Destroyer")
+            return 0;
+        else if (boat.Name == "Submarine")
+            return 1;
+        else
+            return boat.Positions.Length - 1;
     }
 }
