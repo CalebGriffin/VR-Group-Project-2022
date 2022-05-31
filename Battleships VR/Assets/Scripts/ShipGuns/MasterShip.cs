@@ -22,7 +22,7 @@ public class MasterShip : MonoBehaviour
             case 0:
                 ShipController controller1 = ships[id].GetComponent<ShipController>();
                 if (id == controller1.Id)
-                    controller1.FireGuns(id, target, amount);
+                    controller1.FireGuns(target, amount);
 
                 break;
             case 4:
