@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DansLibrary;
 
 public class Plane : MonoBehaviour
 {
@@ -24,7 +25,6 @@ public class Plane : MonoBehaviour
         rend = gameObject.GetComponent<MeshRenderer>();
 
         rend.gameObject.SetActive(false);
-
         
         isMoving = false;
         //Invoke("ReachedEnd", 1.5f);
@@ -59,6 +59,11 @@ public class Plane : MonoBehaviour
         rend.gameObject.SetActive(true);
         targetObj = target;
         isMoving = true;
+
+        GlobalTimer timer = new GlobalTimer(10f);
+        StartCoroutine(timer.ScaledTimer());
+        timer.timerCompleted += ReturnToStartingPosition;
+
         Invoke("ReachedEnd", 3f);
     }
 
@@ -113,5 +118,16 @@ public class Plane : MonoBehaviour
             transform.position = transform.position + new Vector3(0, yValue, 0);
             yield return new WaitForSeconds(0.05f);
         }
+    }
+
+    private void ReturnToStartingPosition()
+    {
+        rend.gameObject.SetActive(false);
+        gameObject.transform.position = startingPos.position;
+        gameObject.transform.localEulerAngles = new Vector3(0, -101, 0);
+        speed = 1f;
+        isMoving = false;
+        GameFeedbackEvents.instance.SwitchToBirdsEye();
+        gVar.playerTurnOver = true;
     }
 }
