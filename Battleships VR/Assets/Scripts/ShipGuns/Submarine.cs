@@ -17,6 +17,9 @@ public class Submarine : MonoBehaviour
     private void Reimerge()
     {
         Debug.Log("Coming up");
-        LeanTween.moveLocalY(gameObject, 0, 5f);
+        LeanTween.moveLocalY(gameObject, 0, 5f).setOnComplete(() =>
+        {
+            gVar.playerTurnOver = true;
+        });
     }
 }
