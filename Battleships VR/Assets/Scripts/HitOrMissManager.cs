@@ -21,6 +21,7 @@ public class HitOrMissManager : MonoBehaviour
 
     private void Start()
     {
+        //Find all the fire particles at the beginning of the game so they can be found after they have all been set inactive 
         firePart = GameObject.FindGameObjectsWithTag("Fire");
         foreach (GameObject fire in firePart)
             fire.SetActive(false);
@@ -28,18 +29,18 @@ public class HitOrMissManager : MonoBehaviour
 
     public void ResultOfAttack(string name, int position, bool hit)
     {
-        //Find the opposite of the board passed in
+        //Call the correct part of this script depending on who is using this script to return the value of their shot
         switch (name)
         {
             case "Player":
                 StartCoroutine(Wait(name, position, hit, false));
-                //UpdateResult("AIBoardInSea", position, hit);
                 break;
             case "AI":
-                //UpdateResult("PlayerBoarInCC", position, hit);
                 UpdateResult("PlayerBoardInSea", position, hit);
+
                 if(hit == true)
                     SpawnFireOnBoats(position);
+
                 TurnClockAnimator.instance.AnimateTo("Player");
                 gVar.playerTurn = true;
                 break;
@@ -70,10 +71,6 @@ public class HitOrMissManager : MonoBehaviour
         yield return new WaitForSeconds(0.1f);
 
         UpdateResult("AIBoardInCC", position, hit);
-        if(hit == true)
-        {
-            //SpawnFireOnBoats(position);
-        }
 
         if (!sunk)
         {
@@ -85,24 +82,21 @@ public class HitOrMissManager : MonoBehaviour
 
     public void SpawnFireOnBoats(int positionFromCC)
     {
-        //Also needs the name of the ship as an overload up in the result of attack method
-        //Convert the position passed from the position on the player board to the sea board
+        //Get the board position from the players board so we can correctly get the board positions on the sea
         int row = (positionFromCC - 1) / playerBoard.Board.Matrix.GetLength(0); 
         int col = (positionFromCC - 1) % playerBoard.Board.Matrix.GetLength(0);
-        Debug.Log("Trying to spawn fire " + positionFromCC);
+
+        //Moving an empty object to the position where the AI fired on the players board because it is easier to debug than just using numbers and calculations
         emptyMarker.transform.localPosition = new Vector3(row * 60, 0, col * 60);
         FindNearestFire().SetActive(true);
-        //GameObject temp = Instantiate(fireParticles, new Vector3(0,0,0), Quaternion.identity, GameObject.Find("Full Board Parent").transform);
-        //temp.transform.localPosition = new Vector3(row * 60, 10, col * 60);
-        // Find the nearest object with tag / on layer for fire and enable it
-
-
     }
 
     private GameObject FindNearestFire()
     {
+        //The starting number is set really high to ensure the check will always run against each fire particle in the array
         float closest = 10000f;
         GameObject nearestFire = null;
+
         foreach(GameObject fire in firePart)
         {
             float distance = (fire.transform.position - emptyMarker.transform.position).magnitude;
@@ -121,6 +115,7 @@ public class HitOrMissManager : MonoBehaviour
     {
         try
         {
+            //Find the gameobject with the correct parent name and child name (chilren are named after the position they ocupy - 1, 2 etc.)
             GameObject.Find(name).transform.Find(position.ToString()).GetChild(hit ? 1 : 0).gameObject.SetActive(true);
         }
         catch (NullReferenceException)

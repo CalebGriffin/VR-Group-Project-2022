@@ -36,6 +36,7 @@ public class MasterShip : MonoBehaviour
 
     private void ShipHasSunk(int id)
     {
+        //Using another script on each boat so I can reuse the code in it for each ship without needing to specify which one
         ships[id].GetComponent<BoatSunk>().SinkShip();
     }
 }

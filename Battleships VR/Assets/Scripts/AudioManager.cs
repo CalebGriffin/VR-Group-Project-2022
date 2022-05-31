@@ -49,7 +49,6 @@ public class AudioManager : MonoBehaviour
             //s.source.pitch = s.pitch;
             s.source.loop = s.loop;
         }
-        PlaySounds("QuietCrowd");
     }
 
     public void PlaySounds(string soundName)
