@@ -9,6 +9,7 @@ public class Plane : MonoBehaviour
     private MeshRenderer rend;
 
     private Vector3 targetObj;
+    [SerializeField] private Transform startingPos;
 
     Vector3 forward;
 
@@ -23,6 +24,8 @@ public class Plane : MonoBehaviour
         rend = gameObject.GetComponent<MeshRenderer>();
 
         rend.gameObject.SetActive(false);
+
+        
         isMoving = false;
         //Invoke("ReachedEnd", 1.5f);
     }
