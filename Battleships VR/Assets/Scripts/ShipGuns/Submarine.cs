@@ -20,6 +20,7 @@ public class Submarine : MonoBehaviour
         LeanTween.moveLocalY(gameObject, 0, 5f).setOnComplete(() =>
         {
             gVar.playerTurnOver = true;
+            GameFeedbackEvents.instance.SwitchToBirdsEye();
         });
     }
 }
