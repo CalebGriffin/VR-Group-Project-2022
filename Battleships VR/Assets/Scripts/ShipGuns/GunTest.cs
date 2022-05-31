@@ -24,10 +24,10 @@ public class GunTest : MonoBehaviour
         {
             Debug.Log("Running down");
 
-            manager.SpawnFireOnBoats(100);
+            manager.SpawnFireOnBoats(47);
             //GameFeedbackEvents.instance.FireGuns(4, testTarget.position, 2);
             //GameFeedbackEvents.instance.SwitchToBirdsEye();
-            countdown = 20f;
+            countdown = 500f;
         }
     }
 }

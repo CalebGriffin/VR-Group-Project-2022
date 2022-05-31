@@ -9,6 +9,7 @@ TagManager:
   - Player Board
   - Enemy Board
   - Barrel
+  - Fire
   layers:
   - Default
   - TransparentFX
