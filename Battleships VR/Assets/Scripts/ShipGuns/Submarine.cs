@@ -13,6 +13,7 @@ public class Submarine : MonoBehaviour
         foreach (GameObject fire in fireParticles)
             if (fire.gameObject.activeSelf == true)
             {
+                Debug.Log("Hiding fire");
                 revealedFire.Add(fire);
                 fire.SetActive(false);
             }
