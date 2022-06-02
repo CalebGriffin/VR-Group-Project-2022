@@ -112,6 +112,7 @@ public class GunBehaviour : MonoBehaviour
                 Animator anim = barrel.GetComponent<Animator>();
                 anim.SetBool("isFiring", true);
                 explosionParticle.SetActive(true);
+                StartCoroutine(AudioLibrary.instance.GenerateSound("Explosion", gameObject, true, 0.5f));
                 //Debug.Log("Ran shoot animation");
                 StartCoroutine(StopShooting(anim));
             }
