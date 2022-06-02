@@ -256,5 +256,6 @@ public class ModelBoat : MonoBehaviour
 
         // Call a method on the player to create a boat with the length and direction
         player.AddShip(this);
+        StartCoroutine(AudioLibrary.instance.GenerateSound("BoardSplash", gameObject, true, 0.8f));
     }
 }
