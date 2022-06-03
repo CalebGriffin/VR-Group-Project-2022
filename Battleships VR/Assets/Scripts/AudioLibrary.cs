@@ -25,7 +25,7 @@ public class AudioLibrary : MonoBehaviour
     public AudioStats[] sounds;
 
 
-    public IEnumerator GenerateSound(string name, GameObject obj, bool is3D, float delay = 0f)
+    public IEnumerator GenerateSound(string name, GameObject obj, bool is3D, float delay = 0f, float minDistance = 100f, bool manualStop = false)
     {
         if (obj.GetComponent<AudioSource>() == null)
             obj.AddComponent<AudioSource>();
@@ -44,7 +44,7 @@ public class AudioLibrary : MonoBehaviour
         if (is3D)
         {
             source.spatialBlend = 1f;
-            source.minDistance = 100f;
+            source.minDistance = minDistance;
             source.maxDistance = 1000f;
         }
         source.clip = stats.clip;
@@ -53,7 +53,8 @@ public class AudioLibrary : MonoBehaviour
         //Delay is an optional parameter so other classes can use this method without the delay
         yield return new WaitForSeconds(delay);
         source.Play();
-        StartCoroutine(StopPlayingSound(source, source.clip.length));
+        if(manualStop == false)
+            StartCoroutine(StopPlayingSound(source, source.clip.length));
     }
 
     private IEnumerator StopPlayingSound(AudioSource source, float timeToStop)
@@ -62,6 +63,4 @@ public class AudioLibrary : MonoBehaviour
         Debug.Log("Stopping source");
         source.Stop();
     }
-
-
 }
