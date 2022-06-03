@@ -27,7 +27,6 @@ public class Plane : MonoBehaviour
         rend.gameObject.SetActive(false);
         
         isMoving = false;
-        //Invoke("ReachedEnd", 1.5f);
     }
 
 
@@ -59,11 +58,13 @@ public class Plane : MonoBehaviour
         rend.gameObject.SetActive(true);
         targetObj = target;
         isMoving = true;
+        StartCoroutine(AudioLibrary.instance.GenerateSound("Plane", gameObject, true, 0.3f, 300f, true));
 
         GlobalTimer timer = new GlobalTimer(10f);
         StartCoroutine(timer.ScaledTimer());
         timer.timerCompleted += ReturnToStartingPosition;
 
+        StartCoroutine(IncreaseHeight());
         Invoke("ReachedEnd", 3f);
     }
 
@@ -76,8 +77,6 @@ public class Plane : MonoBehaviour
         Vector3 directionToTarget = targetObj - rb.transform.position;
         float angle = Mathf.Atan2(directionToTarget.x, directionToTarget.z) * Mathf.Rad2Deg;
         Quaternion angleAxis = Quaternion.AngleAxis(angle, Vector3.up);
-
-        StartCoroutine(IncreaseHeight());
 
         while (CalculateDotProduct(directionToTarget) == false)
         {
@@ -108,7 +107,7 @@ public class Plane : MonoBehaviour
 
     private IEnumerator IncreaseHeight()
     {
-
+        yield return new WaitForSeconds(1f);
         float yValue = 0.02f;
         for(int i = 0; i < 1000; i++)
         {
@@ -127,7 +126,15 @@ public class Plane : MonoBehaviour
         gameObject.transform.localEulerAngles = new Vector3(0, -101, 0);
         speed = 1f;
         isMoving = false;
+        StopAudio();
         GameFeedbackEvents.instance.SwitchToBirdsEye();
         gVar.playerTurnOver = true;
+    }
+
+    private void StopAudio()
+    {
+        AudioSource source = GetComponent<AudioSource>();
+        source.Stop();
+        Debug.Log("Sound stopped");
     }
 }
