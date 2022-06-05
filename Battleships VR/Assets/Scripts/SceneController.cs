@@ -5,20 +5,20 @@ using UnityEngine.SceneManagement;
 
 public class SceneController : MonoBehaviour
 {
+    [SerializeField] private string[] sceneNames;
     // Start is called before the first frame update
     void Start()
     {
         LoadAllScenes();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
     private void LoadAllScenes()
     {
-        SceneManager.LoadScene("Dan's Scene", LoadSceneMode.Additive);
+        foreach(string name in sceneNames)
+        {
+            SceneManager.LoadScene(name, LoadSceneMode.Additive);
+        }
+
     }
 
 }
