@@ -10,6 +10,7 @@ public class DeskAnimator : MonoBehaviour
     [SerializeField] private GameObject blinds;
     [SerializeField] private GameObject buttonParent;
     [SerializeField] private GameObject[] buttons;
+    [SerializeField] private GameObject resetButton;
     [SerializeField] private GameObject turnClock;
     [SerializeField] private GameObject playerBoard;
     [SerializeField] private GameObject enemyBoard;
@@ -27,6 +28,15 @@ public class DeskAnimator : MonoBehaviour
         MoveTurnClockUp();
     }
 
+    public void TransitionToEnd(bool playerWon)
+    {
+        if (!playerWon)
+            BringDownTheBlinds();
+        TurnOnTheMenu(playerWon);
+        MoveTurnClockDown();
+        FlipMovingPartBack();
+    }
+
     private void FlipMovingPart()
     {
         LeanTween.rotateZ(movingPart, 180, animationTime).setOnStart(() =>
@@ -38,6 +48,19 @@ public class DeskAnimator : MonoBehaviour
             playerBoard.SetActive(false);
             pinParent.SetActive(true);
             TurnOffTheMenu();
+        });
+    }
+
+    private void FlipMovingPartBack()
+    {
+        LeanTween.rotateZ(movingPart, 360, animationTime).setOnStart(() =>
+        {
+            resetButton.SetActive(true);
+            pinParent.SetActive(false);
+        });
+        LeanTween.moveLocalY(movingPart, 0.45f, animationTime).setOnComplete(() =>
+        {
+            enemyBoard.SetActive(false);
         });
     }
     
@@ -57,7 +80,18 @@ public class DeskAnimator : MonoBehaviour
 
     private void MoveTurnClockUp()
     {
-        LeanTween.moveLocalY(turnClock, 0.6f, animationTime);
+        LeanTween.moveLocalY(turnClock, 0.6f, animationTime).setOnStart(() =>
+        {
+            turnClock.SetActive(true);
+        });
+    }
+
+    private void MoveTurnClockDown()
+    {
+        LeanTween.moveLocalY(turnClock, 0.2f, animationTime).setOnComplete(() =>
+        {
+            turnClock.SetActive(false);
+        });
     }
 
     private void BringUpTheBlinds()
@@ -65,9 +99,22 @@ public class DeskAnimator : MonoBehaviour
         LeanTween.moveLocalY(blinds, 2.34f, animationTime);
     }
 
+    private void BringDownTheBlinds()
+    {
+        LeanTween.moveLocalY(blinds, 0.0902563f, animationTime);
+    }
+
     private void TurnOffTheMenu()
     {
         menuParent.SetActive(false);
         camDisplayParent.SetActive(true);
+    }
+
+    private void TurnOnTheMenu(bool playerWon)
+    {
+        camDisplayParent.SetActive(false);
+        UIManager.instance.ResetMenuText();
+        menuParent.SetActive(true);
+        UIManager.instance.DisplayEndText(playerWon);
     }
 }

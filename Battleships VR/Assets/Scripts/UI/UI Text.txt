@@ -2,7 +2,7 @@ Welcome to VR Battleships
 
 
 
-To begin 
+To begin, 
 
 pick up the boats placed on the desk 
 and place them on the checkered board_

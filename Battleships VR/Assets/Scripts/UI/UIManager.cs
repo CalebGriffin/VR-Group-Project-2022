@@ -6,13 +6,36 @@ using TMPro;
 public class UIManager : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI text;
-    [SerializeField] private TextAsset textFile;
+    [SerializeField] private TextAsset menuFile;
+    [SerializeField] private TextAsset winnerFile;
+    [SerializeField] private TextAsset loserFile;
+
+    #region Singleton
+    public static UIManager instance;
+    void Awake()
+    {
+        if (instance == null)
+            instance = this;
+    }
+    #endregion
+
     private void Start()
     {
         text.text = "";
-        StartCoroutine(RevealLetters());
+        StartCoroutine(RevealLetters(menuFile));
     }
-    private IEnumerator RevealLetters()
+
+    public void ResetMenuText()
+    {
+        text.text = "";
+    }
+
+    public void DisplayEndText(bool playerWon)
+    {
+        RevealLetters(playerWon ? winnerFile : loserFile);
+    }
+
+    private IEnumerator RevealLetters(TextAsset textFile)
     {
         string stringTextFile = textFile.ToString();
         for(int i = 0; i < stringTextFile.Length; i++)
