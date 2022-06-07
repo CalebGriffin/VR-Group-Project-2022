@@ -29,6 +29,13 @@ public class ShipController : MonoBehaviour
         {
             gVar.playerTurnOver = true;
             GameFeedbackEvents.instance.SwitchToBirdsEye();
+
+            foreach(GameObject gun in guns)
+            {
+                float x = gun.transform.localEulerAngles.x;
+                float z = gun.transform.localEulerAngles.z;
+                gun.transform.localEulerAngles = new Vector3(x, 0, z);
+            }
         }
     }
 
