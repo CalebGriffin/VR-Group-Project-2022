@@ -53,6 +53,7 @@ public class DeskAnimator : MonoBehaviour
 
     private void FlipMovingPartBack()
     {
+        enemyBoard.transform.localPosition = new Vector3(enemyBoard.transform.localPosition.x, -0.026f, enemyBoard.transform.localPosition.z);
         LeanTween.rotateZ(movingPart, 360, animationTime).setOnStart(() =>
         {
             resetButton.SetActive(true);

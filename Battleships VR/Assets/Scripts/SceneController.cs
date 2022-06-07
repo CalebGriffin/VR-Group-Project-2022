@@ -2,23 +2,89 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using Valve.VR.InteractionSystem;
+using Valve.VR;
 
 public class SceneController : MonoBehaviour
 {
-    [SerializeField] private string[] sceneNames;
+    #region Singleton
+    public static SceneController instance;
+    void Awake()
+    {
+        if (instance == null)
+            instance = this;
+    }
+    #endregion
+
+    [SerializeField] private SceneReference[] scenes;
+    
+    private float animationTime = 1f;
+    private bool isLoading = false;
+
     // Start is called before the first frame update
     void Start()
     {
-        LoadAllScenes();
+        StartCoroutine(FadeInDelay());
+
     }
 
     private void LoadAllScenes()
     {
-        foreach(string name in sceneNames)
+        foreach(SceneReference scene in scenes)
         {
-            SceneManager.LoadScene(name, LoadSceneMode.Additive);
+            SceneManager.LoadScene(scene, LoadSceneMode.Additive);
+        }
+    }
+
+    private void FadeIn()
+    {
+        SteamVR_Fade.Start(Color.black, 0);
+        SteamVR_Fade.Start(Color.clear, animationTime);
+    }
+
+    public IEnumerator FadeInDelay()
+    {
+        SteamVR_Fade.Start(Color.black, 0);
+
+        foreach (SceneReference scene in scenes)
+        {
+            AsyncOperation loadScene = SceneManager.LoadSceneAsync(scene, LoadSceneMode.Additive);
+
+            while (!loadScene.isDone)
+                yield return null;
         }
 
+        SteamVR_Fade.Start(Color.clear, animationTime);
+    }
+
+    [ContextMenu(nameof(ReloadScene))]
+    public void ReloadScene()
+    {
+        if (isLoading)
+            return;
+
+        StartCoroutine(ReloadSceneDelay());
+    }
+
+    public IEnumerator ReloadSceneDelay()
+    {
+        isLoading = true;
+
+        SteamVR_Fade.Start(Color.clear, 0);
+        SteamVR_Fade.Start(Color.black, animationTime);
+
+        AsyncOperation loadScene = SceneManager.LoadSceneAsync("TestScene", LoadSceneMode.Single);
+        loadScene.allowSceneActivation = false;
+
+        yield return new WaitForSeconds(animationTime);
+
+        while (loadScene.progress < 0.9f)
+            yield return null;
+        
+        loadScene.allowSceneActivation = true;
+
+        isLoading = false;
     }
 
 }

@@ -11,6 +11,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Dan's Scene.unity
     guid: 35a0b66998f766443b88a47f5bfc0d07
+  - enabled: 1
+    path: Assets/Scenes/Caleb's Scene.unity
+    guid: 787eedc6f6700424fab9e42069b3e5c8
   m_configObjects:
     Unity.XR.OpenVR.Settings: {fileID: 11400000, guid: 787b6d08fad8645798982608ea737672, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: bd1a5e29cc45b4e31b90f5afec10e1be, type: 2}
