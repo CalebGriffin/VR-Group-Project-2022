@@ -121,8 +121,15 @@ public class HitOrMissManager : MonoBehaviour
         int col = (positionFromCC - 1) % playerBoard.Board.Matrix.GetLength(0);
         GameObject temp = Instantiate(waterSplash, new Vector3(0, 0, 0), Quaternion.identity, seaBoard.transform);
         temp.transform.localPosition = new Vector3(row * 60, 0, col * 60);
+        GameFeedbackEvents.instance.SwitchToWaterView(temp.transform);
         Debug.Log("Spawned some water");
-        Destroy(temp, 2f);
+        StartCoroutine(DestroySplash(temp));
+    }
+    private IEnumerator DestroySplash(GameObject temp)
+    {
+        yield return new WaitForSeconds(2f);
+        Destroy(temp);
+        GameFeedbackEvents.instance.SwitchToBirdsEye();
     }
 
     private void UpdateResult(string name, int position, bool hit)

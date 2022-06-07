@@ -34,6 +34,7 @@ public class DroneScript : MonoBehaviour
         droneCam = gameObject.GetComponent<Camera>();
         GameFeedbackEvents.instance.switchViewToShip += SwitchToShip;
         GameFeedbackEvents.instance.switchToBirdsEye += BirdsEyeView;
+        GameFeedbackEvents.instance.switchToWaterView += SwitchTarget;
     }
 
     // Update is called once per frame
@@ -90,8 +91,16 @@ public class DroneScript : MonoBehaviour
 
     public void SwitchTarget(Transform target)
     {
+        ToggleUIElements(false);
+        droneCam.orthographic = false;
         //Called from the AI's side to focus on the attacked point
         this.target = target;
+        StartCoroutine(DestroyTarget());
+    }
+    private IEnumerator DestroyTarget()
+    {
+        yield return new WaitForSeconds(2f);
+        target = null;
     }
 
     private void ToggleUIElements(bool to)
