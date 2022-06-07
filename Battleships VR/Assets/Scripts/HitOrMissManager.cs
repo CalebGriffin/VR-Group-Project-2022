@@ -15,8 +15,11 @@ public class HitOrMissManager : MonoBehaviour
     }
     #endregion
     [SerializeField] private GameObject fireParticles;
+    [SerializeField] private GameObject waterSplash;
     [SerializeField] private Player playerBoard;
     [SerializeField] private GameObject emptyMarker;
+    [SerializeField] private GameObject seaBoard;
+
     private GameObject[] firePart;
 
     private void Start()
@@ -38,8 +41,10 @@ public class HitOrMissManager : MonoBehaviour
             case "AI":
                 UpdateResult("PlayerBoardInSea", position, hit);
 
-                if(hit == true)
+                if (hit == true)
                     SpawnFireOnBoats(position);
+                else
+                    SpawnSplash(position);
 
                 TurnClockAnimator.instance.AnimateTo("Player");
                 gVar.playerTurn = true;
@@ -110,6 +115,15 @@ public class HitOrMissManager : MonoBehaviour
         return nearestFire;
     }
 
+    private void SpawnSplash(int positionFromCC)
+    {
+        int row = (positionFromCC - 1) / playerBoard.Board.Matrix.GetLength(0);
+        int col = (positionFromCC - 1) % playerBoard.Board.Matrix.GetLength(0);
+        GameObject temp = Instantiate(waterSplash, new Vector3(0, 0, 0), Quaternion.identity, seaBoard.transform);
+        temp.transform.localPosition = new Vector3(row * 60, 0, col * 60);
+        Debug.Log("Spawned some water");
+        Destroy(temp, 2f);
+    }
 
     private void UpdateResult(string name, int position, bool hit)
     {
