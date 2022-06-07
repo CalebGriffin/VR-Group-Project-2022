@@ -233,8 +233,17 @@ public class Player : MonoBehaviour
 
         if (win)
         {
-            // Call a GameOver method to end the game because the AI has won
+            StartCoroutine(WaitToEnd());
         }
+    }
+
+    private IEnumerator WaitToEnd()
+    {
+        while (gVar.playerTurnOver == false)
+            yield return null;
+        
+        // Call a GameOver method to end the game because the AI has won
+        GameOver.instance.Winner("AI");
     }
 
     public void Decision(int position)

@@ -95,11 +95,7 @@ namespace BattleshipAI
             if (win)
             {
                 // Call a GameOver method to end the game because the player has won
-                // TESTING // REMOVE
-                if (ai.testRunner.playing)
-                {
-                    ai.testRunner.Button("AI2");
-                }
+                GameOver.instance.Winner("Player");
             }
         }
 

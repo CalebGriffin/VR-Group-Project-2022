@@ -25,15 +25,8 @@ public class FireworkSpawner : MonoBehaviour
 
         GameObject temp = Instantiate(fireworkSquare, new Vector3(0,0,0), Quaternion.identity, boardParent.transform);
         temp.transform.localPosition = new Vector3(randX * 60, randY, randZ * 60);
-        StartCoroutine(DestroyFirework(temp));
+        Destroy(temp, 10);
 
         StartCoroutine(SpawnFirework());
-    }
-
-    private IEnumerator DestroyFirework(GameObject firework)
-    {
-        yield return new WaitForSeconds(10);
-
-        Destroy(firework);
     }
 }
