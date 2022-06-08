@@ -26,21 +26,24 @@ public class DroneScript : MonoBehaviour
     private bool assignPosition = true;
     private Transform target;
 
-
+    private bool alwaysLook = false;
 
     // Start is called before the first frame update
     void Start()
     {
+        alwaysLook = false;
         droneCam = gameObject.GetComponent<Camera>();
         GameFeedbackEvents.instance.switchViewToShip += SwitchToShip;
         GameFeedbackEvents.instance.switchToBirdsEye += BirdsEyeView;
         GameFeedbackEvents.instance.switchToWaterView += SwitchTarget;
+        GameFeedbackEvents.instance.switchToPlaneView += LookAtPlane;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if (alwaysLook && target != null)
+            transform.LookAt(target);
 
 
         if (target == null)
@@ -97,10 +100,18 @@ public class DroneScript : MonoBehaviour
         this.target = target;
         StartCoroutine(DestroyTarget());
     }
-    private IEnumerator DestroyTarget()
+    private IEnumerator DestroyTarget(float waitTimer = 2f)
     {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(waitTimer);
         target = null;
+        alwaysLook = false;
+    }
+
+    private void LookAtPlane(Transform target)
+    {
+        this.target = target;
+        alwaysLook = true;
+        StartCoroutine(DestroyTarget(10f));
     }
 
     private void ToggleUIElements(bool to)

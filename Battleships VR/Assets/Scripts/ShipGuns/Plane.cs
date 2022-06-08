@@ -59,6 +59,7 @@ public class Plane : MonoBehaviour
         targetObj = target;
         isMoving = true;
         StartCoroutine(AudioLibrary.instance.GenerateSound("Plane", gameObject, true, 0.3f, 300f, true));
+        GameFeedbackEvents.instance.SwitchToPlaneView(gameObject.transform);
 
         GlobalTimer timer = new GlobalTimer(10f);
         StartCoroutine(timer.ScaledTimer());

@@ -19,6 +19,7 @@ public class GameFeedbackEvents : MonoBehaviour
     public Action switchToBirdsEye;
     public Action<int> shipHasSunk;
     public Action<Transform> switchToWaterView;
+    public Action<Transform> switchToPlaneView;
     public void FireGuns(int id, Vector3 target, int amount = 1)
     {
         //IMPORTANT - id represents the index of the ship model in the drone camera list
@@ -45,5 +46,9 @@ public class GameFeedbackEvents : MonoBehaviour
     public void SwitchToWaterView(Transform target)
     {
         switchToWaterView.Invoke(target);
+    }
+    public void SwitchToPlaneView(Transform target)
+    {
+        switchToPlaneView.Invoke(target);
     }
 }
