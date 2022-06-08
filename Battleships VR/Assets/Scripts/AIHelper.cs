@@ -94,8 +94,7 @@ namespace BattleshipAI
 
             if (win)
             {
-                // Call a GameOver method to end the game because the player has won
-                GameOver.instance.Winner("Player");
+                ai.StartCoroutine("WaitToEnd");
             }
         }
 

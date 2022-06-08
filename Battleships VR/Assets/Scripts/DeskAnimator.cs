@@ -28,6 +28,7 @@ public class DeskAnimator : MonoBehaviour
         MoveButtonsDown();
         BringUpTheBlinds();
         MoveTurnClockUp();
+        MoveTestingButtonsUp();
     }
 
     public void TransitionToEnd(bool playerWon)
@@ -69,6 +70,7 @@ public class DeskAnimator : MonoBehaviour
 
     private void MoveTestingButtonsUp()
     {
+        testingButtonParent.SetActive(true);
         LeanTween.moveLocalY(testingButtonParent, 0.5f, animationTime).setOnStart(() =>
         {
             foreach (GameObject button in testingButtons)

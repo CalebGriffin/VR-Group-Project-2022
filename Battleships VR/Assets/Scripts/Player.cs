@@ -239,9 +239,8 @@ public class Player : MonoBehaviour
 
     private IEnumerator WaitToEnd()
     {
-        while (gVar.playerTurnOver == false)
-            yield return null;
-        
+        yield return new WaitForSeconds(2f);
+
         // Call a GameOver method to end the game because the AI has won
         GameOver.instance.Winner("AI");
     }

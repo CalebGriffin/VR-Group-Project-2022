@@ -173,6 +173,17 @@ public class AI : MonoBehaviour
         }
     }
 
+    public IEnumerator WaitToEnd()
+    {
+        yield return new WaitForSeconds(1f);
+
+        while (gVar.playerTurnOver == false)
+            yield return null;
+        
+        // Call a GameOver method to end the game because the player has won
+        GameOver.instance.Winner("Player");
+    }
+
     public IEnumerator WaitToDecide()
     {
         float randTime = UnityEngine.Random.Range(2f, 5f);
