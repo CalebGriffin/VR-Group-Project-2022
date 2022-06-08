@@ -10,6 +10,8 @@ public class DeskAnimator : MonoBehaviour
     [SerializeField] private GameObject blinds;
     [SerializeField] private GameObject buttonParent;
     [SerializeField] private GameObject[] buttons;
+    [SerializeField] private GameObject testingButtonParent;
+    [SerializeField] private GameObject[] testingButtons;
     [SerializeField] private GameObject resetButton;
     [SerializeField] private GameObject turnClock;
     [SerializeField] private GameObject playerBoard;
@@ -62,6 +64,19 @@ public class DeskAnimator : MonoBehaviour
         LeanTween.moveLocalY(movingPart, 0.45f, animationTime).setOnComplete(() =>
         {
             enemyBoard.SetActive(false);
+        });
+    }
+
+    private void MoveTestingButtonsUp()
+    {
+        LeanTween.moveLocalY(testingButtonParent, 0.5f, animationTime).setOnStart(() =>
+        {
+            foreach (GameObject button in testingButtons)
+                button.AddComponent<IgnoreHovering>();
+        }).setOnComplete(() =>
+        {
+            foreach (GameObject button in testingButtons)
+                Destroy(button.GetComponent<IgnoreHovering>());
         });
     }
     
