@@ -30,7 +30,7 @@ public class AudioLibrary : MonoBehaviour
         if (obj.GetComponent<AudioSource>() == null)
             obj.AddComponent<AudioSource>();
 
-
+        Debug.Log("Added source");
         AudioStats stats = Array.Find(sounds, sound => sound.name == name);
         if(stats == null)
         {
