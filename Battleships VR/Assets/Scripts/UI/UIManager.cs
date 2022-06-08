@@ -27,12 +27,13 @@ public class UIManager : MonoBehaviour
 
     public void ResetMenuText()
     {
+        StopAllCoroutines();
         text.text = "";
     }
 
     public void DisplayEndText(bool playerWon)
     {
-        RevealLetters(playerWon ? winnerFile : loserFile);
+        StartCoroutine(RevealLetters(playerWon ? winnerFile : loserFile));
     }
 
     private IEnumerator RevealLetters(TextAsset textFile)

@@ -18,6 +18,7 @@ public class SceneController : MonoBehaviour
     #endregion
 
     [SerializeField] private SceneReference[] scenes;
+    [SerializeField] private SceneReference mainScene;
     
     private float animationTime = 1f;
     private bool isLoading = false;
@@ -26,7 +27,6 @@ public class SceneController : MonoBehaviour
     void Start()
     {
         StartCoroutine(FadeInDelay());
-
     }
 
     private void LoadAllScenes()
@@ -52,8 +52,12 @@ public class SceneController : MonoBehaviour
             AsyncOperation loadScene = SceneManager.LoadSceneAsync(scene, LoadSceneMode.Additive);
 
             while (!loadScene.isDone)
+            {
                 yield return null;
+            }
         }
+
+        yield return new WaitForSeconds(animationTime);
 
         SteamVR_Fade.Start(Color.clear, animationTime);
     }
@@ -74,7 +78,7 @@ public class SceneController : MonoBehaviour
         SteamVR_Fade.Start(Color.clear, 0);
         SteamVR_Fade.Start(Color.black, animationTime);
 
-        AsyncOperation loadScene = SceneManager.LoadSceneAsync("TestScene", LoadSceneMode.Single);
+        AsyncOperation loadScene = SceneManager.LoadSceneAsync(mainScene, LoadSceneMode.Single);
         loadScene.allowSceneActivation = false;
 
         yield return new WaitForSeconds(animationTime);
@@ -86,5 +90,4 @@ public class SceneController : MonoBehaviour
 
         isLoading = false;
     }
-
 }

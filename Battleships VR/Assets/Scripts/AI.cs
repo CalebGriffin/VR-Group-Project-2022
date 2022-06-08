@@ -175,7 +175,7 @@ public class AI : MonoBehaviour
 
     public IEnumerator WaitToEnd()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.5f);
 
         while (gVar.playerTurnOver == false)
             yield return null;
