@@ -57,11 +57,11 @@ public class AI : MonoBehaviour
     public bool targetMode = false;
 
     // An integer to store how far below the optimal move the AI could potentially shoot at
-    private int deviation = 0;
+    private int deviation = 1;
     public int Deviation { get { return deviation; } }
 
     // An integer to remember the original deviation value so that it can be dynamically changed at runtime
-    private int startingDeviation = 0;
+    private int startingDeviation = 1;
     public int StartingDeviation { get { return startingDeviation; } }
 
     // A boolean that stops functions from running if the AI is clearing all of the information at the end of a game

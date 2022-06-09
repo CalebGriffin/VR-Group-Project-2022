@@ -60,8 +60,8 @@ public class DeskAnimator : MonoBehaviour
         enemyBoard.transform.localPosition = new Vector3(enemyBoard.transform.localPosition.x, -0.026f, enemyBoard.transform.localPosition.z);
         LeanTween.rotateZ(movingPart, 360, animationTime).setOnStart(() =>
         {
-            //resetButton.SetActive(true);
-            apologyCanvas.SetActive(true);
+            resetButton.SetActive(true);
+            //apologyCanvas.SetActive(true);
             pinParent.SetActive(false);
         });
         LeanTween.moveLocalY(movingPart, 0.45f, animationTime).setOnComplete(() =>
